@@ -1,0 +1,7 @@
+venv/
+.idea/
+*.pyc
+db.sqlite3
+templates/
+static/
+static_collected/
