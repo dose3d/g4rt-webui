@@ -1,0 +1,5 @@
+TODO_DIR=../var/dose3d/todo
+PENDING_DIR=../var/dose3d/pending
+DONE_DIR=../var/dose3d/done
+DOSE3D_EXEC=../dummy/cmake-build-debug/dummy.exe
+SLEEP=1

@@ -4,7 +4,7 @@ autobahn==23.1.2
 Automat==22.10.0
 cffi==1.15.1
 constantly==15.1.0
-cryptography==39.0.2
+cryptography==40.0.1
 daphne==4.0.0
 Django==4.1.7
 django-cors-headers==3.14.0
@@ -18,8 +18,8 @@ pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.21
 PyJWT==2.6.0
-pyOpenSSL==23.0.0
-pytz==2022.7.1
+pyOpenSSL==23.1.1
+pytz==2023.2
 service-identity==21.1.0
 six==1.16.0
 sqlparse==0.4.3
@@ -27,5 +27,5 @@ Twisted==22.10.0
 twisted-iocpsupport==1.0.2
 txaio==23.1.1
 typing_extensions==4.5.0
-tzdata==2022.7
+tzdata==2023.2
 zope.interface==6.0
