@@ -1,25 +1,26 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import './index.css';
+import Footer from './components/Footer';
+import Navbar from './components/Navbar';
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import Home from './site/homePage';
+import Login from './site/LoginPage';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="flex min-h-screen flex-col overflow-hidden">
+        <AuthProvider>
+          <Navbar />
+          <Routes>
+            <Route element={<Login />} path="/login" />
+            <Route element={<Home />} path="/" />
+          </Routes>
+        </AuthProvider>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
