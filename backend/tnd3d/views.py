@@ -1,3 +1,11 @@
-from django.shortcuts import render
+from rest_framework import viewsets
 
-# Create your views here.
+from commons.views import CustomPageNumberPagination
+from tnd3d.models import Job
+from tnd3d.serializer import JobSerializer
+
+
+class JobViewSet(viewsets.ModelViewSet):
+    queryset = Job.objects.all()
+    serializer_class = JobSerializer
+    pagination_class = CustomPageNumberPagination

@@ -22,6 +22,7 @@ from django.views.static import serve
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
+    path('api/', include("api.urls")),
     path(r'', serve, kwargs={'path': 'index.html', 'document_root': 'templates'}),
     path(r'asset-manifest.json', serve, kwargs={'path': 'asset-manifest.json', 'document_root': 'templates'}),
     path(r'favicon.ico', serve, kwargs={'path': 'favicon.ico', 'document_root': 'templates'}),
