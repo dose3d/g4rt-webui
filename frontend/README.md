@@ -7,8 +7,9 @@ JavaScript application
 Future features:
 
 * functionally login page (for non-localhost usage)
-* load jobs from backend
+* load jobs from backend (pagination and filtering)
 * add job page
+* sort jobs by column
 * details job page
 * functionally pagination
 * footer links

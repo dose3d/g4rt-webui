@@ -39,6 +39,14 @@ export interface UseBackendParams<Response, TFieldValues extends FieldValues = F
   formProps?: UseFormProps<TFieldValues>;
 }
 
+export interface PaginatedResponse<E> {
+  count: number;
+  next: string;
+  pages_count: number;
+  previous: string;
+  results: E[];
+}
+
 function defaultPreSubmit<TFieldValues extends FieldValues = FieldValues>(values: TFieldValues) {
   return values;
 }

@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import { CloseIcon, HamburgerIcon } from './icons';
 
-const buttonCN =
-  'ml-5 mr-3 hidden items-center rounded-lg bg-cyan-600 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 sm:inline-flex';
+const buttonCN = 'btn btn-ghost';
 
 interface Props {
   toggle: boolean;
