@@ -1,11 +1,11 @@
 import axios, { AxiosError, AxiosInstance, Method } from 'axios';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { FieldValues } from 'react-hook-form/dist/types';
+import { SubmitHandler, useForm, UseFormProps } from "react-hook-form";
+import { FieldPath, FieldValues } from "react-hook-form/dist/types";
 import { useCallback, useState } from 'react';
 import useAxios from '../utils/useAxios';
 import { UseFormSetError } from 'react-hook-form/dist/types/form';
 
-interface DrfError {
+interface DrfError<TFieldValues extends FieldValues = FieldValues> {
   detail: string;
 }
 
@@ -36,6 +36,7 @@ export interface UseBackendParams<Response, TFieldValues extends FieldValues = F
   submit?: (axiosInstance: AxiosInstance, method: Method, endpoint: string, values: TFieldValues) => Promise<Response>;
   postSubmit?: (response: Response, values: TFieldValues) => void;
   parseErrors?: (error: unknown, setError: UseFormSetError<TFieldValues>, values: TFieldValues) => string;
+  formProps?: UseFormProps<TFieldValues>;
 }
 
 function defaultPreSubmit<TFieldValues extends FieldValues = FieldValues>(values: TFieldValues) {
@@ -60,7 +61,12 @@ function defaultParseErrors<Response, TFieldValues extends FieldValues = FieldVa
   if (axios.isAxiosError(error)) {
     const aerr = error as AxiosError<DrfError>;
     if (aerr.response) {
-      // TODO: setError
+      const resp = aerr.response.data as unknown as {[key: string]: string[]};
+      const fields = Object.keys(resp);
+      for (let i = 0; i < fields.length; i++) {
+        const field = fields[i] as FieldPath<TFieldValues>;
+        setError(field, { type: 'custom', message: resp[field].join('\n') });
+      }
     }
   }
   return formatErrorToString(error);
@@ -95,9 +101,10 @@ export function useBackend<Response, TFieldValues extends FieldValues = FieldVal
     submit = defaultSubmit,
     postSubmit,
     parseErrors = defaultParseErrors,
+    formProps
   } = params;
 
-  const form = useForm<TFieldValues>();
+  const form = useForm(formProps);
   const { setError } = form;
   const axiosInstance = useAxios();
   const [status, setStatus] = useState<'' | 'pending' | 'success' | 'error'>('');
