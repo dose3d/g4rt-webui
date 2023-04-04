@@ -47,3 +47,30 @@ export function CTextInput<TFieldValues extends FieldValues = FieldValues>({
 }: CTextInputProps<TFieldValues>) {
   return <Controller name={name} control={control} render={(p) => <TextInput {...p} {...rest} />} />;
 }
+
+export function TextArea<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({ field, fieldState, title, subtitle, bottomRight }: TextInputProps<TFieldValues, TName>) {
+  return (
+    <div className="form-control w-full">
+      <label className="label">
+        <span className="label-text">{title}</span>
+        <span className="label-text-alt">{subtitle}</span>
+      </label>
+      <textarea placeholder="Type here" className="textarea-bordered textarea h-24 w-full" {...field} />
+      <label className="label">
+        <span className="label-text-alt">{fieldState.error?.message}</span>
+        <span className="label-text-alt">{bottomRight}</span>
+      </label>
+    </div>
+  );
+}
+
+export function CTextArea<TFieldValues extends FieldValues = FieldValues>({
+  control,
+  name,
+  ...rest
+}: CTextInputProps<TFieldValues>) {
+  return <Controller name={name} control={control} render={(p) => <TextArea {...p} {...rest} />} />;
+}

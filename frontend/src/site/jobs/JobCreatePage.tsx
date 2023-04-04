@@ -10,7 +10,7 @@ import {
   Margin,
   Page,
 } from '../../components/layout';
-import { CTextInput } from '../../components/forms';
+import { CTextArea, CTextInput } from "../../components/forms";
 
 export default function JobCreatePage() {
   const { handleSubmit, onSubmit, control } = useJobApi({
@@ -32,7 +32,7 @@ export default function JobCreatePage() {
             </CardHeader>
             <form onSubmit={handleSubmit(onSubmit)}>
               <CTextInput name="title" control={control} title="Job title" />
-              <CTextInput name="description" control={control} title="Description of the job" />
+              <CTextArea name="description" control={control} title="Description of the job" />
               <input type="submit" />
             </form>
           </Card>
