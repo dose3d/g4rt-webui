@@ -9,6 +9,7 @@ interface CommonAdds {
   subtitle?: string;
   bottomRight?: string;
   placeHolder?: string;
+  inputCN?: string;
 }
 
 interface RFHAdds<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>> {
@@ -64,6 +65,7 @@ export function TextInput<
   bottomRight,
   placeHolder,
   type = 'text',
+  inputCN,
 }: TextInputProps<TFieldValues, TName>) {
   const hasError = !!fieldState.error?.message;
 
@@ -72,7 +74,7 @@ export function TextInput<
       <input
         type={type}
         placeholder={placeHolder}
-        className={cn('input-bordered input w-full', { 'input-error': hasError })}
+        className={cn('input-bordered input w-full', inputCN, { 'input-error': hasError })}
         {...field}
       />
     </LabelOutline>
@@ -110,6 +112,7 @@ export function TextArea<
   bottomRight,
   placeHolder,
   height = 'h-24',
+  inputCN,
 }: TextAreaProps<TFieldValues, TName>) {
   const hasError = !!fieldState.error?.message;
 
@@ -117,7 +120,7 @@ export function TextArea<
     <LabelOutline title={title} subtitle={subtitle} bottomRight={bottomRight} error={fieldState.error?.message}>
       <textarea
         placeholder={placeHolder}
-        className={cn('textarea-bordered textarea w-full', height, { 'textarea-error': hasError })}
+        className={cn('textarea-bordered textarea w-full', inputCN, height, { 'textarea-error': hasError })}
         {...field}
       />
     </LabelOutline>

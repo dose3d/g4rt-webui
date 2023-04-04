@@ -33,7 +33,13 @@ export default function JobCreatePage() {
             <form onSubmit={handleSubmit(onSubmit)}>
               <CTextInput name="title" control={control} title="Job title" />
               <CTextArea name="description" control={control} title="Description of the job" />
-              <CTextArea name="toml" control={control} title="Paste TOML file content here" height="h-96" />
+              <CTextArea
+                name="toml"
+                control={control}
+                title="Paste TOML file content here"
+                height="h-96"
+                inputCN="font-mono leading-tight"
+              />
               <button type="submit" className="btn-primary btn">
                 Send
               </button>
