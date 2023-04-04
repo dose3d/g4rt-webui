@@ -30,6 +30,29 @@ interface TextInputProps<TFieldValues extends FieldValues, TName extends FieldPa
   extends TextInputAdds,
     RFHAdds<TFieldValues, TName> {}
 
+interface LabelOutlineProps extends CommonAdds {
+  error?: string;
+  children: React.ReactNode;
+}
+
+function LabelOutline({ children, title, subtitle, bottomRight, error }: LabelOutlineProps) {
+  const hasError = !!error;
+
+  return (
+    <div className="form-control w-full">
+      <label className="label">
+        <span className={cn('label-text', { 'text-error': hasError })}>{title}</span>
+        <span className={cn('label-text-alt', { 'text-error': hasError })}>{subtitle}</span>
+      </label>
+      {children}
+      <label className="label">
+        <span className={cn('label-text-alt', { 'text-error': hasError })}>{error}</span>
+        <span className={cn('label-text-alt', { 'text-error': hasError })}>{bottomRight}</span>
+      </label>
+    </div>
+  );
+}
+
 export function TextInput<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
@@ -42,18 +65,17 @@ export function TextInput<
   placeHolder,
   type = 'text',
 }: TextInputProps<TFieldValues, TName>) {
+  const hasError = !!fieldState.error?.message;
+
   return (
-    <div className="form-control w-full">
-      <label className="label">
-        <span className="label-text">{title}</span>
-        <span className="label-text-alt">{subtitle}</span>
-      </label>
-      <input type={type} placeholder={placeHolder} className="input-bordered input w-full" {...field} />
-      <label className="label">
-        <span className="label-text-alt">{fieldState.error?.message}</span>
-        <span className="label-text-alt">{bottomRight}</span>
-      </label>
-    </div>
+    <LabelOutline title={title} subtitle={subtitle} bottomRight={bottomRight} error={fieldState.error?.message}>
+      <input
+        type={type}
+        placeholder={placeHolder}
+        className={cn('input-bordered input w-full', { 'input-error': hasError })}
+        {...field}
+      />
+    </LabelOutline>
   );
 }
 
@@ -89,18 +111,16 @@ export function TextArea<
   placeHolder,
   height = 'h-24',
 }: TextAreaProps<TFieldValues, TName>) {
+  const hasError = !!fieldState.error?.message;
+
   return (
-    <div className="form-control w-full">
-      <label className="label">
-        <span className="label-text">{title}</span>
-        <span className="label-text-alt">{subtitle}</span>
-      </label>
-      <textarea placeholder={placeHolder} className={cn('textarea-bordered textarea w-full', height)} {...field} />
-      <label className="label">
-        <span className="label-text-alt">{fieldState.error?.message}</span>
-        <span className="label-text-alt">{bottomRight}</span>
-      </label>
-    </div>
+    <LabelOutline title={title} subtitle={subtitle} bottomRight={bottomRight} error={fieldState.error?.message}>
+      <textarea
+        placeholder={placeHolder}
+        className={cn('textarea-bordered textarea w-full', height, { 'textarea-error': hasError })}
+        {...field}
+      />
+    </LabelOutline>
   );
 }
 
