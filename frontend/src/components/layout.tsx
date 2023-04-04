@@ -35,3 +35,31 @@ export function Content({ children }: ChildrenProps) {
     </div>
   );
 }
+
+export function Margin({ children }: ChildrenProps) {
+  return <div className="px-4 pt-6">{children}</div>;
+}
+
+export function CardsContainer({ children }: ChildrenProps) {
+  return <div className="grid grid-cols-1 xl:gap-4 2xl:grid-cols-2">{children}</div>;
+}
+
+export function Card({ children }: ChildrenProps) {
+  return <div className="rounded-lg bg-white p-4 shadow sm:p-6 xl:p-8">{children}</div>;
+}
+
+export function CardHeader({ children }: ChildrenProps) {
+  return <div className="mb-4 flex items-center justify-between">{children}</div>;
+}
+
+export function CardHeaderMain({ children }: ChildrenProps) {
+  return <div>{children}</div>;
+}
+
+export function CardHeaderTitle({ children }: ChildrenProps) {
+  return <h2 className="mb-2 text-xl font-bold text-gray-900">{children}</h2>;
+}
+
+export function CardHeaderSubTitle({ children }: ChildrenProps) {
+  return <span className="text-base font-normal text-gray-500">{children}</span>;
+}
