@@ -1,6 +1,5 @@
 import React from 'react';
 import { useJobApi } from '../../api/jobs';
-import { Controller } from 'react-hook-form';
 import {
   Card,
   CardHeader,
@@ -11,7 +10,7 @@ import {
   Margin,
   Page,
 } from '../../components/layout';
-import { TextInput } from '../../components/forms';
+import { CTextInput } from '../../components/forms';
 
 export default function JobCreatePage() {
   const { handleSubmit, onSubmit, control } = useJobApi({
@@ -32,8 +31,8 @@ export default function JobCreatePage() {
               </CardHeaderMain>
             </CardHeader>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Controller name="title" control={control} render={(p) => <TextInput {...p} />} />
-              <Controller name="description" control={control} render={(p) => <TextInput {...p} />} />
+              <CTextInput name="title" control={control} title="Job title" />
+              <CTextInput name="description" control={control} title="Description of the job" />
               <input type="submit" />
             </form>
           </Card>
