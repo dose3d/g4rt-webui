@@ -11,7 +11,7 @@ import JobCreatePage from './site/jobs/JobCreatePage';
 import JobDetailPage from './site/jobs/JobDetailPage';
 import Sidebar from './components/Sidebar';
 import useToggle from './hooks/useToggle';
-import Copyright from "./components/Copyright";
+import Copyright from './components/Copyright';
 
 function App() {
   const [toggle, onToggle] = useToggle();
@@ -22,18 +22,18 @@ function App() {
         <Navbar toggle={toggle} onToggle={onToggle} />
         <div className="flex overflow-hidden bg-white pt-16">
           <Sidebar toggle={toggle} onToggle={onToggle} />
-          <div className="h-full w-full bg-gray-50 relative overflow-y-auto lg:ml-64">
-          <Routes>
-            <Route path="/jobs">
-              <Route element={<JobsPage />} path="" />
-              <Route element={<JobCreatePage />} path="create" />
-              <Route element={<JobDetailPage />} path=":jobId" />
-            </Route>
-            <Route element={<Login />} path="/login" />
-            <Route element={<HomePage />} path="/" />
-          </Routes>
+          <div className="relative h-full w-full overflow-y-auto bg-gray-50 lg:ml-64">
+            <Routes>
+              <Route path="/jobs">
+                <Route element={<JobsPage />} path="" />
+                <Route element={<JobCreatePage />} path="create" />
+                <Route element={<JobDetailPage />} path=":jobId" />
+              </Route>
+              <Route element={<Login />} path="/login" />
+              <Route element={<HomePage />} path="/" />
+            </Routes>
             <Footer />
-            <Copyright/>
+            <Copyright />
           </div>
         </div>
       </AuthProvider>
