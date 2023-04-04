@@ -10,7 +10,7 @@ import {
   Margin,
   Page,
 } from '../../components/layout';
-import { CTextArea, CTextInput } from "../../components/forms";
+import { CTextArea, CTextInput } from '../../components/forms';
 
 export default function JobCreatePage() {
   const { handleSubmit, onSubmit, control } = useJobApi({
@@ -33,7 +33,10 @@ export default function JobCreatePage() {
             <form onSubmit={handleSubmit(onSubmit)}>
               <CTextInput name="title" control={control} title="Job title" />
               <CTextArea name="description" control={control} title="Description of the job" />
-              <input type="submit" />
+              <CTextArea name="toml" control={control} title="Paste TOML file content here" height="h-96" />
+              <button type="submit" className="btn-primary btn">
+                Send
+              </button>
             </form>
           </Card>
         </CardsContainer>

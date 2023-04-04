@@ -1,7 +1,6 @@
 import { PaginatedResponse, useBackend, UseBackendParams } from './common';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import useAxios from '../utils/useAxios';
-import { AxiosInstance } from "axios";
 
 export interface JobEntity {
   id: number;
@@ -11,6 +10,8 @@ export interface JobEntity {
   updated_at: string;
   status: string;
   is_error: boolean;
+
+  toml: string;
 }
 
 export function useJobApi(params: Omit<UseBackendParams<JobEntity, JobEntity>, 'endpoint'>) {
@@ -23,12 +24,8 @@ export function useJobApi(params: Omit<UseBackendParams<JobEntity, JobEntity>, '
 export function useJobList() {
   const axiosInstance = useAxios();
 
-  const query = useQuery({
+  return useQuery({
     queryKey: ['todos'],
-    queryFn: () => (
-      axiosInstance.get<PaginatedResponse<JobEntity>>('/api/jobs/').then((res) => res.data)
-    ),
+    queryFn: () => axiosInstance.get<PaginatedResponse<JobEntity>>('/api/jobs/').then((res) => res.data),
   });
-
-  return query;
 }
