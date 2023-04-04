@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { JobEntity } from '../api/jobs';
 import { EditIcon } from './icons';
 import moment from 'moment';
+import { Content } from './layout';
 
 function TableHeader() {
   return (
@@ -68,22 +69,16 @@ interface Props {
 
 function JobsTable({ jobs }: Props) {
   return (
-    <div className="flex flex-col">
-      <div className="overflow-x-auto">
-        <div className="inline-block min-w-full align-middle">
-          <div className="overflow-hidden shadow">
-            <table className="w-full table-fixed divide-y divide-gray-200">
-              <TableHeader />
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {(jobs || []).map((o, i) => (
-                  <TableRow key={i} job={o} />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Content>
+      <table className="w-full table-fixed divide-y divide-gray-200">
+        <TableHeader />
+        <tbody className="divide-y divide-gray-200 bg-white">
+          {(jobs || []).map((o, i) => (
+            <TableRow key={i} job={o} />
+          ))}
+        </tbody>
+      </table>
+    </Content>
   );
 }
 

@@ -23,3 +23,15 @@ export function Title({ children }: ChildrenProps) {
 export function Description({ children }: ChildrenProps) {
   return <p className="text-base font-normal text-gray-500">{children}</p>;
 }
+
+export function Content({ children }: ChildrenProps) {
+  return (
+    <div className="flex flex-col">
+      <div className="overflow-x-auto">
+        <div className="inline-block min-w-full align-middle">
+          <div className="overflow-hidden shadow">{children}</div>
+        </div>
+      </div>
+    </div>
+  );
+}

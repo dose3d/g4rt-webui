@@ -13,3 +13,4 @@ Future features:
 * details job page
 * functionally pagination
 * footer links
+* job page - errors handling
