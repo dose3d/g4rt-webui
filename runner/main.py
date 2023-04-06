@@ -5,6 +5,8 @@ import subprocess
 import sys
 import pathlib
 
+import psutil
+
 
 def load_config(config_file):
     config_values = {}
@@ -18,10 +20,16 @@ def load_config(config_file):
     return config_values
 
 
-def getfiles_by_date(path):
+def get_files_by_date(path):
     a = [s for s in os.listdir(path)
          if os.path.isfile(os.path.join(path, s))]
     a.sort(key=lambda s: os.path.getmtime(os.path.join(path, s)))
+    return a
+
+
+def get_dirs(path):
+    a = [s for s in os.listdir(path)
+         if os.path.isdir(os.path.join(path, s))]
     return a
 
 
@@ -86,7 +94,44 @@ def execute_job(config, job_id):
     shutil.move(job_path, done_path)
 
 
-if __name__ == "__main__":
+def clean_orphan_job(config, job_id):
+    job_path = os.path.join(config['RUNNING_DIR'], job_id)
+    done_path = os.path.join(config['DONE_DIR'], job_id)
+    pid_fn = os.path.join(job_path, 'pid')
+
+    # check for running Dose3D process
+    if os.path.exists(pid_fn):
+        with open(pid_fn, 'rt') as pf:
+            pid = int(pf.readline())
+
+        try:
+            while True:
+                process = psutil.Process(pid)
+
+                # check if it is Dose3D process
+                if process.name() == os.path.basename(config["DOSE3D_EXEC"]):
+                    print('Orphan job "%s" is running, wait for finish process PID %d...' % (job_id, pid))
+                else:
+                    pass  # another process just too over the same PID
+
+                time.sleep(1)
+
+        except psutil.NoSuchProcess:
+            pass  # process done
+
+        try:
+            os.remove(pid_fn)
+        except FileNotFoundError:
+            pass
+
+        print('Process %d is done, job "%s" is finished, move to DONEs' % (pid, job_id))
+    else:
+        print('Orphan job "%s" is finished, move to DONEs' % job_id)
+
+    shutil.move(job_path, done_path)
+
+
+def main():
     main_dir = pathlib.Path(__file__).parent.resolve().parent.resolve()
     config_file = os.path.join(main_dir, 'config.txt')
 
@@ -117,19 +162,25 @@ if __name__ == "__main__":
         if not (1 <= s <= 3600):
             print('Error! SLEEP should be between 1 and 3600', file=sys.stderr)
             exit(1)
-    except:
+    except ValueError:
         print('Error! SLEEP not a number', file=sys.stderr)
         exit(1)
 
     # main loop
     print('\nStart loop QUEUE_DIR crawler loop...\n')
     while True:
-        # Stage 1:  search for new files in TODO directory
-        # the new job should contains 2 files:
+        # Stage 1: search for orphan running jobs and clean
+        running_jobs = get_dirs(config['RUNNING_DIR'])
+        for d in running_jobs:
+            job_id = os.path.basename(d)
+            clean_orphan_job(config, job_id)
+
+        # Stage 2: search for new files in QUEUE directory
+        # the new job should have 2 files:
         # - new_job_id.dat
         # - new_job_id.dat.ready
-        # the second file inform the writing of new_job_id.dat is done and can be consume by runner
-        new_files = getfiles_by_date(config['QUEUE_DIR'])
+        # the second file inform the writing of new_job_id.dat is done and can be consumed by runner
+        new_files = get_files_by_date(config['QUEUE_DIR'])
         found_ready = None
         for f in new_files:
             if f.endswith('.toml'):
@@ -143,10 +194,14 @@ if __name__ == "__main__":
                 else:
                     print('Found new job but is not ready yet: ' + job_id)
 
-        # Stage 2: the job is ready, so move to PENDING and execute Dose3D
+        # Stage 3: the job is ready, so move to PENDING and execute Dose3D
         if found_ready:
             execute_job(config, found_ready)
 
-        # Stage 3: wait for
+        # Stage 4: wait for
         print('.', end='')
         time.sleep(int(config['SLEEP']))
+
+
+if __name__ == "__main__":
+    main()
