@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import psutil
 
 from dose3d.dose3d_error import Dose3DException
 
@@ -8,6 +9,23 @@ from dose3d.dose3d_error import Dose3DException
 QUEUE = "queue"
 RUNNING = "running"
 DONE = "done"
+
+
+def load_int_from_file(fn):
+    if os.path.exists(fn):
+        with open(fn, 'rt') as pf:
+            return int(pf.readline())
+    return None
+
+
+def load_all_from_file(fn):
+    with open(fn, 'rt') as f:
+        return ''.join(f.readlines())
+
+
+def write_all_to_file(fn, content):
+    with open(fn, 'wt') as f:
+        f.write(content)
 
 
 class Job:
@@ -50,6 +68,14 @@ class Job:
         """Get file name with PID of Dose3D process"""
         return os.path.join(self.get_job_path(RUNNING), 'pid')
 
+    def get_ret_code_file(self, for_status=None):
+        """Get file name with PID of Dose3D process"""
+        return os.path.join(self.get_job_path(for_status), 'ret_code.txt')
+
+    def get_log_file(self, for_status=None):
+        """Get file name with PID of Dose3D process"""
+        return os.path.join(self.get_job_path(for_status), 'log.txt')
+
     def update_job_status(self):
         """Check status by QUEUE, PENDING and DONE dirs and update status and ready in self"""
         if os.path.exists(self.get_job_path(DONE)):
@@ -61,6 +87,18 @@ class Job:
             self.ready = os.path.exists(self.get_ready_file())
         else:
             raise Dose3DException('Job %s not found' % self.job_id)
+
+    def flush_to_queue(self, args, toml):
+        """Flush new job to QUEUE dir"""
+        self.status = QUEUE
+        toml_file = self.get_toml_file()
+        args_file = self.get_args_file()
+        ready_file = self.get_ready_file()
+
+        write_all_to_file(toml_file, toml)
+        write_all_to_file(args_file, args)
+        write_all_to_file(ready_file, "go")
+
 
     def move_from_queue_to_running(self):
         """Move Job from QUEUE to RUNNING"""
@@ -111,24 +149,24 @@ class Job:
         log_callback('PID of process: %d' % p.pid)
 
         # waiting for logs line or close process and write logs to PENDING/job_id/log.txt
-        log_fn = os.path.join(job_path, 'log.txt')
+        log_fn = self.get_log_file()
         while True:
-            retcode = p.poll()
+            ret_code = p.poll()
             line = p.stdout.readline()
             with open(log_fn, 'ab') as fl:
                 fl.write(line)
                 log_callback('> %s' % line.decode("utf-8"), end='')
 
-            # if process closed break loop and remove pid file and write return code to PENDING/job_id/retcode.txt
-            if retcode is not None:
+            # if process closed break loop and remove pid file and write return code to PENDING/job_id/ret_code.txt
+            if ret_code is not None:
                 # remove pid file
                 os.remove(pid_fn)
 
                 # write return code to file
-                retcode_fn = os.path.join(job_path, 'retcode.txt')
-                with open(retcode_fn, 'wt') as rf:
-                    rf.write('%d' % retcode)
-                log_callback('\nEnd with code: %d' % retcode)
+                ret_code_fn = self.get_ret_code_file()
+                with open(ret_code_fn, 'wt') as rf:
+                    rf.write('%d' % ret_code)
+                log_callback('\nEnd with code: %d' % ret_code)
                 break
 
     def move_from_running_to_done(self):
@@ -142,8 +180,37 @@ class Job:
 
     def get_pid(self):
         """Load PID of running Job"""
-        pid_fn = self.get_pid_file()
-        if os.path.exists(pid_fn):
-            with open(pid_fn, 'rt') as pf:
-                return int(pf.readline())
-        return None
+        return load_int_from_file(self.get_pid_file())
+
+    def get_ret_code(self):
+        """Load PID of running Job"""
+        return load_int_from_file(self.get_ret_code_file())
+
+    def load_logs(self):
+        """Load logs to one string"""
+        return load_all_from_file(self.get_log_file())
+
+    def get_root_files(self):
+        """Load list of ROOT files"""
+        ret = []
+        fns = get_files_by_date(self.get_job_path())
+        for fn in fns:
+            if fn.endswith('.root'):
+                ret.append(fn)
+        return ret
+
+    def kill(self):
+        """Kill Dose3D process. Runner should move from RUNNING to DONE."""
+        pid = self.get_pid()
+        if pid is not None and self.jm.check_pid_is_dose3d(pid):
+            process = psutil.Process(pid)
+            process.kill()
+
+    def purge(self):
+        """Remove jobs files"""
+        if self.status == QUEUE:
+            os.remove(self.get_ready_file())
+            os.remove(self.get_toml_file())
+            os.remove(self.get_args_file())
+        else:
+            shutil.rmtree(self.get_job_path())

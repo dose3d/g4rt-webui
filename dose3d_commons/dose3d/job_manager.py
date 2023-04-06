@@ -134,3 +134,10 @@ class JobsManager:
 
         except psutil.NoSuchProcess:
             return None  # process done
+
+    def get_job(self, job_id, update_status=True):
+        """Build job instance and update status from dirs if update_status is true"""
+        job = Job(self, job_id)
+        if update_status:
+            job.update_job_status()
+        return job
