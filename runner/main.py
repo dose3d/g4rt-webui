@@ -1,103 +1,37 @@
 import os
 import time
-import shutil
-import subprocess
 import sys
 import pathlib
 
-import psutil
-from dose3d import JobsManager
+from dose3d import JobsManager, Dose3DException
 
 
 def execute_job(job):
     job_id = job.job_id
     print('Start job %s...' % job_id)
 
-    # extract job ID from job file name
-    args_file = job.get_args_file()
-    ready_file = job.get_ready_file()
-    job_file = job.get_toml_file()
-
-    # prepare PENDING/job_id path
-    job_path = job.get_running_job_path()
-    os.makedirs(job_path)
-
-    # move TODO/job_id.dat to PENDING/job_id/input.dat
-    input_toml_fn = os.path.join(job_path, 'input.toml')
-    shutil.move(job_file, input_toml_fn)
-
-    # read args from TODO/job_id.args
-    with open(args_file, 'rt') as af:
-        args = af.readline().split()
-
-    # and remove TODO/job_id.ready and TODO/job_id.args
-    os.remove(args_file)
-    os.remove(ready_file)
-
-    # execute Dose3D: DOSE3D_EXEC -t PENDING/job_id/input.toml -f
-    exe = [job.jm.DOSE3D_EXEC, '-t', input_toml_fn, '-o', job_path, *args]
-    print('Execute: %s' % ' '.join(exe))
-    p = subprocess.Popen(exe, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-    # write PID to PENDING/job_id/pid file
-    pid_fn = job.get_pid_file()
-    with open(pid_fn, 'wt') as pf:
-        pf.write('%d' % p.pid)
-    print('PID of process: %d' % p.pid)
-
-    # waiting for logs line or close process and write logs to PENDING/job_id/log.txt
-    log_fn = os.path.join(job_path, 'log.txt')
-    while True:
-        retcode = p.poll()
-        line = p.stdout.readline()
-        with open(log_fn, 'ab') as fl:
-            fl.write(line)
-            print('> %s' % line.decode("utf-8"), end='')
-
-        # if process closed break loop and remove pid file and write return code to PENDING/job_id/retcode.txt
-        if retcode is not None:
-            # remove pid file
-            os.remove(pid_fn)
-
-            # write return code to file
-            retcode_fn = os.path.join(job_path, 'retcode.txt')
-            with open(retcode_fn, 'wt') as rf:
-                rf.write('%d' % retcode)
-            print('\nEnd with code: %d' % retcode)
-            break
-
-    # move PENDING/job_id to DONE/job_id
-    done_path = job.get_done_job_path()
-    shutil.move(job_path, done_path)
+    job.move_from_queue_to_running()
+    job.execute_dose3d(print)
+    job.move_from_running_to_done()
 
 
 def clean_orphan_job(job):
-    job_path = job.get_running_job_path()
-    done_path = job.get_done_job_path()
-    pid_fn = os.path.join(job_path, 'pid')
-
     # check for running Dose3D process
-    if os.path.exists(pid_fn):
-        with open(pid_fn, 'rt') as pf:
-            pid = int(pf.readline())
+    pid = job.get_pid()
+    if pid is not None:
 
-        try:
-            while True:
-                process = psutil.Process(pid)
-
-                # check if it is Dose3D process
-                if process.name() == os.path.basename(job.jm.DOSE3D_EXEC):
-                    print('Orphan job "%s" is running, wait for finish process PID %d...' % (job.job_id, pid))
-                else:
-                    pass  # another process just too over the same PID
-
+        # Waiting for finish Dose3D process if needed
+        while True:
+            is_dose3d = job.jm.check_pid_is_dose3d(pid)
+            if is_dose3d:
+                print('Orphan job "%s" is running, wait for finish process PID %d...' % (job.job_id, pid))
                 time.sleep(1)
+            else:
+                break
 
-        except psutil.NoSuchProcess:
-            pass  # process done
-
+        # remove PID file
         try:
-            os.remove(pid_fn)
+            os.remove(job.get_pid_file())
         except FileNotFoundError:
             pass
 
@@ -105,7 +39,8 @@ def clean_orphan_job(job):
     else:
         print('Orphan job "%s" is finished, move to DONEs' % job.job_id)
 
-    shutil.move(job_path, done_path)
+    # Move from RUNNING to DONE
+    job.move_from_running_to_done()
 
 
 def main():
@@ -117,7 +52,7 @@ def main():
 
     try:
         jm = JobsManager(config_file, True)
-    except ValueError as e:
+    except Dose3DException as e:
         print('Error! ' + str(e), file=sys.stderr)
         exit(1)
 

@@ -1,5 +1,24 @@
 import os
 import pathlib
+import psutil
+
+from dose3d.dose3d_error import Dose3DException
+from dose3d.job import Job, QUEUE, RUNNING, DONE
+
+
+def get_files_by_date(path):
+    """Get list of files from path sorted by created date"""
+    a = [s for s in os.listdir(path)
+         if os.path.isfile(os.path.join(path, s))]
+    a.sort(key=lambda s: os.path.getctime(os.path.join(path, s)))
+    return a
+
+
+def get_dirs(path):
+    """Get list of dirs from path"""
+    a = [s for s in os.listdir(path)
+         if os.path.isdir(os.path.join(path, s))]
+    return a
 
 
 class JobsManager:
@@ -25,7 +44,7 @@ class JobsManager:
         # load config file
         self.load_config(config_file)
 
-        # create jobs dirs if need
+        # create jobs dirs if needed
         if init_dirs:
             self.init_dirs_if_need()
 
@@ -57,20 +76,23 @@ class JobsManager:
         try:
             self.SLEEP = int(self.config["SLEEP"])
         except ValueError:
-            raise ValueError('SLEEP must be number')
+            raise Dose3DException('SLEEP must be number')
+
+    def get_path_for_status(self, status):
+        """Get path for Jobs by status"""
+        if status == QUEUE:
+            return self.QUEUE_DIR
+        if status == RUNNING:
+            return self.RUNNING_DIR
+        if status == DONE:
+            return self.DONE_DIR
+        raise Dose3DException('Invalid status: %s, should be QUEUE, RUNNING or DONE' % status)
 
     def init_dirs_if_need(self):
         """Create JOBs dirs if not exists"""
         os.makedirs(self.QUEUE_DIR, exist_ok=True)
         os.makedirs(self.RUNNING_DIR, exist_ok=True)
         os.makedirs(self.DONE_DIR, exist_ok=True)
-
-    def get_files_by_date(self, path):
-        """Get list of files from path sorted by created date"""
-        a = [s for s in os.listdir(path)
-             if os.path.isfile(os.path.join(path, s))]
-        a.sort(key=lambda s: os.path.getctime(os.path.join(path, s)))
-        return a
 
     def get_jobs_from_queue(self):
         """
@@ -79,31 +101,36 @@ class JobsManager:
         """
 
         jobs = []
-        new_files = self.get_files_by_date(self.QUEUE_DIR)
+        new_files = get_files_by_date(self.QUEUE_DIR)
         for f in new_files:
             if f.endswith('.toml'):
                 base_file = os.path.basename(f)
                 job_id = os.path.splitext(base_file)[0]
                 ready_file = os.path.join(self.QUEUE_DIR, job_id + '.ready')
                 if os.path.exists(ready_file):
-                    jobs.append(Job(self, job_id, True))
+                    jobs.append(Job(self, job_id, True, QUEUE))
                     break
                 else:
-                    jobs.append(Job(self, job_id, False))
+                    jobs.append(Job(self, job_id, False, QUEUE))
 
         return jobs
-
-    def get_dirs(self, path):
-        """Get list of dirs from path"""
-        a = [s for s in os.listdir(path)
-             if os.path.isdir(os.path.join(path, s))]
-        return a
 
     def get_running_jobs(self):
         """Get list of running jobs"""
         jobs = []
-        running_jobs = self.get_dirs(self.RUNNING_DIR)
+        running_jobs = get_dirs(self.RUNNING_DIR)
         for d in running_jobs:
             job_id = os.path.basename(d)
-            jobs.append(Job(self, job_id))
+            jobs.append(Job(self, job_id, status=RUNNING))
         return jobs
+
+    def check_pid_is_dose3d(self, pid):
+        """Check if PID process is Dose3D process. None - no process with this PID"""
+        try:
+            process = psutil.Process(pid)
+
+            # check if it is Dose3D process
+            return process.name() == os.path.basename(self.DOSE3D_EXEC)
+
+        except psutil.NoSuchProcess:
+            return None  # process done
