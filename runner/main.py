@@ -29,12 +29,12 @@ def execute_job(config, job_id):
     print('Start job %s...' % job_id)
 
     # extract job ID from job file name
-    args_file = os.path.join(config['TODO_DIR'], job_id + ".args")
-    ready_file = os.path.join(config['TODO_DIR'], job_id + ".ready")
-    job_file = os.path.join(config['TODO_DIR'], job_id + ".toml")
+    args_file = os.path.join(config['QUEUE_DIR'], job_id + ".args")
+    ready_file = os.path.join(config['QUEUE_DIR'], job_id + ".ready")
+    job_file = os.path.join(config['QUEUE_DIR'], job_id + ".toml")
 
     # prepare PENDING/job_id path
-    job_path = os.path.join(config['PENDING_DIR'], job_id)
+    job_path = os.path.join(config['RUNNING_DIR'], job_id)
     os.makedirs(job_path)
 
     # move TODO/job_id.dat to PENDING/job_id/input.dat
@@ -95,15 +95,19 @@ if __name__ == "__main__":
     config = load_config(config_file)
 
     print('Used config settings:')
-    print('TODO_DIR = ' + os.path.abspath(config['TODO_DIR']))
-    print('PENDING_DIR = ' + os.path.abspath(config['PENDING_DIR']))
+    print('QUEUE_DIR = ' + os.path.abspath(config['QUEUE_DIR']))
+    print('RUNNING_DIR = ' + os.path.abspath(config['RUNNING_DIR']))
     print('DONE_DIR = ' + os.path.abspath(config['DONE_DIR']))
     print('DOSE3D_EXEC = ' + os.path.abspath(config['DOSE3D_EXEC']))
     print('SLEEP = ' + config['SLEEP'])
 
+    os.makedirs(config['QUEUE_DIR'], exist_ok=True)
+    os.makedirs(config['RUNNING_DIR'], exist_ok=True)
+    os.makedirs(config['DONE_DIR'], exist_ok=True)
+
     # check some config settings
-    if not os.path.exists(config['TODO_DIR']):
-        print('Error! Path %s not found' % config['TODO_DIR'], file=sys.stderr)
+    if not os.path.exists(config['QUEUE_DIR']):
+        print('Error! Path %s not found' % config['QUEUE_DIR'], file=sys.stderr)
         exit(1)
     if not os.path.exists(config['DOSE3D_EXEC']):
         print('Error! File %s not found' % config['DOSE3D_EXEC'], file=sys.stderr)
@@ -118,20 +122,20 @@ if __name__ == "__main__":
         exit(1)
 
     # main loop
-    print('\nStart loop TODO_DIR crawler loop...\n')
+    print('\nStart loop QUEUE_DIR crawler loop...\n')
     while True:
         # Stage 1:  search for new files in TODO directory
         # the new job should contains 2 files:
         # - new_job_id.dat
         # - new_job_id.dat.ready
         # the second file inform the writing of new_job_id.dat is done and can be consume by runner
-        new_files = getfiles_by_date(config['TODO_DIR'])
+        new_files = getfiles_by_date(config['QUEUE_DIR'])
         found_ready = None
         for f in new_files:
             if f.endswith('.toml'):
                 base_file = os.path.basename(f)
                 job_id = os.path.splitext(base_file)[0]
-                ready_file = os.path.join(config['TODO_DIR'], job_id + '.ready')
+                ready_file = os.path.join(config['QUEUE_DIR'], job_id + '.ready')
                 if os.path.exists(ready_file):
                     print('Found new ready job: ' + job_id)
                     found_ready = job_id

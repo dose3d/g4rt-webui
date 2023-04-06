@@ -14,3 +14,7 @@ Future features:
 * functionally pagination
 * footer links
 * job page - errors handling
+
+## Possible improvements
+
+* extract library for Django Rest Framework table (list) and CRUD (POST/PUT)

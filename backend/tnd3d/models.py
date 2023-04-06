@@ -4,8 +4,8 @@ from django.utils.translation import gettext_lazy as _
 
 class Job(models.Model):
     STATUS = [
-        ('TODO', 'TODO'),
-        ('PENDING', 'PENDING'),
+        ('QUEUE', 'QUEUE'),
+        ('RUNNING', 'RUNNING'),
         ('DONE', 'DONE'),
     ]
 
@@ -15,6 +15,7 @@ class Job(models.Model):
     description = models.TextField(blank=True, default='', verbose_name=_('Jobs description'))
     status = models.CharField(max_length=16, choices=STATUS, default='TODO', verbose_name=_('Current status'))
     is_error = models.BooleanField(default=False, verbose_name=_('Finish with errors'))
+    toml = models.TextField(blank=True, default='', verbose_name=_('Content of TOML file'))
 
     class Meta:
         ordering = ('created_at',)

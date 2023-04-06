@@ -15,9 +15,9 @@ if __name__ == "__main__":
     while True:
         _id += 1
         job_id = 'test_%d' % _id
-        if os.path.exists(os.path.join(config['TODO_DIR'], job_id + '.toml')):
+        if os.path.exists(os.path.join(config['QUEUE_DIR'], job_id + '.toml')):
             continue
-        if os.path.exists(os.path.join(config['PENDING_DIR'], job_id)):
+        if os.path.exists(os.path.join(config['RUNNING_DIR'], job_id)):
             continue
         if os.path.exists(os.path.join(config['DONE_DIR'], job_id)):
             continue
@@ -25,11 +25,11 @@ if __name__ == "__main__":
         break
 
     # found, so copy
-    shutil.copyfile('../test/example_job.toml', os.path.join(config['TODO_DIR'], job_id + '.toml'))
+    shutil.copyfile('../test/example_job.toml', os.path.join(config['QUEUE_DIR'], job_id + '.toml'))
 
-    with open(os.path.join(config['TODO_DIR'], job_id + '.args'), 'wt') as af:
+    with open(os.path.join(config['QUEUE_DIR'], job_id + '.args'), 'wt') as af:
         af.write('-f')
-    with open(os.path.join(config['TODO_DIR'], job_id + '.ready'), 'wt') as rf:
+    with open(os.path.join(config['QUEUE_DIR'], job_id + '.ready'), 'wt') as rf:
         rf.write('ok')
 
     print('Test job created: ' + job_id)
