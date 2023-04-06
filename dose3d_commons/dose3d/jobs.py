@@ -92,3 +92,18 @@ class JobsManager:
                     jobs.append([job_id, False])
 
         return jobs
+
+    def get_dirs(self, path):
+        """Get list of dirs from path"""
+        a = [s for s in os.listdir(path)
+             if os.path.isdir(os.path.join(path, s))]
+        return a
+
+    def get_running_jobs(self):
+        """Get list of running jobs"""
+        jobs = []
+        running_jobs = self.get_dirs(self.RUNNING_DIR)
+        for d in running_jobs:
+            job_id = os.path.basename(d)
+            jobs.append(job_id)
+        return jobs

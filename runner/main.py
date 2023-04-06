@@ -143,9 +143,8 @@ def main():
     print('\nStart loop QUEUE_DIR crawler loop...\n')
     while True:
         # Stage 1: search for orphan running jobs and clean
-        running_jobs = get_dirs(config['RUNNING_DIR'])
-        for d in running_jobs:
-            job_id = os.path.basename(d)
+        running_jobs = jm.get_running_jobs()
+        for job_id in running_jobs:
             clean_orphan_job(config, job_id)
 
         # Stage 2: search for new files in QUEUE directory
