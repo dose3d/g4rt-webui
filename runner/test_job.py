@@ -2,13 +2,13 @@ import os
 import shutil
 import pathlib
 
-from main import load_config
+from main import JobsManager
 
 if __name__ == "__main__":
     # load config
     main_dir = pathlib.Path(__file__).parent.resolve().parent.resolve()
     config_file = os.path.join(main_dir, 'config.txt')
-    config = load_config(config_file)
+    config = JobsManager(config_file).config
 
     # check exists IDs
     _id = 0

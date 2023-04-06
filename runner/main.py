@@ -6,7 +6,7 @@ import sys
 import pathlib
 
 import psutil
-from dose3d import load_config
+from dose3d import JobsManager
 
 
 def get_files_by_date(path):
@@ -126,7 +126,8 @@ def main():
 
     # load config
     print('Load config from: ' + config_file)
-    config = load_config(config_file)
+    jm = JobsManager(config_file)
+    config = jm.config
 
     print('Used config settings:')
     print('QUEUE_DIR = ' + os.path.abspath(config['QUEUE_DIR']))

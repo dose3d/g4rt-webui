@@ -7,7 +7,7 @@ from rest_framework import generics
 from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny
 
-from dose3d import load_config
+from dose3d import JobsManager
 
 
 class MyTokenObtainPairView(TokenObtainPairView):
@@ -22,5 +22,6 @@ class RegisterView(generics.CreateAPIView):
 
 @api_view(['GET'])
 def get_config(request):
-    config = load_config(settings.CONFIG_FILE)
+    jm = JobsManager(settings.CONFIG_FILE)
+    config = jm.config
     return Response(config)

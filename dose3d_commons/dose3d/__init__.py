@@ -1,1 +1,1 @@
-from dose3d.jobs import load_config
+from dose3d.jobs import JobsManager
