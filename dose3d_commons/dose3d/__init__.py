@@ -1,1 +1,2 @@
-from dose3d.jobs import JobsManager
+from dose3d.job import Job
+from dose3d.job_manager import JobsManager
