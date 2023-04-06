@@ -9,19 +9,6 @@ import psutil
 from dose3d import JobsManager
 
 
-def get_files_by_date(path):
-    a = [s for s in os.listdir(path)
-         if os.path.isfile(os.path.join(path, s))]
-    a.sort(key=lambda s: os.path.getmtime(os.path.join(path, s)))
-    return a
-
-
-def get_dirs(path):
-    a = [s for s in os.listdir(path)
-         if os.path.isdir(os.path.join(path, s))]
-    return a
-
-
 def execute_job(config, job_id):
     print('Start job %s...' % job_id)
 
@@ -126,34 +113,30 @@ def main():
 
     # load config
     print('Load config from: ' + config_file)
-    jm = JobsManager(config_file)
+
+    try:
+        jm = JobsManager(config_file, True)
+    except ValueError as e:
+        print('Error! ' + str(e), file=sys.stderr)
+        exit(1)
+
     config = jm.config
 
     print('Used config settings:')
-    print('QUEUE_DIR = ' + os.path.abspath(config['QUEUE_DIR']))
-    print('RUNNING_DIR = ' + os.path.abspath(config['RUNNING_DIR']))
-    print('DONE_DIR = ' + os.path.abspath(config['DONE_DIR']))
-    print('DOSE3D_EXEC = ' + os.path.abspath(config['DOSE3D_EXEC']))
-    print('SLEEP = ' + config['SLEEP'])
+    print('QUEUE_DIR = ' + jm.QUEUE_DIR)
+    print('RUNNING_DIR = ' + jm.RUNNING_DIR)
+    print('DONE_DIR = ' + jm.DONE_DIR)
+    print('DOSE3D_EXEC = ' + jm.DOSE3D_EXEC)
+    print('SLEEP = ' + str(jm.SLEEP))
 
-    os.makedirs(config['QUEUE_DIR'], exist_ok=True)
-    os.makedirs(config['RUNNING_DIR'], exist_ok=True)
-    os.makedirs(config['DONE_DIR'], exist_ok=True)
+    jm.init_dirs_if_need()
 
     # check some config settings
-    if not os.path.exists(config['QUEUE_DIR']):
-        print('Error! Path %s not found' % config['QUEUE_DIR'], file=sys.stderr)
-        exit(1)
-    if not os.path.exists(config['DOSE3D_EXEC']):
+    if not os.path.exists(jm.DOSE3D_EXEC):
         print('Error! File %s not found' % config['DOSE3D_EXEC'], file=sys.stderr)
         exit(1)
-    try:
-        s = int(config['SLEEP'])
-        if not (1 <= s <= 3600):
-            print('Error! SLEEP should be between 1 and 3600', file=sys.stderr)
-            exit(1)
-    except ValueError:
-        print('Error! SLEEP not a number', file=sys.stderr)
+    if not (1 <= jm.SLEEP <= 3600):
+        print('Error! SLEEP should be between 1 and 3600', file=sys.stderr)
         exit(1)
 
     # main loop
@@ -170,19 +153,15 @@ def main():
         # - new_job_id.dat
         # - new_job_id.dat.ready
         # the second file inform the writing of new_job_id.dat is done and can be consumed by runner
-        new_files = get_files_by_date(config['QUEUE_DIR'])
+        new_jobs = jm.get_jobs_from_queue()
         found_ready = None
-        for f in new_files:
-            if f.endswith('.toml'):
-                base_file = os.path.basename(f)
-                job_id = os.path.splitext(base_file)[0]
-                ready_file = os.path.join(config['QUEUE_DIR'], job_id + '.ready')
-                if os.path.exists(ready_file):
-                    print('Found new ready job: ' + job_id)
-                    found_ready = job_id
-                    break
-                else:
-                    print('Found new job but is not ready yet: ' + job_id)
+        for [job_id, ready] in new_jobs:
+            if ready:
+                print('Found new ready job: ' + job_id)
+                found_ready = job_id
+                break
+            else:
+                print('Found new job but is not ready yet: ' + job_id)
 
         # Stage 3: the job is ready, so move to PENDING and execute Dose3D
         if found_ready:
@@ -190,7 +169,7 @@ def main():
 
         # Stage 4: wait for
         print('.', end='')
-        time.sleep(int(config['SLEEP']))
+        time.sleep(jm.SLEEP)
 
 
 if __name__ == "__main__":
