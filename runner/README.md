@@ -17,7 +17,7 @@ The script never stops. You must kill the python process.
 1. Copy `../config.txt.sample` to `../config.txt`
 2. Adjust `config.txt` settings for your platform
 
-Tested on Python 3.11. It only uses the standard library and `psutil` (included in `requirements.txt`).
+Tested on Python 3.11. It only uses the `dose3d_commons` library (included in `requirements.txt`).
 
 ## Run
  

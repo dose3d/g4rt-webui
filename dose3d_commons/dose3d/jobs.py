@@ -1,5 +1,5 @@
-import pathlib
 import os
+import pathlib
 
 
 def load_config(config_file=None):

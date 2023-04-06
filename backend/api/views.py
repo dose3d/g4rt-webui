@@ -7,7 +7,7 @@ from rest_framework import generics
 from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny
 
-from commons.utils import load_config
+from dose3d import load_config
 
 
 class MyTokenObtainPairView(TokenObtainPairView):

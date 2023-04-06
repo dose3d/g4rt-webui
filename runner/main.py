@@ -6,18 +6,7 @@ import sys
 import pathlib
 
 import psutil
-
-
-def load_config(config_file):
-    config_values = {}
-
-    with open(config_file, 'rt') as c:
-        for line in c.readlines():
-            [key, value] = line.strip().split('=')
-            key = key.strip()
-            if key and key[0] != '#':
-                config_values[key] = value.strip()
-    return config_values
+from dose3d import load_config
 
 
 def get_files_by_date(path):
