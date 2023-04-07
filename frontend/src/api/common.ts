@@ -7,9 +7,9 @@ import { UseFormSetError } from 'react-hook-form/dist/types/form';
 import { useMutation } from '@tanstack/react-query';
 import { MutationKey } from '@tanstack/query-core/build/lib/types';
 
-interface DrfError<TFieldValues extends FieldValues = FieldValues> {
-  detail: string;
-}
+type DrfError<TFieldValues extends FieldValues = FieldValues> = {
+  [V in FieldPath<TFieldValues>]?: string[];
+} & { detail?: string };
 
 export function formatErrorToString(err: unknown): string {
   if (axios.isAxiosError(err)) {
@@ -64,18 +64,17 @@ async function defaultSubmit<Response, TFieldValues extends FieldValues = FieldV
   return response.data;
 }
 
-function defaultParseErrors<Response, TFieldValues extends FieldValues = FieldValues>(
+function defaultParseErrors<TFieldValues extends FieldValues = FieldValues>(
   error: unknown,
   setError: UseFormSetError<TFieldValues>,
-  values: TFieldValues,
 ) {
   if (axios.isAxiosError(error)) {
-    const aerr = error as AxiosError<DrfError>;
-    if (aerr.response) {
-      const resp = aerr.response.data as unknown as { [key: string]: string[] };
-      const fields = Object.keys(resp);
+    const axiosError = error as AxiosError<DrfError<TFieldValues>>;
+    if (axiosError.response) {
+      const resp = axiosError.response.data;
+      const fields = Object.keys(resp) as FieldPath<TFieldValues>[];
       for (let i = 0; i < fields.length; i++) {
-        const field = fields[i] as FieldPath<TFieldValues>;
+        const field = fields[i];
         const value = resp[field];
         const message = Array.isArray(value) ? value.join('\n') : `${value}`;
         setError(field, { type: 'custom', message });
@@ -86,8 +85,7 @@ function defaultParseErrors<Response, TFieldValues extends FieldValues = FieldVa
 }
 
 function defaultPutPost<TFieldValues extends FieldValues = FieldValues>(values: TFieldValues): Method {
-  // TODO: check if ID field in values is filled, when yes use POST otherwise use PUT
-  return 'POST';
+  return values.id ? 'PUT' : 'POST';
 }
 
 function defaultFormatEndpoint<TFieldValues extends FieldValues = FieldValues>(
@@ -98,8 +96,7 @@ function defaultFormatEndpoint<TFieldValues extends FieldValues = FieldValues>(
   if (method === 'POST') {
     return endpoint;
   } else {
-    // TODO: append ID
-    return endpoint;
+    return `${endpoint}/${values.id}`;
   }
 }
 

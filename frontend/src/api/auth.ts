@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useBackend, UseBackendParams } from './common';
 
 export interface BearerToken {
@@ -20,16 +19,6 @@ export interface LoginResponse {
   refresh: string;
   access: string;
 }
-
-export const loginUserRequest = async (username: string, password: string) => {
-  const request: LoginRequest = {
-    username,
-    password,
-  };
-
-  const response = await axios.post<LoginResponse>('/api/token/', request);
-  return response.data;
-};
 
 export function useLoginApi(params: Omit<UseBackendParams<LoginResponse, LoginRequest>, 'endpoint' | 'method'>) {
   return useBackend({
