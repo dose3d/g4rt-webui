@@ -13,7 +13,7 @@ import {
 import { CTextArea, CTextInput } from '../../components/forms';
 
 export default function JobCreatePage() {
-  const { handleSubmit, onSubmit, control } = useJobApi({
+  const { simpleHandleSubmit, control } = useJobApi({
     formProps: { defaultValues: { title: '', description: '' }, reValidateMode: 'onSubmit' },
   });
 
@@ -30,9 +30,10 @@ export default function JobCreatePage() {
                 </CardHeaderSubTitle>
               </CardHeaderMain>
             </CardHeader>
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={simpleHandleSubmit}>
               <CTextInput name="title" control={control} title="Job title" />
               <CTextArea name="description" control={control} title="Description of the job" />
+              <CTextInput name="args" control={control} title="Command line arguments for Dose3D" />
               <CTextArea
                 name="toml"
                 control={control}

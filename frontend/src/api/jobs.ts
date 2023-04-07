@@ -12,11 +12,13 @@ export interface JobEntity {
   is_error: boolean;
 
   toml: string;
+  args: string;
 }
 
 export function useJobApi(params: Omit<UseBackendParams<JobEntity, JobEntity>, 'endpoint'>) {
   return useBackend({
     endpoint: '/api/jobs/',
+    mutationKey: ['jobs'],
     ...params,
   });
 }
@@ -25,7 +27,7 @@ export function useJobList() {
   const axiosInstance = useAxios();
 
   return useQuery({
-    queryKey: ['todos'],
+    queryKey: ['jobs'],
     queryFn: () => axiosInstance.get<PaginatedResponse<JobEntity>>('/api/jobs/').then((res) => res.data),
   });
 }

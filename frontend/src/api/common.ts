@@ -1,9 +1,11 @@
 import axios, { AxiosError, AxiosInstance, Method } from 'axios';
-import { SubmitHandler, useForm, UseFormProps } from "react-hook-form";
-import { FieldPath, FieldValues } from "react-hook-form/dist/types";
+import { SubmitHandler, useForm, UseFormProps } from 'react-hook-form';
+import { FieldPath, FieldValues } from 'react-hook-form/dist/types';
 import { useCallback, useState } from 'react';
 import useAxios from '../utils/useAxios';
 import { UseFormSetError } from 'react-hook-form/dist/types/form';
+import { useMutation } from '@tanstack/react-query';
+import { MutationKey } from '@tanstack/query-core/build/lib/types';
 
 interface DrfError<TFieldValues extends FieldValues = FieldValues> {
   detail: string;
@@ -37,6 +39,7 @@ export interface UseBackendParams<Response, TFieldValues extends FieldValues = F
   postSubmit?: (response: Response, values: TFieldValues) => void;
   parseErrors?: (error: unknown, setError: UseFormSetError<TFieldValues>, values: TFieldValues) => string;
   formProps?: UseFormProps<TFieldValues>;
+  mutationKey?: MutationKey;
 }
 
 export interface PaginatedResponse<E> {
@@ -69,11 +72,13 @@ function defaultParseErrors<Response, TFieldValues extends FieldValues = FieldVa
   if (axios.isAxiosError(error)) {
     const aerr = error as AxiosError<DrfError>;
     if (aerr.response) {
-      const resp = aerr.response.data as unknown as {[key: string]: string[]};
+      const resp = aerr.response.data as unknown as { [key: string]: string[] };
       const fields = Object.keys(resp);
       for (let i = 0; i < fields.length; i++) {
         const field = fields[i] as FieldPath<TFieldValues>;
-        setError(field, { type: 'custom', message: resp[field].join('\n') });
+        const value = resp[field];
+        const message = Array.isArray(value) ? value.join('\n') : `${value}`;
+        setError(field, { type: 'custom', message });
       }
     }
   }
@@ -98,6 +103,9 @@ function defaultFormatEndpoint<TFieldValues extends FieldValues = FieldValues>(
   }
 }
 
+/**
+ * Integrate React Form Hooks, Axios, TanSack Query and Django Rest Framework.
+ */
 export function useBackend<Response, TFieldValues extends FieldValues = FieldValues>(
   params: UseBackendParams<Response, TFieldValues>,
 ) {
@@ -109,35 +117,58 @@ export function useBackend<Response, TFieldValues extends FieldValues = FieldVal
     submit = defaultSubmit,
     postSubmit,
     parseErrors = defaultParseErrors,
-    formProps
+    formProps,
+    mutationKey,
   } = params;
 
   const form = useForm(formProps);
   const { setError } = form;
   const axiosInstance = useAxios();
-  const [status, setStatus] = useState<'' | 'pending' | 'success' | 'error'>('');
-  const [message, setMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const onSubmit: SubmitHandler<TFieldValues> = useCallback(
-    async (data) => {
+  // Send request to backend
+  const onSend = useCallback(
+    async (data: TFieldValues) => {
       const data2 = preSubmit(data);
       const m = typeof method === 'function' ? method(data2) : method;
       const url = formatEndpoint(endpoint, m, data2);
-      try {
-        setStatus('pending');
-        const response = await submit(axiosInstance, m, url, data2);
-        setStatus('success');
-        setMessage('');
-        if (postSubmit) {
-          postSubmit(response, data2);
-        }
-      } catch (e) {
-        setStatus('error');
-        setMessage(parseErrors(e, setError, data2));
-      }
+      return await submit(axiosInstance, m, url, data2);
     },
-    [axiosInstance, endpoint, formatEndpoint, method, parseErrors, postSubmit, preSubmit, setError, submit],
+    [axiosInstance, endpoint, formatEndpoint, method, preSubmit, submit],
   );
 
-  return { ...form, onSubmit, message, status };
+  // Handle error response from backend
+  const onError = useCallback(
+    (error: unknown, data: TFieldValues) => {
+      const message = parseErrors(error, setError, data);
+      setErrorMessage(message);
+    },
+    [parseErrors, setError],
+  );
+
+  const mutation = useMutation<Response, string, TFieldValues>({
+    mutationFn: onSend,
+    onSuccess: postSubmit,
+    onError: onError,
+    mutationKey,
+  });
+
+  // React Form Hook with TanSack Query integration
+  const onSubmit: SubmitHandler<TFieldValues> = useCallback(
+    async (data) => {
+      try {
+        await mutation.mutateAsync(data);
+      } catch (e) {
+        if (!axios.isAxiosError(e)) {
+          throw e;
+        }
+      }
+    },
+    [mutation],
+  );
+
+  // Shortcut for handleSubmit(onSubmit)
+  const simpleHandleSubmit = form.handleSubmit(onSubmit);
+
+  return { ...form, onSubmit, ...mutation, errorMessage, simpleHandleSubmit };
 }
