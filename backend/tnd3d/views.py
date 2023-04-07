@@ -20,10 +20,11 @@ class JobViewSet(viewsets.ModelViewSet):
     pagination_class = CustomPageNumberPagination
 
     def get_serializer_class(self):
-        obj = self.get_object()
-        if obj is not None and obj.status != QUEUE:
-            # if job is pending then args and toml is read only
-            return JobSerializerPending
+        if self.action not in ['list', 'create']:
+            obj = self.get_object()
+            if obj is not None and obj.status != QUEUE:
+                # if job is pending then args and toml is read only
+                return JobSerializerPending
         return super().get_serializer_class()
 
     def list(self, request, *args, **kwargs):
@@ -46,7 +47,7 @@ class JobViewSet(viewsets.ModelViewSet):
         super().perform_destroy(instance)
 
     @action(detail=True, methods=['put'])
-    def kill(self, request, pk=None):
+    def kill(self, request):
         obj = self.get_object()
         if obj.status != RUNNING:
             raise ValidationError(_('Job must be in RUNNING state'))
@@ -54,7 +55,7 @@ class JobViewSet(viewsets.ModelViewSet):
         return Response({})
 
     @action(detail=True, methods=['get'])
-    def logs(self, request, pk=None):
+    def logs(self, request):
         obj = self.get_object()
         job = obj.get_runner_job()
         fn = job.get_log_file()

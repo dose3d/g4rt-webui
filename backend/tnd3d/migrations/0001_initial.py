@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('status', models.CharField(choices=[('INIT', 'init'), ('QUEUE', 'queue'), ('RUNNING', 'running'), ('DONE', 'done')], default='init', max_length=16, verbose_name='Current status')),
                 ('ret_code', models.BooleanField(blank=True, null=True, verbose_name='Return code of Dose3D process')),
                 ('toml', models.TextField(blank=True, default='', verbose_name='Content of TOML file')),
-                ('args', models.CharField(choices=[('INIT', 'init'), ('QUEUE', 'queue'), ('RUNNING', 'running'), ('DONE', 'done')], default='', max_length=255, verbose_name='Dose3D command line args')),
+                ('args', models.CharField(default='', max_length=255, verbose_name='Dose3D command line args')),
             ],
             options={
                 'verbose_name': 'Job',
