@@ -19,10 +19,13 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 
+from tnd3d.download import download_by_token
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include("api.urls")),
+    path('download/:module/:identify/:ts/:sha/', download_by_token, name="download"),
     path(r'', serve, kwargs={'path': 'index.html', 'document_root': 'templates'}),
     path(r'asset-manifest.json', serve, kwargs={'path': 'asset-manifest.json', 'document_root': 'templates'}),
     path(r'favicon.ico', serve, kwargs={'path': 'favicon.ico', 'document_root': 'templates'}),

@@ -173,4 +173,5 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-CONFIG_FILE = None
+CONFIG_FILE = None   # path to config.txt, when None use '../../config.txt'
+EXPIRATION_LINK = 70  # seconds to expire download link

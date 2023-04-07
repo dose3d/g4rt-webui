@@ -1,7 +1,5 @@
 import os.path
-from wsgiref.util import FileWrapper
 
-from django.http import StreamingHttpResponse
 from dose3d import QUEUE, RUNNING
 from rest_framework import viewsets
 from rest_framework.decorators import action
@@ -9,8 +7,9 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from commons.views import CustomPageNumberPagination
+from tnd3d.download import download_file
 from tnd3d.models import Job, JobRootFile
-from tnd3d.serializer import JobSerializer, JobSerializerPending, JobRootFileSerializer
+from tnd3d.serializer import JobSerializer, JobSerializerPending, JobRootFileSerializer, JobSerializerFull
 from django.utils.translation import gettext_lazy as _
 
 
@@ -20,7 +19,9 @@ class JobViewSet(viewsets.ModelViewSet):
     pagination_class = CustomPageNumberPagination
 
     def get_serializer_class(self):
-        if self.action not in ['list', 'create']:
+        if self.action == 'retrieve':
+            return JobSerializerFull
+        elif self.action not in ['list', 'create']:
             obj = self.get_object()
             if obj is not None and obj.status != QUEUE:
                 # if job is pending then args and toml is read only
@@ -56,25 +57,15 @@ class JobViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def logs(self, request):
+        """Download logs file API, not used by Frontend"""
         obj = self.get_object()
         job = obj.get_runner_job()
         fn = job.get_log_file()
-
-        file_stat = os.stat(fn)
-
-        chunk_size = 8192
-        response = StreamingHttpResponse(
-            FileWrapper(
-                open(fn, "rb"),
-                chunk_size,
-            ),
-            content_type='text/plain; charset=UTF-8',
-        )
-        response["Content-Length"] = file_stat.st_size
-        return response
+        return download_file(fn, None, 'text/plain; charset=UTF-8')
 
 
 class JobRootFileViewSet(viewsets.ReadOnlyModelViewSet):
+    """Download ROOT file API, not used by Frontend"""
     queryset = JobRootFile.objects.all()
     serializer_class = JobRootFileSerializer
 
@@ -92,16 +83,4 @@ class JobRootFileViewSet(viewsets.ReadOnlyModelViewSet):
         f = self.get_object()
         job = f.job.get_runner_job()
         fn = os.path.join(job.get_job_path(), f.file_name)
-        file_stat = os.stat(fn)
-
-        chunk_size = 8192
-        response = StreamingHttpResponse(
-            FileWrapper(
-                open(fn, "rb"),
-                chunk_size,
-            ),
-            content_type='application/octet-stream',
-        )
-        response["Content-Length"] = file_stat.st_size
-        response["Content-Disposition"] = f"attachment; filename={f.file_name}"
-        return response
+        return download_file(fn, f.file_name, 'application/octet-stream')

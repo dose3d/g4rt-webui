@@ -37,6 +37,7 @@ class Job(models.Model):
 
     def flush_job_to_queue(self):
         job = self.get_runners_job(False)
+
         if self.status == INIT:
             job.flush_to_queue(self.args, self.toml)
             self.status = QUEUE
