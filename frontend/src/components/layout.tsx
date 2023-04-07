@@ -41,7 +41,7 @@ export function Margin({ children }: ChildrenProps) {
 }
 
 export function CardsContainer({ children }: ChildrenProps) {
-  return <div className="grid grid-cols-1 xl:gap-4 2xl:grid-cols-2">{children}</div>;
+  return <div className="grid grid-cols-1">{children}</div>;
 }
 
 export function Card({ children }: ChildrenProps) {

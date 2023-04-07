@@ -11,10 +11,13 @@ import {
   Page,
 } from '../../components/layout';
 import { CTextArea, CTextInput } from '../../components/forms';
+import { useNavigate } from 'react-router-dom';
 
 export default function JobCreatePage() {
-  const { simpleHandleSubmit, control } = useJobApi({
+  const navigate = useNavigate();
+  const { simpleHandleSubmit, control, isLoading } = useJobApi({
     formProps: { defaultValues: { title: '', description: '' }, reValidateMode: 'onSubmit' },
+    postSubmit: () => navigate('/jobs'),
   });
 
   return (
@@ -41,7 +44,7 @@ export default function JobCreatePage() {
                 height="h-96"
                 inputCN="font-mono leading-tight"
               />
-              <button type="submit" className="btn-primary btn">
+              <button type="submit" className="btn-primary btn" disabled={isLoading}>
                 Send
               </button>
             </form>
