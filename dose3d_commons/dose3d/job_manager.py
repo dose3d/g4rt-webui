@@ -4,21 +4,7 @@ import psutil
 
 from dose3d.dose3d_error import Dose3DException
 from dose3d.job import Job, QUEUE, RUNNING, DONE
-
-
-def get_files_by_date(path):
-    """Get list of files from path sorted by created date"""
-    a = [s for s in os.listdir(path)
-         if os.path.isfile(os.path.join(path, s))]
-    a.sort(key=lambda s: os.path.getctime(os.path.join(path, s)))
-    return a
-
-
-def get_dirs(path):
-    """Get list of dirs from path"""
-    a = [s for s in os.listdir(path)
-         if os.path.isdir(os.path.join(path, s))]
-    return a
+from dose3d.utils import get_files_by_date, get_dirs
 
 
 class JobsManager:

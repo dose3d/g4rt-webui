@@ -4,28 +4,11 @@ import subprocess
 import psutil
 
 from dose3d.dose3d_error import Dose3DException
-
+from dose3d.utils import write_all_to_file, load_int_from_file, load_all_from_file, get_files_by_date
 
 QUEUE = "queue"
 RUNNING = "running"
 DONE = "done"
-
-
-def load_int_from_file(fn):
-    if os.path.exists(fn):
-        with open(fn, 'rt') as pf:
-            return int(pf.readline())
-    return None
-
-
-def load_all_from_file(fn):
-    with open(fn, 'rt') as f:
-        return ''.join(f.readlines())
-
-
-def write_all_to_file(fn, content):
-    with open(fn, 'wt') as f:
-        f.write(content)
 
 
 class Job:
@@ -98,7 +81,6 @@ class Job:
         write_all_to_file(toml_file, toml)
         write_all_to_file(args_file, args)
         write_all_to_file(ready_file, "go")
-
 
     def move_from_queue_to_running(self):
         """Move Job from QUEUE to RUNNING"""
