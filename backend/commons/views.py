@@ -1,5 +1,6 @@
 import math
 
+from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
@@ -19,3 +20,17 @@ class CustomPageNumberPagination(PageNumberPagination):
             ('previous', self.get_previous_link()),
             ('results', data)
         ]))
+
+
+class VariousSerializersViewSet(viewsets.ModelViewSet):
+    retrieve_serializer_class = None
+    list_serializer_class = None
+    create_serializer_class = None
+    update_serializer_class = None
+    destroy_serializer_class = None
+
+    def get_serializer_class(self):
+        sc = getattr(self, '%s_serializer_class' % self.action, self.serializer_class)
+        if sc is None:
+            return super().get_serializer_class()
+        return sc

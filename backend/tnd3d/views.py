@@ -6,22 +6,22 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
-from commons.views import CustomPageNumberPagination
+from commons.views import CustomPageNumberPagination, VariousSerializersViewSet
 from tnd3d.download import download_file
 from tnd3d.models import Job, JobRootFile
-from tnd3d.serializer import JobSerializer, JobSerializerPending, JobRootFileSerializer, JobSerializerFull
+from tnd3d.serializer import JobSerializer, JobSerializerPending, JobRootFileSerializer, JobSerializerFull, \
+    JobListSerializer
 from django.utils.translation import gettext_lazy as _
 
 
-class JobViewSet(viewsets.ModelViewSet):
+class JobViewSet(VariousSerializersViewSet):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
+    list_serializer_class = JobListSerializer
     pagination_class = CustomPageNumberPagination
 
     def get_serializer_class(self):
-        if self.action == 'retrieve':
-            return JobSerializerFull
-        elif self.action not in ['list', 'create']:
+        if self.action == 'update':
             obj = self.get_object()
             if obj is not None and obj.status != QUEUE:
                 # if job is pending then args and toml is read only

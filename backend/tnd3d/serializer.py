@@ -4,6 +4,15 @@ from tnd3d.download import generate_download_href, MODULE_ROOT, MODULE_LOGS
 from tnd3d.models import Job, JobRootFile
 
 
+class JobListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Job
+        exclude = ('toml', 'args')
+
+    def save(self, **kwargs):
+        pass  # it is readonly serializer
+
+
 class JobSerializer(serializers.ModelSerializer):
     class Meta:
         model = Job
