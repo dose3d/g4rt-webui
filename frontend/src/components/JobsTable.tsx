@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { JobEntity } from '../api/jobs';
+import { JobEntityList } from '../api/jobs';
 import { EditIcon } from './icons';
-import moment from 'moment';
 import { Content } from './layout';
+import { formatDate } from '../utils/formatValues';
 
 function TableHeader() {
   return (
@@ -33,11 +33,7 @@ function TableHeader() {
 }
 
 interface JobTableRow {
-  job: JobEntity;
-}
-
-function formatDate(drf: string) {
-  return moment(drf).format('YYYY-MM-DD HH:mm');
+  job: JobEntityList;
 }
 
 function TableRow({ job: { id, title, description, status, is_error, updated_at, created_at } }: JobTableRow) {
@@ -63,7 +59,7 @@ function TableRow({ job: { id, title, description, status, is_error, updated_at,
 }
 
 interface Props {
-  jobs: JobEntity[] | undefined;
+  jobs: JobEntityList[] | undefined;
   isLoading: boolean;
 }
 

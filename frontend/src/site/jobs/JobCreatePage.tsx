@@ -1,5 +1,5 @@
 import React from 'react';
-import { useJobApi } from '../../api/jobs';
+import { useJobCreateUpdate } from '../../api/jobs';
 import {
   Card,
   CardHeader,
@@ -15,7 +15,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function JobCreatePage() {
   const navigate = useNavigate();
-  const { simpleHandleSubmit, control, isLoading } = useJobApi({
+  const { simpleHandleSubmit, control, isLoading } = useJobCreateUpdate({
     formProps: { defaultValues: { title: '', description: '' }, reValidateMode: 'onSubmit' },
     postSubmit: () => navigate('/jobs'),
   });

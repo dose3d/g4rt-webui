@@ -1,33 +1,43 @@
-import { PaginatedResponse, useBackend, UseBackendParams } from './common';
-import { useQuery } from '@tanstack/react-query';
-import useAxios from '../utils/useAxios';
+import { useCreateUpdate, UseBackendParamsBase, useSelect, useEntity } from './common';
 
-export interface JobEntity {
+export interface JobEntityList {
   id: number;
   title: string;
   description: string;
   created_at: string;
   updated_at: string;
   status: string;
+  ret_code: number;
   is_error: boolean;
-
-  toml: string;
-  args: string;
 }
 
-export function useJobApi(params: Omit<UseBackendParams<JobEntity, JobEntity>, 'endpoint'>) {
-  return useBackend({
+export interface JobRootFileEntity {
+  id: number;
+  file_name: string;
+  size: number;
+  href: string;
+}
+
+export interface JobEntity extends JobEntityList {
+  toml: string;
+  args: string;
+
+  logs_href: string;
+  root_files: JobRootFileEntity[];
+}
+
+export function useJobCreateUpdate(params: Omit<UseBackendParamsBase<JobEntity, JobEntity>, 'endpoint'>) {
+  return useCreateUpdate({
     endpoint: '/api/jobs/',
-    mutationKey: ['jobs'],
+    queryKey: 'jobs',
     ...params,
   });
 }
 
-export function useJobList() {
-  const axiosInstance = useAxios();
+export function useJobList(refetchInterval = 60000) {
+  return useSelect<JobEntityList>({ queryKey: 'jobs', endpoint: '/api/jobs/', refetchInterval });
+}
 
-  return useQuery({
-    queryKey: ['jobs'],
-    queryFn: () => axiosInstance.get<PaginatedResponse<JobEntity>>('/api/jobs/').then((res) => res.data),
-  });
+export function useJobEntity(primaryKey: number, refetchInterval = 60000) {
+  return useEntity<JobEntity>({ queryKey: 'jobs', endpoint: '/api/jobs/', primaryKey, refetchInterval });
 }

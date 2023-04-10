@@ -1,4 +1,4 @@
-import { useBackend, UseBackendParams } from './common';
+import { useCreateUpdate, UseBackendParamsBase } from './common';
 
 export interface BearerToken {
   email: string;
@@ -20,8 +20,8 @@ export interface LoginResponse {
   access: string;
 }
 
-export function useLoginApi(params: Omit<UseBackendParams<LoginResponse, LoginRequest>, 'endpoint' | 'method'>) {
-  return useBackend({
+export function useLoginApi(params: UseBackendParamsBase<LoginResponse, LoginRequest>) {
+  return useCreateUpdate({
     endpoint: '/api/token/',
     method: 'POST',
     ...params,

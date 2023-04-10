@@ -4,8 +4,8 @@ import { FieldPath, FieldValues } from 'react-hook-form/dist/types';
 import { useCallback, useState } from 'react';
 import useAxios from '../utils/useAxios';
 import { UseFormSetError } from 'react-hook-form/dist/types/form';
-import { useMutation } from '@tanstack/react-query';
-import { MutationKey } from '@tanstack/query-core/build/lib/types';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { JobEntityList } from './jobs';
 
 type DrfError<TFieldValues extends FieldValues = FieldValues> = {
   [V in FieldPath<TFieldValues>]?: string[];
@@ -30,16 +30,22 @@ export function formatErrorToString(err: unknown): string {
   }
 }
 
-export interface UseBackendParams<Response, TFieldValues extends FieldValues = FieldValues> {
-  endpoint: string;
-  method?: Method | ((values: TFieldValues) => Method);
-  formatEndpoint?: (endpoint: string, method: Method, values: TFieldValues) => string;
+export interface UseBackendParamsBase<Response, TFieldValues extends FieldValues = FieldValues> {
+  method?: Method | ((pk: number | string, values: TFieldValues) => Method);
+  requestPrimaryKey?: number | string | ((values: TFieldValues) => number | string);
+  responsePrimaryKey?: (values: Response) => number | string;
+  formatEndpoint?: (endpoint: string, method: Method, pk: number | string, values: TFieldValues) => string;
   preSubmit?: (values: TFieldValues) => TFieldValues;
   submit?: (axiosInstance: AxiosInstance, method: Method, endpoint: string, values: TFieldValues) => Promise<Response>;
   postSubmit?: (response: Response, values: TFieldValues) => void;
   parseErrors?: (error: unknown, setError: UseFormSetError<TFieldValues>, values: TFieldValues) => string;
   formProps?: UseFormProps<TFieldValues>;
-  mutationKey?: MutationKey;
+}
+
+export interface UseBackendParams<Response, TFieldValues extends FieldValues = FieldValues>
+  extends UseBackendParamsBase<Response, TFieldValues> {
+  endpoint: string;
+  queryKey?: string;
 }
 
 export interface PaginatedResponse<E> {
@@ -84,54 +90,61 @@ function defaultParseErrors<TFieldValues extends FieldValues = FieldValues>(
   return formatErrorToString(error);
 }
 
-function defaultPutPost<TFieldValues extends FieldValues = FieldValues>(values: TFieldValues): Method {
-  return values.id ? 'PUT' : 'POST';
+function defaultPrimaryKey<T>(values: T): number | string {
+  return (values as unknown as { id: number | string }).id;
 }
 
-function defaultFormatEndpoint<TFieldValues extends FieldValues = FieldValues>(
-  endpoint: string,
-  method: Method,
-  values: TFieldValues,
-) {
+function defaultPutPost(pk: number | string): Method {
+  return pk ? 'PUT' : 'POST';
+}
+
+function defaultFormatEndpoint(endpoint: string, method: Method, pk: number | string) {
   if (method === 'POST') {
     return endpoint;
   } else {
-    return `${endpoint}/${values.id}`;
+    if (!pk) {
+      throw Error('Primary Key required');
+    }
+    return `${endpoint}/${pk}`;
   }
 }
 
 /**
  * Integrate React Form Hooks, Axios, TanSack Query and Django Rest Framework.
  */
-export function useBackend<Response, TFieldValues extends FieldValues = FieldValues>(
+export function useCreateUpdate<Response, TFieldValues extends FieldValues = FieldValues>(
   params: UseBackendParams<Response, TFieldValues>,
 ) {
   const {
     endpoint,
     method = defaultPutPost,
+    requestPrimaryKey = defaultPrimaryKey,
+    responsePrimaryKey = defaultPrimaryKey,
     formatEndpoint = defaultFormatEndpoint,
     preSubmit = defaultPreSubmit,
     submit = defaultSubmit,
     postSubmit,
     parseErrors = defaultParseErrors,
     formProps,
-    mutationKey,
+    queryKey,
   } = params;
 
   const form = useForm(formProps);
   const { setError } = form;
   const axiosInstance = useAxios();
+  const queryClient = useQueryClient();
   const [errorMessage, setErrorMessage] = useState('');
 
   // Send request to backend
   const onSend = useCallback(
     async (data: TFieldValues) => {
       const data2 = preSubmit(data);
-      const m = typeof method === 'function' ? method(data2) : method;
-      const url = formatEndpoint(endpoint, m, data2);
+      const pk = typeof requestPrimaryKey === 'function' ? requestPrimaryKey(data2) : requestPrimaryKey;
+      const m = typeof method === 'function' ? method(pk, data2) : method;
+      const url = formatEndpoint(endpoint, m, pk, data2);
       return await submit(axiosInstance, m, url, data2);
     },
-    [axiosInstance, endpoint, formatEndpoint, method, preSubmit, submit],
+    [axiosInstance, endpoint, formatEndpoint, method, preSubmit, requestPrimaryKey, submit],
   );
 
   // Handle error response from backend
@@ -143,11 +156,23 @@ export function useBackend<Response, TFieldValues extends FieldValues = FieldVal
     [parseErrors, setError],
   );
 
+  const onSuccess = useCallback(
+    (response: Response, values: TFieldValues) => {
+      if (queryKey) {
+        //queryClient.invalidateQueries({ queryKey: [queryKey, responsePrimaryKey(response)] }).then();
+        queryClient.setQueryData([queryKey, responsePrimaryKey(response)], response);
+      }
+      if (postSubmit) {
+        postSubmit(response, values);
+      }
+    },
+    [postSubmit, queryClient, queryKey, responsePrimaryKey],
+  );
+
   const mutation = useMutation<Response, string, TFieldValues>({
     mutationFn: onSend,
-    onSuccess: postSubmit,
+    onSuccess,
     onError: onError,
-    mutationKey,
   });
 
   // React Form Hook with TanSack Query integration
@@ -168,4 +193,50 @@ export function useBackend<Response, TFieldValues extends FieldValues = FieldVal
   const simpleHandleSubmit = form.handleSubmit(onSubmit);
 
   return { ...form, onSubmit, ...mutation, errorMessage, simpleHandleSubmit };
+}
+
+export interface UseSelect {
+  queryKey: string;
+  endpoint: string;
+  refetchInterval?: number;
+}
+
+export function useSelect<TFieldValues extends FieldValues = FieldValues>({
+  queryKey,
+  endpoint,
+  refetchInterval = 60000,
+}: UseSelect) {
+  const axiosInstance = useAxios();
+
+  return useQuery({
+    queryKey: queryKey ? [queryKey, 'list'] : undefined,
+    refetchInterval,
+    queryFn: () => axiosInstance.get<PaginatedResponse<TFieldValues>>(endpoint).then((res) => res.data),
+  });
+}
+
+export interface UseEntity {
+  queryKey: string;
+  endpoint: string;
+  primaryKey: string | number;
+  refetchInterval?: number;
+}
+
+export function useEntity<TFieldValues extends FieldValues = FieldValues>({
+  queryKey,
+  endpoint,
+  primaryKey,
+  refetchInterval = 60000,
+}: UseEntity) {
+  const axiosInstance = useAxios();
+
+  return useQuery({
+    queryKey: queryKey ? [queryKey, primaryKey] : undefined,
+    refetchInterval,
+    queryFn: () => axiosInstance.get<TFieldValues>(`${endpoint}${primaryKey}/`).then((res) => res.data),
+  });
+}
+
+export function useDelete() {
+  //queryClient.invalidateQueries({ queryKey: [queryKey, responsePrimaryKey(response)] }).then();
 }
