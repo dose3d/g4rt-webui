@@ -13,18 +13,6 @@ class JobListSerializer(serializers.ModelSerializer):
         pass  # it is readonly serializer
 
 
-class JobSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Job
-        fields = '__all__'
-        read_only_fields = ('id', 'status', 'ret_code', 'created_at', 'updated_at')
-
-
-class JobSerializerPending(JobSerializer):
-    class Meta(JobSerializer.Meta):
-        read_only_fields = (*JobSerializer.Meta.read_only_fields, 'args', 'toml')
-
-
 class JobRootFileSerializer(serializers.ModelSerializer):
 
     href = serializers.SerializerMethodField()
@@ -38,16 +26,20 @@ class JobRootFileSerializer(serializers.ModelSerializer):
         return generate_download_href(MODULE_ROOT, obj.id)
 
 
-class JobSerializerFull(JobSerializer):
+class JobSerializer(serializers.ModelSerializer):
 
-    root_files = JobRootFileSerializer(many=True, source='jobrootfile_set')
-    logs_href = serializers.SerializerMethodField()
+    root_files = JobRootFileSerializer(many=True, source='jobrootfile_set', read_only=True)
+    logs_href = serializers.SerializerMethodField(read_only=True)
 
-    class Meta(JobSerializer.Meta):
-        pass
+    class Meta:
+        model = Job
+        fields = '__all__'
+        read_only_fields = ('id', 'status', 'ret_code', 'created_at', 'updated_at')
 
     def get_logs_href(self, obj):
         return generate_download_href(MODULE_LOGS, obj.id)
 
-    def save(self, **kwargs):
-        pass  # it is readonly serializer
+
+class JobSerializerPending(JobSerializer):
+    class Meta(JobSerializer.Meta):
+        read_only_fields = (*JobSerializer.Meta.read_only_fields, 'args', 'toml')

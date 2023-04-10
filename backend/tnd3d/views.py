@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from commons.views import CustomPageNumberPagination, VariousSerializersViewSet
 from tnd3d.download import download_file
 from tnd3d.models import Job, JobRootFile
-from tnd3d.serializer import JobSerializer, JobSerializerPending, JobRootFileSerializer, JobSerializerFull, \
+from tnd3d.serializer import JobSerializer, JobSerializerPending, JobRootFileSerializer, \
     JobListSerializer
 from django.utils.translation import gettext_lazy as _
 
