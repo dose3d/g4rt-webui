@@ -65,7 +65,7 @@ def download_file(file_path, file_name, content_type, chunk_size=8192):
 
 def make_hash(unix, module, identify):
     m = hashlib.sha256()
-    m.update('%s_%s_%s_%s' % (str(unix), module, str(identify), settings.SECRET_KEY))
+    m.update(bytes('%s_%s_%s_%s' % (str(unix), module, str(identify), settings.SECRET_KEY), 'utf-8'))
     return m.hexdigest()
 
 

@@ -55,13 +55,13 @@ class Job(models.Model):
             self.ret_code = job.get_ret_code()
             self.save()
             if self.status == DONE:
-                rfs = job.get_root_files()
-                for rf in rfs:
-                    fn = os.path.basename(rf)
-                    if JobRootFile.objects.filter(job=self, file_name=rf).count() == 0:
-                        file_stats = os.stat(fn)
+                fns = job.get_root_files()
+                for fn in fns:
+                    rf = os.path.join(job.get_job_path(), fn)
+                    if JobRootFile.objects.filter(job=self, file_name=fn).count() == 0:
+                        file_stats = os.stat(rf)
                         size = file_stats.st_size
-                        JobRootFile.objects.create(job=self, file_name=rf, size=size)
+                        JobRootFile.objects.create(job=self, file_name=fn, size=size)
 
     @staticmethod
     def sync_not_done_jobs():
