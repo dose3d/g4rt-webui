@@ -200,20 +200,46 @@ export interface UseSelect {
   queryKey: string;
   endpoint: string;
   refetchInterval?: number;
+  pageSize?: number;
 }
 
 export function useSelect<TFieldValues extends FieldValues = FieldValues>({
   queryKey,
   endpoint,
   refetchInterval = 60000,
+  pageSize = 10,
 }: UseSelect) {
   const axiosInstance = useAxios();
+  const [current, setCurrent] = useState(1);
 
-  return useQuery({
-    queryKey: queryKey ? [queryKey, 'list'] : undefined,
+  const query = useQuery({
+    queryKey: queryKey ? [queryKey, 'list', current] : undefined,
     refetchInterval,
-    queryFn: () => axiosInstance.get<PaginatedResponse<TFieldValues>>(endpoint).then((res) => res.data),
+    queryFn: () =>
+      axiosInstance
+        .get<PaginatedResponse<TFieldValues>>(endpoint, { params: { page_size: pageSize, page: current } })
+        .then((res) => res.data),
   });
+
+  const pages_count = query.data?.pages_count;
+
+  const goFirst = useCallback(() => {
+    setCurrent(1);
+  }, []);
+
+  const goPrev = useCallback(() => {
+    setCurrent((v) => Math.max(1, v - 1));
+  }, []);
+
+  const goNext = useCallback(() => {
+    setCurrent((v) => Math.min(pages_count || 1, v + 1));
+  }, [pages_count]);
+
+  const goLatest = useCallback(() => {
+    setCurrent(pages_count || 1);
+  }, [pages_count]);
+
+  return { ...query, current, goFirst, goPrev, goNext, goLatest };
 }
 
 export interface UseEntity {
