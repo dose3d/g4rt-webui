@@ -34,8 +34,8 @@ export function useJobCreateUpdate(params: Omit<UseBackendParamsBase<JobEntity, 
   });
 }
 
-export function useJobList(refetchInterval = 10000) {
-  return useSelect<JobEntityList>({ queryKey: 'jobs', endpoint: '/api/jobs/', refetchInterval });
+export function useJobList(pageSize = 10, refetchInterval = 10000) {
+  return useSelect<JobEntityList>({ queryKey: 'jobs', endpoint: '/api/jobs/', refetchInterval, pageSize });
 }
 
 export function useJobEntity(primaryKey: number, refetchInterval = 10000) {

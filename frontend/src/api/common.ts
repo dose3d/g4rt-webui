@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance, Method } from 'axios';
 import { SubmitHandler, useForm, UseFormProps } from 'react-hook-form';
 import { FieldPath, FieldValues } from 'react-hook-form/dist/types';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import useAxios from '../utils/useAxios';
 import { UseFormSetError } from 'react-hook-form/dist/types/form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -196,6 +196,16 @@ export function useCreateUpdate<Response, TFieldValues extends FieldValues = Fie
   return { ...form, onSubmit, ...mutation, errorMessage, simpleHandleSubmit };
 }
 
+export interface PaginationController {
+  current: number;
+  count?: number;
+  goFirst: () => void;
+  goPrev: () => void;
+  goNext: () => void;
+  goLatest: () => void;
+  setPage: (v: number) => void;
+}
+
 export interface UseSelect {
   queryKey: string;
   endpoint: string;
@@ -213,7 +223,7 @@ export function useSelect<TFieldValues extends FieldValues = FieldValues>({
   const [current, setCurrent] = useState(1);
 
   const query = useQuery({
-    queryKey: queryKey ? [queryKey, 'list', current] : undefined,
+    queryKey: queryKey ? [queryKey, 'list', pageSize, current] : undefined,
     refetchInterval,
     queryFn: () =>
       axiosInstance
@@ -246,7 +256,20 @@ export function useSelect<TFieldValues extends FieldValues = FieldValues>({
     [pages_count],
   );
 
-  return { ...query, current, goFirst, goPrev, goNext, goLatest, setPage };
+  const controller = useMemo<PaginationController>(
+    () => ({
+      current,
+      goFirst,
+      goPrev,
+      goNext,
+      goLatest,
+      setPage,
+      count: pages_count,
+    }),
+    [current, goFirst, goLatest, goNext, goPrev, pages_count, setPage],
+  );
+
+  return { ...query, controller };
 }
 
 export interface UseEntity {

@@ -1,14 +1,11 @@
 import { DoubleLeftIcon, DoubleRightIcon, LeftIcon, RightIcon } from './icons';
 import React, { useEffect, useRef, useState } from 'react';
+import { PaginationController } from '../api/common';
 
 interface PaginationProps {
-  current: number;
-  count?: number;
-  loadFirst: () => void;
-  loadPrev: () => void;
-  loadNext: () => void;
-  loadLatest: () => void;
-  setPage: (v: number) => void;
+  controller: PaginationController;
+  pageSize: number;
+  setPageSize: (v: number) => void;
 }
 
 interface ManualPageProps {
@@ -38,37 +35,64 @@ function ManualPage({ setPage, current, close, count }: ManualPageProps) {
       <button type="submit" className="btn-primary btn-xs btn">
         Go
       </button>
-      <button type="button" onClick={close} className="btn-ghost btn-xs btn">X</button>
+      <button type="button" onClick={close} className="btn-ghost btn-xs btn">
+        X
+      </button>
     </form>
   );
 }
 
-function Pagination({ current, count, loadFirst, loadPrev, loadNext, loadLatest, setPage }: PaginationProps) {
+function Pagination({
+  controller: { count, current, goNext, goPrev, goFirst, goLatest, setPage },
+  pageSize,
+  setPageSize,
+}: PaginationProps) {
   const [manualPage, setManualPage] = useState(false);
 
   return (
-    <div className="sticky flex items-center justify-center border-t border-gray-200 bg-white p-4">
-      <button onClick={loadFirst} className="btn-ghost btn">
-        <DoubleLeftIcon />
-      </button>
-      <button onClick={loadPrev} className="btn-ghost btn">
-        <LeftIcon />
-      </button>
-      {manualPage ? (
-        <ManualPage count={count || 1} close={() => setManualPage(false)} current={current} setPage={setPage} />
-      ) : (
-        <span className="mx-2 text-sm font-normal text-gray-500" onClick={() => setManualPage(true)}>
-          <span className="font-bold text-gray-900">{current}</span>
-          <span className="mx-2">of</span>
-          <span className="font-bold text-gray-900">{count}</span>
-        </span>
-      )}
-      <button onClick={loadNext} className="btn-ghost btn mr-4">
-        <RightIcon />
-      </button>
-      <button onClick={loadLatest} className="btn-ghost btn mr-4">
-        <DoubleRightIcon />
-      </button>
+    <div className="sticky grid grid-cols-3 border-t border-gray-200 bg-white p-4">
+      <div />
+      <div className=" flex items-center justify-center">
+        <button onClick={goFirst} className="btn-ghost btn">
+          <DoubleLeftIcon />
+        </button>
+        <button onClick={goPrev} className="btn-ghost btn">
+          <LeftIcon />
+        </button>
+        {manualPage ? (
+          <ManualPage count={count || 1} close={() => setManualPage(false)} current={current} setPage={setPage} />
+        ) : (
+          <span className="mx-2 text-sm font-normal text-gray-500" onClick={() => setManualPage(true)}>
+            <span className="font-bold text-gray-900">{current}</span>
+            <span className="mx-2">of</span>
+            <span className="font-bold text-gray-900">{count}</span>
+          </span>
+        )}
+        <button onClick={goNext} className="btn-ghost btn">
+          <RightIcon />
+        </button>
+        <button onClick={goLatest} className="btn-ghost btn">
+          <DoubleRightIcon />
+        </button>
+      </div>
+      <div className="justify-self-end">
+        <div className=" flex justify-items-center">
+          <div className="m-auto mr-2 text-sm">Show per page:</div>
+          <div>
+            <select
+              className="select-bordered select w-full max-w-xs"
+              onChange={(e) => {
+                setPageSize(parseInt(e.target.value));
+                setPage(1);
+              }}
+            >
+              <option selected={pageSize == 10}>10</option>
+              <option selected={pageSize == 25}>25</option>
+              <option selected={pageSize == 100}>100</option>
+            </select>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

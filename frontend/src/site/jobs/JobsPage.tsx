@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Page, PageHeader, Title } from '../../components/layout';
 import { AddIcon } from '../../components/icons';
@@ -7,7 +7,8 @@ import Pagination from '../../components/Pagination';
 import { useJobList } from '../../api/jobs';
 
 export default function JobsPage() {
-  const { data, isLoading, current, goFirst, goPrev, goNext, goLatest, setPage } = useJobList();
+  const [pageSize, setPageSize] = useState(10);
+  const { data, isLoading, controller } = useJobList(pageSize);
 
   return (
     <Page>
@@ -38,15 +39,7 @@ export default function JobsPage() {
         </div>
       </PageHeader>
       <JobsTable isLoading={isLoading} jobs={data?.results} />
-      <Pagination
-        current={current}
-        count={data?.pages_count}
-        loadFirst={goFirst}
-        loadPrev={goPrev}
-        loadNext={goNext}
-        loadLatest={goLatest}
-        setPage={setPage}
-      />
+      <Pagination controller={controller} pageSize={pageSize} setPageSize={setPageSize} />
     </Page>
   );
 }
