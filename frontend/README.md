@@ -1,17 +1,22 @@
 # Frontend
 
-JavaScript application
+JavaScript application. 
+
+## Prepare for usage
+
+Install packages and build:
+
+1. Install packages: `npm install`
+2. Build: `npm run build`
+
+Tested on node v18.15.0 and npm v9.6.3.
+
 
 ## Road map
 
 Future features:
 
-* functionally login page (for non-localhost usage)
-* load jobs from backend (pagination and filtering)
-* add job page
 * sort jobs by column
-* details job page
-* functionally pagination
 * footer links
 * job page - errors handling
 

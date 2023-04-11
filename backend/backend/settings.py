@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import mimetypes
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -167,7 +168,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = 'static_collected/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
+FRONTEND_DIR = BASE_DIR.parent / "frontend" / "build"
+STATICFILES_DIRS = [FRONTEND_DIR / "static"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -175,3 +177,6 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CONFIG_FILE = None   # path to config.txt, when None use '../../config.txt'
 EXPIRATION_LINK = 70  # seconds to expire download link
+
+mimetypes.add_type("text/css", ".css", True)
+mimetypes.add_type("text/javascript", ".js", True)

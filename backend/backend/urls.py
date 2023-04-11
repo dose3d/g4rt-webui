@@ -19,6 +19,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
 
+from backend.settings import FRONTEND_DIR
 from tnd3d.download import download_by_token
 
 urlpatterns = [
@@ -26,11 +27,11 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include("api.urls")),
     path('download/<module>/<identify>/<int:ts>/<sha>/', download_by_token, name="download"),
-    path(r'', serve, kwargs={'path': 'index.html', 'document_root': 'templates'}),
-    path(r'asset-manifest.json', serve, kwargs={'path': 'asset-manifest.json', 'document_root': 'templates'}),
-    path(r'favicon.ico', serve, kwargs={'path': 'favicon.ico', 'document_root': 'templates'}),
-    path(r'logo192.png', serve, kwargs={'path': 'logo192.png', 'document_root': 'templates'}),
-    path(r'logo512.png', serve, kwargs={'path': 'logo512.png', 'document_root': 'templates'}),
-    path(r'manifest.json', serve, kwargs={'path': 'manifest.json', 'document_root': 'templates'}),
-    path(r'robots.txt', serve, kwargs={'path': 'robots.txt', 'document_root': 'templates'})
+    path(r'', serve, kwargs={'path': 'index.html', 'document_root': FRONTEND_DIR}),
+    path(r'asset-manifest.json', serve, kwargs={'path': 'asset-manifest.json', 'document_root': FRONTEND_DIR}),
+    path(r'favicon.ico', serve, kwargs={'path': 'favicon.ico', 'document_root': FRONTEND_DIR}),
+    path(r'logo192.png', serve, kwargs={'path': 'logo192.png', 'document_root': FRONTEND_DIR}),
+    path(r'logo512.png', serve, kwargs={'path': 'logo512.png', 'document_root': FRONTEND_DIR}),
+    path(r'manifest.json', serve, kwargs={'path': 'manifest.json', 'document_root': FRONTEND_DIR}),
+    path(r'robots.txt', serve, kwargs={'path': 'robots.txt', 'document_root': FRONTEND_DIR})
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
