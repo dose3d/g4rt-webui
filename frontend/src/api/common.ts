@@ -5,7 +5,6 @@ import { useCallback, useState } from 'react';
 import useAxios from '../utils/useAxios';
 import { UseFormSetError } from 'react-hook-form/dist/types/form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { JobEntityList } from './jobs';
 
 type DrfError<TFieldValues extends FieldValues = FieldValues> = {
   [V in FieldPath<TFieldValues>]?: string[];
@@ -82,8 +81,10 @@ function defaultParseErrors<TFieldValues extends FieldValues = FieldValues>(
       for (let i = 0; i < fields.length; i++) {
         const field = fields[i];
         const value = resp[field];
-        const message = Array.isArray(value) ? value.join('\n') : `${value}`;
-        setError(field, { type: 'custom', message });
+        if (Array.isArray(value)) {
+          const message = value.join('\n');
+          setError(field, { type: 'custom', message });
+        }
       }
     }
   }

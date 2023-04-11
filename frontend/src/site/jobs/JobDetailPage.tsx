@@ -4,7 +4,6 @@ import {
   Card,
   CardHeader,
   CardHeaderMain,
-  CardHeaderSubTitle,
   CardHeaderTitle,
   CardsContainer,
   Margin,
@@ -12,6 +11,20 @@ import {
 } from '../../components/layout';
 import { useJobEntity } from '../../api/jobs';
 import { formatDate, formatFileSize } from '../../utils/formatValues';
+import { CloseIcon, DeleteIcon, EditIcon, PlayIcon } from '../../components/icons';
+
+function LabelValueHOutline({ children }: { children: React.ReactNode }) {
+  return <section className="table">{children}</section>;
+}
+
+function LabelValueH({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <dl className="table-row">
+      <dt className="table-cell">{label}</dt>
+      <dd className="table-cell pl-8 font-bold">{children}</dd>
+    </dl>
+  );
+}
 
 export default function JobDetailPage() {
   const { jobId } = useParams();
@@ -24,72 +37,75 @@ export default function JobDetailPage() {
           <Card>
             <CardHeader>
               <CardHeaderMain>
-                <CardHeaderTitle>Job details</CardHeaderTitle>
-                <CardHeaderSubTitle>
-                  Check job status and manage.
-                </CardHeaderSubTitle>
+                <CardHeaderTitle>{`#${data?.id}: ${data?.title}`}</CardHeaderTitle>
+                <div className="text-xs font-bold text-gray-500">
+                  Created: {formatDate(data?.created_at)}, updated: {formatDate(data?.updated_at)}
+                </div>
               </CardHeaderMain>
+              <div className="inline-flex items-center p-2 text-sm font-medium">
+                <LabelValueHOutline>
+                  <LabelValueH label="Status:">{data?.status}</LabelValueH>
+                </LabelValueHOutline>
+              </div>
             </CardHeader>
 
-            <div>
-              <dl>
-                <dt>ID:</dt>
-                <dd>{data?.id}</dd>
-
-                <dt>Created date:</dt>
-                <dd>{formatDate(data?.created_at)}</dd>
-
-                <dt>Updated date:</dt>
-                <dd>{formatDate(data?.updated_at)}</dd>
-
-                <dt>Title:</dt>
-                <dd>{data?.title}</dd>
-
-                <dt>Description:</dt>
-                <dd>{data?.description}</dd>
-
-                <dt>Command line args:</dt>
-                <dd>
-                  <code>{data?.args}</code>
-                </dd>
-
-                <dt>TOML file content:</dt>
-                <dd>
-                  <pre>{data?.toml}</pre>
-                </dd>
-              </dl>
+            <div className="flex gap-4">
+              <button className="btn-warning btn-sm btn">
+                <EditIcon className="mr-2 h-5 w-5" /> Edit
+              </button>
+              <button className="btn-success btn-sm btn">
+                <PlayIcon className="mr-2 h-5 w-5" /> Run
+              </button>
+              <button className="btn-error btn-sm btn">
+                <CloseIcon className="mr-2 h-5 w-5" /> Kill
+              </button>
+              <button className="btn-error btn-sm btn">
+                <DeleteIcon className="mr-2 h-5 w-5" /> Delete
+              </button>
             </div>
 
-            <h3>Execution status:</h3>
-            <dl>
-              <dt>Job status:</dt>
-              <dd>{data?.status}</dd>
+            <h3 className="mb-2 mt-4 font-bold">Details:</h3>
+            <div className="ml-4">
+              <LabelValueHOutline>
+                <LabelValueH label="Status:">{data?.status}</LabelValueH>
+                <LabelValueH label="Return code:">{data?.ret_code}</LabelValueH>
+                <LabelValueH label="View logs file:">
+                  <a href={data?.logs_href}>logs.txt</a>
+                </LabelValueH>
+              </LabelValueHOutline>
+            </div>
 
-              <dt>Return code:</dt>
-              <dd>{data?.ret_code}</dd>
+            <h3 className="mb-2 mt-4 font-bold">Description:</h3>
+            <div className="ml-4 whitespace-pre-line text-base font-normal text-gray-500">{data?.description}</div>
 
-              <dt>View logs file:</dt>
-              <dd>
-                <a href={data?.logs_href}>logs.txt</a>
-              </dd>
+            <h3 className="mb-2 mt-4 font-bold">Results:</h3>
+            <div className="ml-4">
+              {data?.root_files ? (
+                <ol className="list-inside list-decimal">
+                  {data?.root_files.map((o, i) => (
+                    <li key={i}>
+                      <a href={o.href}>
+                        {o.file_name} ({formatFileSize(o.size)})
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <>no files</>
+              )}
+            </div>
 
-              <dt>Download ROOT files:</dt>
-              <dd>
-                {data?.root_files ? (
-                  <ol>
-                    {data?.root_files.map((o, i) => (
-                      <li key={i}>
-                        <a href={o.href}>
-                          {o.file_name} ({formatFileSize(o.size)})
-                        </a>
-                      </li>
-                    ))}
-                  </ol>
-                ) : (
-                  <>no files</>
-                )}
-              </dd>
-            </dl>
+            <h3 className="mb-2 mt-4 font-bold">Run conditions:</h3>
+
+            <div className="ml-4">
+              <LabelValueHOutline>
+                <LabelValueH label="Command line args:">
+                  <code>{data?.args}</code>
+                </LabelValueH>
+              </LabelValueHOutline>
+              <h4 className="mt-4">TOML file content:</h4>
+              <pre className="border-2 border-gray-200 bg-gray-100 p-2">{data?.toml}</pre>
+            </div>
           </Card>
         </CardsContainer>
       </Margin>
