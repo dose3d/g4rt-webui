@@ -35,7 +35,9 @@ function decodeJwtOrNull<T>(v: string | null) {
 }
 
 export const AuthProvider = ({ children }: Props) => {
-  const [authTokens, setAuthTokens] = useState<LoginResponse | null>(() => parseJsonOrNull(localStorage.getItem('authTokens')));
+  const [authTokens, setAuthTokens] = useState<LoginResponse | null>(() =>
+    parseJsonOrNull(localStorage.getItem('authTokens')),
+  );
   const [user, setUser] = useState<BearerToken | null>(() => decodeJwtOrNull(localStorage.getItem('authTokens')));
   const [loading, setLoading] = useState(true);
 
