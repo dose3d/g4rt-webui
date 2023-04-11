@@ -7,7 +7,7 @@ import Pagination from '../../components/Pagination';
 import { useJobList } from '../../api/jobs';
 
 export default function JobsPage() {
-  const { data, isLoading, current, goFirst, goPrev, goNext, goLatest } = useJobList();
+  const { data, isLoading, current, goFirst, goPrev, goNext, goLatest, setPage } = useJobList();
 
   return (
     <Page>
@@ -38,7 +38,15 @@ export default function JobsPage() {
         </div>
       </PageHeader>
       <JobsTable isLoading={isLoading} jobs={data?.results} />
-      <Pagination current={current} count={data?.pages_count} loadFirst={goFirst} loadPrev={goPrev} loadNext={goNext} loadLatest={goLatest} />
+      <Pagination
+        current={current}
+        count={data?.pages_count}
+        loadFirst={goFirst}
+        loadPrev={goPrev}
+        loadNext={goNext}
+        loadLatest={goLatest}
+        setPage={setPage}
+      />
     </Page>
   );
 }

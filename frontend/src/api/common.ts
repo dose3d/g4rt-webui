@@ -239,7 +239,14 @@ export function useSelect<TFieldValues extends FieldValues = FieldValues>({
     setCurrent(pages_count || 1);
   }, [pages_count]);
 
-  return { ...query, current, goFirst, goPrev, goNext, goLatest };
+  const setPage = useCallback(
+    (page: number) => {
+      setCurrent(Math.max(1, Math.min(pages_count || 1, page)));
+    },
+    [pages_count],
+  );
+
+  return { ...query, current, goFirst, goPrev, goNext, goLatest, setPage };
 }
 
 export interface UseEntity {
