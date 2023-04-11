@@ -45,7 +45,7 @@ class Job(models.Model):
         else:
             raise Dose3DException('Job must be in INIT state, not in %s' % self.status)
 
-    def sync_status(self):
+    def sync_status(self, force=False):
         old_status = self.status
 
         job = self.get_runners_job()
@@ -54,14 +54,14 @@ class Job(models.Model):
             self.status = job.status
             self.ret_code = job.get_ret_code()
             self.save()
-            if self.status == DONE:
-                fns = job.get_root_files()
-                for fn in fns:
-                    rf = os.path.join(job.get_job_path(), fn)
-                    if JobRootFile.objects.filter(job=self, file_name=fn).count() == 0:
-                        file_stats = os.stat(rf)
-                        size = file_stats.st_size
-                        JobRootFile.objects.create(job=self, file_name=fn, size=size)
+        if force or self.status == DONE:
+            fns = job.get_root_files()
+            for fn in fns:
+                rf = os.path.join(job.get_job_path(), fn)
+                if JobRootFile.objects.filter(job=self, file_name=fn).count() == 0:
+                    file_stats = os.stat(rf)
+                    size = file_stats.st_size
+                    JobRootFile.objects.create(job=self, file_name=fn, size=size)
 
     @staticmethod
     def sync_not_done_jobs():

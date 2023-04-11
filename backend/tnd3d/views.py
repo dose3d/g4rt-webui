@@ -34,7 +34,7 @@ class JobViewSet(VariousSerializersViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         obj = self.get_object()
-        obj.sync_status()
+        obj.sync_status(True)
         return super().retrieve(request, *args, **kwargs)
 
     def perform_create(self, serializer):
