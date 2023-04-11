@@ -1,7 +1,29 @@
 /* eslint-disable tailwindcss/no-contradicting-classname */
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useMatch, useResolvedPath } from 'react-router-dom';
 import cn from 'classnames';
+import { DocumentPlusIcon, PhotoIcon, PresentationChartIcon, RocketLaunchIcon, ServerStackIcon } from './icons';
+
+interface NavLinkProps {
+  to: string;
+  children?: React.ReactNode;
+  label: string;
+}
+
+function NavLink({ to, children, label }: NavLinkProps) {
+  const resolved = useResolvedPath(to);
+  const match = useMatch({ path: resolved.pathname, end: true });
+
+  return (
+    <Link
+      to={to}
+      className="group flex items-center rounded-lg p-2 text-base font-normal text-gray-900 hover:bg-gray-100"
+    >
+      {children}
+      <span className={cn('ml-3', { 'font-bold': match })}>{label}</span>
+    </Link>
+  );
+}
 
 interface Props {
   toggle: boolean;
@@ -20,24 +42,40 @@ const Sidebar = ({ toggle, onToggle }: Props) => {
       >
         <div className="relative flex min-h-0 flex-1 flex-col border-r border-gray-200 bg-white pt-0">
           <div className="flex flex-1 flex-col overflow-y-auto pb-4 pt-5">
-            <div className="flex-1 space-y-1 divide-y bg-white px-3">
+            <div className="flex-1 bg-white px-3">
+              <h3 className="pb-2 pt-4 text-base font-bold text-gray-500">Simulation</h3>
               <ul className="space-y-2 pb-2">
                 <li>
-                  <Link
-                    to="/jobs/"
-                    className="group flex items-center rounded-lg p-2 text-base font-normal text-gray-900 hover:bg-gray-100"
-                  >
-                    <svg
-                      className="h-6 w-6 text-gray-500 transition duration-75 group-hover:text-gray-900"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
-                      <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
-                    </svg>
-                    <span className="ml-3">Jobs</span>
-                  </Link>
+                  <NavLink to="/jobs/create" label="Define">
+                    <DocumentPlusIcon />
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink to="/jobs/" label="Run">
+                    <RocketLaunchIcon />
+                  </NavLink>
+                </li>
+              </ul>
+
+              <h3 className="pb-2 pt-4 text-base font-bold text-gray-500">Analysis</h3>
+              <ul className="space-y-2 pb-2">
+                <li>
+                  <NavLink to="/load" label="Load data">
+                    <ServerStackIcon />
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink to="/draw/2d" label="Draw dose 2D">
+                    <PhotoIcon />
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink to="/draw/profiles" label="Draw dose profiles">
+                    <PresentationChartIcon />
+                  </NavLink>
                 </li>
               </ul>
             </div>
