@@ -1,4 +1,5 @@
 import React from 'react';
+import cn from 'classnames';
 
 interface ChildrenProps {
   children: React.ReactNode;
@@ -64,9 +65,9 @@ export function CardHeaderSubTitle({ children }: ChildrenProps) {
   return <span className="whitespace-pre-line text-base font-normal text-gray-500">{children}</span>;
 }
 
-export function ErrorAlert({ children }: { children: React.ReactNode }) {
+export function ErrorAlert({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className="alert alert-error shadow-lg">
+    <div className={cn('alert alert-error shadow-lg', className)}>
       <div>
         <svg
           xmlns="http://www.w3.org/2000/svg"

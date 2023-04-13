@@ -221,14 +221,17 @@ export function useSelect<TFieldValues extends FieldValues = FieldValues>({
 }: UseSelect) {
   const axiosInstance = useAxios();
   const [current, setCurrent] = useState(1);
+  const [latestError, setLatestError] = useState<AxiosError<DrfError<TFieldValues>> | null>(null);
 
-  const query = useQuery({
+  const query = useQuery<PaginatedResponse<TFieldValues>, AxiosError<DrfError<TFieldValues>>>({
     queryKey: queryKey ? [queryKey, 'list', pageSize, current] : undefined,
     refetchInterval,
     queryFn: () =>
       axiosInstance
         .get<PaginatedResponse<TFieldValues>>(endpoint, { params: { page_size: pageSize, page: current } })
         .then((res) => res.data),
+    onSuccess: () => setLatestError(null),
+    onError: (err) => setLatestError(err),
   });
 
   const pages_count = query.data?.pages_count;
@@ -269,7 +272,7 @@ export function useSelect<TFieldValues extends FieldValues = FieldValues>({
     [current, goFirst, goLatest, goNext, goPrev, pages_count, setPage],
   );
 
-  return { ...query, controller };
+  return { ...query, controller, latestError };
 }
 
 export interface UseEntity {
