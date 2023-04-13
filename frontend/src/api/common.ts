@@ -1,33 +1,13 @@
 import axios, { AxiosError, AxiosInstance, Method } from 'axios';
 import { SubmitHandler, useForm, UseFormProps } from 'react-hook-form';
-import { FieldPath, FieldValues } from 'react-hook-form/dist/types';
+import { FieldValues } from 'react-hook-form/dist/types';
 import { useCallback, useMemo, useState } from 'react';
 import useAxios from '../utils/useAxios';
 import { UseFormSetError } from 'react-hook-form/dist/types/form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-
-type DrfError<TFieldValues extends FieldValues = FieldValues> = {
-  [V in FieldPath<TFieldValues>]?: string[];
-} & { detail?: string };
-
-export function formatErrorToString(err: unknown): string {
-  if (axios.isAxiosError(err)) {
-    const axiosErr = err as AxiosError<DrfError>;
-    if (axiosErr.response) {
-      if (axiosErr.response.headers['content-type'] == 'application/json') {
-        return `Server returns error: ${axiosErr.response.data.detail}`;
-      } else {
-        return `Server returns undefined error, please look to backend logs`;
-      }
-    } else {
-      return `Connection error`;
-    }
-  } else if (err instanceof Error) {
-    return `Another browser error: ${err}`;
-  } else {
-    return `Another error: ${err}`;
-  }
-}
+import { useTranslation } from 'react-i18next';
+import { TFunction } from 'i18next';
+import { DrfError, loadErrorsToRFH } from '../drf-client';
 
 export interface UseBackendParamsBase<Response, TFieldValues extends FieldValues = FieldValues> {
   method?: Method | ((pk: number | string, values: TFieldValues) => Method);
@@ -37,7 +17,7 @@ export interface UseBackendParamsBase<Response, TFieldValues extends FieldValues
   preSubmit?: (values: TFieldValues) => TFieldValues;
   submit?: (axiosInstance: AxiosInstance, method: Method, endpoint: string, values: TFieldValues) => Promise<Response>;
   postSubmit?: (response: Response, values: TFieldValues) => void;
-  parseErrors?: (error: unknown, setError: UseFormSetError<TFieldValues>, values: TFieldValues) => string;
+  parseErrors?: (error: unknown, setError: UseFormSetError<TFieldValues>, t: TFunction, values: TFieldValues) => string;
   formProps?: UseFormProps<TFieldValues>;
 }
 
@@ -67,28 +47,6 @@ async function defaultSubmit<Response, TFieldValues extends FieldValues = FieldV
 ) {
   const response = await axiosInstance.request<Response>({ url: endpoint, method, data: values });
   return response.data;
-}
-
-function defaultParseErrors<TFieldValues extends FieldValues = FieldValues>(
-  error: unknown,
-  setError: UseFormSetError<TFieldValues>,
-) {
-  if (axios.isAxiosError(error)) {
-    const axiosError = error as AxiosError<DrfError<TFieldValues>>;
-    if (axiosError.response) {
-      const resp = axiosError.response.data;
-      const fields = Object.keys(resp) as FieldPath<TFieldValues>[];
-      for (let i = 0; i < fields.length; i++) {
-        const field = fields[i];
-        const value = resp[field];
-        if (Array.isArray(value)) {
-          const message = value.join('\n');
-          setError(field, { type: 'custom', message });
-        }
-      }
-    }
-  }
-  return formatErrorToString(error);
 }
 
 function defaultPrimaryKey<T>(values: T): number | string {
@@ -125,7 +83,7 @@ export function useCreateUpdate<Response, TFieldValues extends FieldValues = Fie
     preSubmit = defaultPreSubmit,
     submit = defaultSubmit,
     postSubmit,
-    parseErrors = defaultParseErrors,
+    parseErrors = loadErrorsToRFH,
     formProps,
     queryKey,
   } = params;
@@ -135,6 +93,7 @@ export function useCreateUpdate<Response, TFieldValues extends FieldValues = Fie
   const axiosInstance = useAxios();
   const queryClient = useQueryClient();
   const [errorMessage, setErrorMessage] = useState('');
+  const { t } = useTranslation('drf');
 
   // Send request to backend
   const onSend = useCallback(
@@ -151,7 +110,7 @@ export function useCreateUpdate<Response, TFieldValues extends FieldValues = Fie
   // Handle error response from backend
   const onError = useCallback(
     (error: unknown, data: TFieldValues) => {
-      const message = parseErrors(error, setError, data);
+      const message = parseErrors(error, setError, t, data);
       setErrorMessage(message);
     },
     [parseErrors, setError],

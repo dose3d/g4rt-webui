@@ -5,11 +5,12 @@ import { AddIcon } from '../../components/icons';
 import JobsTable from '../../components/JobsTable';
 import Pagination from '../../components/Pagination';
 import { useJobList } from '../../api/jobs';
-import { formatErrorToString } from '../../api/common';
+import { useFormatErrorToString } from '../../drf-client';
 
 export default function JobsPage() {
   const [pageSize, setPageSize] = useState(10);
   const { data, isLoading, controller, latestError, isFetching } = useJobList(pageSize);
+  const formatErrorToString = useFormatErrorToString();
 
   return (
     <Page>
