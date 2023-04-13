@@ -1,4 +1,4 @@
-import { useCreateUpdate, UseBackendParamsBase, useSelect, useEntity } from './common';
+import { useCreateUpdate, UseBackendParamsBase, useSelect, useEntity, useDelete, useAction } from './common';
 
 export interface JobEntityList {
   id: number;
@@ -26,7 +26,7 @@ export interface JobEntity extends JobEntityList {
   root_files: JobRootFileEntity[];
 }
 
-export function useJobCreateUpdate(params: Omit<UseBackendParamsBase<JobEntity, JobEntity>, 'endpoint'>) {
+export function useJobCreateUpdate(params: UseBackendParamsBase<JobEntity, JobEntity>) {
   return useCreateUpdate({
     endpoint: '/api/jobs/',
     queryKey: 'jobs',
@@ -40,4 +40,12 @@ export function useJobList(pageSize = 10, refetchInterval = 10000) {
 
 export function useJobEntity(primaryKey: number, refetchInterval = 10000) {
   return useEntity<JobEntity>({ queryKey: 'jobs', endpoint: '/api/jobs/', primaryKey, refetchInterval });
+}
+
+export function useJobDelete(primaryKey: number) {
+  return useDelete<JobEntity>({ queryKey: 'jobs', endpoint: '/api/jobs/', primaryKey });
+}
+
+export function useJobAction(primaryKey: number, action: string) {
+  return useAction<JobEntity>({ queryKey: 'jobs', endpoint: '/api/jobs/', primaryKey, action });
 }
