@@ -1,4 +1,5 @@
 import React from 'react';
+import cn from 'classnames';
 import { useJobCreateUpdate } from '../../api/jobs';
 import {
   Card,
@@ -44,7 +45,7 @@ export default function JobCreatePage() {
                 height="h-96"
                 inputCN="font-mono leading-tight"
               />
-              <button type="submit" className="btn-primary btn" disabled={isLoading}>
+              <button type="submit" className={cn('btn-primary btn', { loading: isLoading })} disabled={isLoading}>
                 Send
               </button>
             </form>
