@@ -85,10 +85,11 @@ function Pagination({
                 setPageSize(parseInt(e.target.value));
                 setPage(1);
               }}
+              value={pageSize}
             >
-              <option selected={pageSize == 10}>10</option>
-              <option selected={pageSize == 25}>25</option>
-              <option selected={pageSize == 100}>100</option>
+              <option>10</option>
+              <option>25</option>
+              <option>100</option>
             </select>
           </div>
         </div>
