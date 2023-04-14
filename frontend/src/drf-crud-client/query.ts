@@ -1,13 +1,12 @@
-import { RequestOptions } from './types';
+import { QueryOptions } from './types';
 import { FieldValues } from 'react-hook-form';
 import axios, { AxiosError } from 'axios';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { DrfError } from './errors';
-import { UseQueryOptions } from '@tanstack/react-query/src/types';
 import { useCallback, useState } from 'react';
 
 export interface UseDrfQuery<TFieldValues extends FieldValues = FieldValues>
-  extends RequestOptions<TFieldValues>,
+  extends QueryOptions<TFieldValues>,
     Omit<UseQueryOptions<TFieldValues, AxiosError<DrfError<TFieldValues>>>, 'queryFn' | 'onSuccess' | 'onError'> {}
 
 export function useDrfQuery<TFieldValues extends FieldValues = FieldValues>(params: UseDrfQuery<TFieldValues>) {

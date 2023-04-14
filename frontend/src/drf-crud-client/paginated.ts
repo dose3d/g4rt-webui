@@ -21,7 +21,7 @@ export function usePaginated<TFieldValues extends FieldValues = FieldValues>(arg
   const controller = usePaginationController(1, pagesCount);
   const drfQuery = useDrfQuery<PaginatedResponse<TFieldValues>>({
     config: { params: { ...params, page_size: pageSize, page: controller.page }, ...configRest },
-    queryKey: queryKey ? [queryKey, 'list', pageSize, controller.page] : undefined,
+    queryKey: queryKey ? [queryKey, 'page', pageSize, controller.page] : undefined,
     ...rest,
   });
 

@@ -4,7 +4,7 @@ import { FieldValues } from 'react-hook-form/dist/types';
 import { useCallback, useState } from 'react';
 import useAxios from '../utils/useAxios';
 import { UseFormSetError } from 'react-hook-form/dist/types/form';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { TFunction } from 'i18next';
 import { DrfError, loadErrorsToRFH } from '../drf-crud-client';
@@ -153,45 +153,6 @@ export function useCreateUpdate<Response, TFieldValues extends FieldValues = Fie
   const simpleHandleSubmit = form.handleSubmit(onSubmit);
 
   return { ...form, onSubmit, ...mutation, errorMessage, simpleHandleSubmit };
-}
-
-export interface PaginationController {
-  current: number;
-  count?: number;
-  goFirst: () => void;
-  goPrev: () => void;
-  goNext: () => void;
-  goLatest: () => void;
-  setPage: (v: number) => void;
-}
-
-export interface UseSelect {
-  queryKey: string;
-  endpoint: string;
-  refetchInterval?: number;
-  pageSize?: number;
-}
-
-export interface UseEntity {
-  queryKey: string;
-  endpoint: string;
-  primaryKey: string | number;
-  refetchInterval?: number;
-}
-
-export function useEntity<TFieldValues extends FieldValues = FieldValues>({
-  queryKey,
-  endpoint,
-  primaryKey,
-  refetchInterval = 60000,
-}: UseEntity) {
-  const axiosInstance = useAxios();
-
-  return useQuery({
-    queryKey: queryKey ? [queryKey, primaryKey] : undefined,
-    refetchInterval,
-    queryFn: () => axiosInstance.get<TFieldValues>(`${endpoint}${primaryKey}/`).then((res) => res.data),
-  });
 }
 
 export interface UseActionParamsBase<Response, TFieldValues extends FieldValues = FieldValues> {

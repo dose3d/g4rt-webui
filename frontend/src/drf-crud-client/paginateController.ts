@@ -44,7 +44,7 @@ export function usePaginationController(initialPage = 1, pagesCount = 1) {
       goNext,
       goLatest,
       goPage,
-      pagesCount
+      pagesCount,
     }),
     [page, goFirst, goLatest, goNext, goPrev, goPage, pagesCount],
   );

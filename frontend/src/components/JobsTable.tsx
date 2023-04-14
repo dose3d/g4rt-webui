@@ -36,7 +36,7 @@ interface JobTableRow {
   job: JobEntityList;
 }
 
-function TableRow({ job: { id, title, description, status, is_error, updated_at, created_at } }: JobTableRow) {
+function TableRow({ job: { id, title, description, status, updated_at, created_at } }: JobTableRow) {
   return (
     <tr className="hover:bg-gray-100">
       <td className="whitespace-nowrap p-4 text-right text-base font-medium text-gray-900">#{id}</td>
