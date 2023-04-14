@@ -1,5 +1,5 @@
-import { useCreateUpdate, UseBackendParamsBase, useDelete, useAction } from './common';
-import { usePaginated, useEntity } from '../drf-crud-client';
+import { useDelete, useAction } from './common';
+import { usePaginated, useEntity, UseFormCreateUpdate, useFormCreateUpdate } from '../drf-crud-client';
 import useAxios from '../utils/useAxios';
 
 export interface JobEntityList {
@@ -28,10 +28,14 @@ export interface JobEntity extends JobEntityList {
   root_files: JobRootFileEntity[];
 }
 
-export function useJobCreateUpdate(params: UseBackendParamsBase<JobEntity, JobEntity>) {
-  return useCreateUpdate({
+export function useJobCreateUpdate(
+  params: Omit<UseFormCreateUpdate<JobEntity, number>, 'endpoint' | 'queryKey' | 'axiosInstance'>,
+) {
+  const axiosInstance = useAxios();
+  return useFormCreateUpdate({
     endpoint: '/api/jobs/',
     queryKey: 'jobs',
+    axiosInstance,
     ...params,
   });
 }

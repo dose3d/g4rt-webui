@@ -16,9 +16,13 @@ import { useNavigate } from 'react-router-dom';
 
 export default function JobCreatePage() {
   const navigate = useNavigate();
-  const { simpleHandleSubmit, control, isLoading } = useJobCreateUpdate({
+  const {
+    handleSubmitShort,
+    form: { control },
+    createUpdate: { isLoading },
+  } = useJobCreateUpdate({
     formProps: { defaultValues: { title: '', description: '' }, reValidateMode: 'onSubmit' },
-    postSubmit: () => navigate('/jobs'),
+    cudProps: { onSuccess: () => navigate('/jobs') },
   });
 
   return (
@@ -34,7 +38,7 @@ export default function JobCreatePage() {
                 </CardHeaderSubTitle>
               </CardHeaderMain>
             </CardHeader>
-            <form onSubmit={simpleHandleSubmit}>
+            <form onSubmit={handleSubmitShort}>
               <CTextInput name="title" control={control} title="Job title" />
               <CTextArea name="description" control={control} title="Description of the job" />
               <CTextInput name="args" control={control} title="Command line arguments for Dose3D" />
