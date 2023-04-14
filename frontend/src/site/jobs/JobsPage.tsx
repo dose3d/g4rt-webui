@@ -5,18 +5,18 @@ import { AddIcon } from '../../components/icons';
 import JobsTable from '../../components/JobsTable';
 import Pagination from '../../components/Pagination';
 import { useJobList } from '../../api/jobs';
-import { useFormatErrorToString } from '../../drf-client';
+import { useFormatErrorToString } from '../../drf-crud-client';
 
 export default function JobsPage() {
   const [pageSize, setPageSize] = useState(10);
-  const { data, isLoading, controller, latestError, isFetching } = useJobList(pageSize);
+  const { data, isLoading, controller, lastError, isFetching } = useJobList(pageSize);
   const formatErrorToString = useFormatErrorToString();
 
   return (
     <Page>
       <PageHeader>
         <Title>List of jobs</Title>
-        {!!latestError && <ErrorAlert className="my-4">{formatErrorToString(latestError)}</ErrorAlert>}
+        {!!lastError && <ErrorAlert className="my-4">{formatErrorToString(lastError)}</ErrorAlert>}
 
         <div className="h-6">{isFetching && <progress className="progress" />}</div>
 

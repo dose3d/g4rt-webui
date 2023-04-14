@@ -1,6 +1,6 @@
 import { DoubleLeftIcon, DoubleRightIcon, LeftIcon, RightIcon } from './icons';
 import React, { useEffect, useRef, useState } from 'react';
-import { PaginationController } from '../api/common';
+import { PaginationController } from '../drf-crud-client';
 
 interface PaginationProps {
   controller: PaginationController;
@@ -43,7 +43,7 @@ function ManualPage({ setPage, current, close, count }: ManualPageProps) {
 }
 
 function Pagination({
-  controller: { count, current, goNext, goPrev, goFirst, goLatest, setPage },
+  controller: { page, pagesCount, goNext, goPrev, goFirst, goLatest, goPage },
   pageSize,
   setPageSize,
 }: PaginationProps) {
@@ -60,12 +60,12 @@ function Pagination({
           <LeftIcon />
         </button>
         {manualPage ? (
-          <ManualPage count={count || 1} close={() => setManualPage(false)} current={current} setPage={setPage} />
+          <ManualPage count={pagesCount || 1} close={() => setManualPage(false)} current={page} setPage={goPage} />
         ) : (
           <span className="mx-2 text-sm font-normal text-gray-500" onClick={() => setManualPage(true)}>
-            <span className="font-bold text-gray-900">{current}</span>
+            <span className="font-bold text-gray-900">{page}</span>
             <span className="mx-2">of</span>
-            <span className="font-bold text-gray-900">{count}</span>
+            <span className="font-bold text-gray-900">{pagesCount}</span>
           </span>
         )}
         <button onClick={goNext} className="btn-ghost btn">
@@ -83,7 +83,7 @@ function Pagination({
               className="select-bordered select w-full max-w-xs"
               onChange={(e) => {
                 setPageSize(parseInt(e.target.value));
-                setPage(1);
+                goPage(1);
               }}
               value={pageSize}
             >

@@ -1,4 +1,6 @@
-import { useCreateUpdate, UseBackendParamsBase, useSelect, useEntity, useDelete, useAction } from './common';
+import { useCreateUpdate, UseBackendParamsBase, useEntity, useDelete, useAction } from './common';
+import { usePaginated } from '../drf-crud-client/paginated';
+import useAxios from '../utils/useAxios';
 
 export interface JobEntityList {
   id: number;
@@ -35,7 +37,15 @@ export function useJobCreateUpdate(params: UseBackendParamsBase<JobEntity, JobEn
 }
 
 export function useJobList(pageSize = 10, refetchInterval = 10000) {
-  return useSelect<JobEntityList>({ queryKey: 'jobs', endpoint: '/api/jobs/', refetchInterval, pageSize });
+  const axiosInstance = useAxios();
+
+  return usePaginated<JobEntityList>({
+    queryKey: 'jobs',
+    endpoint: '/api/jobs/',
+    refetchInterval,
+    pageSize,
+    axiosInstance,
+  });
 }
 
 export function useJobEntity(primaryKey: number, refetchInterval = 10000) {

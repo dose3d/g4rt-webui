@@ -1,13 +1,13 @@
 import axios, { AxiosError, AxiosInstance, Method } from 'axios';
 import { SubmitHandler, useForm, UseFormProps } from 'react-hook-form';
 import { FieldValues } from 'react-hook-form/dist/types';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import useAxios from '../utils/useAxios';
 import { UseFormSetError } from 'react-hook-form/dist/types/form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { TFunction } from 'i18next';
-import { DrfError, loadErrorsToRFH } from '../drf-client';
+import { DrfError, loadErrorsToRFH } from '../drf-crud-client';
 
 export interface UseBackendParamsBase<Response, TFieldValues extends FieldValues = FieldValues> {
   method?: Method | ((pk: number | string, values: TFieldValues) => Method);
@@ -113,7 +113,7 @@ export function useCreateUpdate<Response, TFieldValues extends FieldValues = Fie
       const message = parseErrors(error, setError, t, data);
       setErrorMessage(message);
     },
-    [parseErrors, setError],
+    [parseErrors, setError, t],
   );
 
   const onSuccess = useCallback(
@@ -170,68 +170,6 @@ export interface UseSelect {
   endpoint: string;
   refetchInterval?: number;
   pageSize?: number;
-}
-
-export function useSelect<TFieldValues extends FieldValues = FieldValues>({
-  queryKey,
-  endpoint,
-  refetchInterval = 60000,
-  pageSize = 10,
-}: UseSelect) {
-  const axiosInstance = useAxios();
-  const [current, setCurrent] = useState(1);
-  const [latestError, setLatestError] = useState<AxiosError<DrfError<TFieldValues>> | null>(null);
-
-  const query = useQuery<PaginatedResponse<TFieldValues>, AxiosError<DrfError<TFieldValues>>>({
-    queryKey: queryKey ? [queryKey, 'list', pageSize, current] : undefined,
-    refetchInterval,
-    queryFn: () =>
-      axiosInstance
-        .get<PaginatedResponse<TFieldValues>>(endpoint, { params: { page_size: pageSize, page: current } })
-        .then((res) => res.data),
-    onSuccess: () => setLatestError(null),
-    onError: (err) => setLatestError(err),
-  });
-
-  const pages_count = query.data?.pages_count;
-
-  const goFirst = useCallback(() => {
-    setCurrent(1);
-  }, []);
-
-  const goPrev = useCallback(() => {
-    setCurrent((v) => Math.max(1, v - 1));
-  }, []);
-
-  const goNext = useCallback(() => {
-    setCurrent((v) => Math.min(pages_count || 1, v + 1));
-  }, [pages_count]);
-
-  const goLatest = useCallback(() => {
-    setCurrent(pages_count || 1);
-  }, [pages_count]);
-
-  const setPage = useCallback(
-    (page: number) => {
-      setCurrent(Math.max(1, Math.min(pages_count || 1, page)));
-    },
-    [pages_count],
-  );
-
-  const controller = useMemo<PaginationController>(
-    () => ({
-      current,
-      goFirst,
-      goPrev,
-      goNext,
-      goLatest,
-      setPage,
-      count: pages_count,
-    }),
-    [current, goFirst, goLatest, goNext, goPrev, pages_count, setPage],
-  );
-
-  return { ...query, controller, latestError };
 }
 
 export interface UseEntity {
