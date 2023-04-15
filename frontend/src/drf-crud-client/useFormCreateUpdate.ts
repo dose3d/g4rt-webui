@@ -1,8 +1,8 @@
 import { FieldValues, UseFormProps } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
 import axios, { AxiosInstance } from 'axios';
-import { useCreateUpdateDelete, UseCreateUpdateDelete } from './createUpdateDelete';
-import { UseRFHIntegration, useRFHIntegration } from './rfhIntegration';
+import { useCreateUpdateDelete, UseCreateUpdateDelete } from './useCreateUpdateDelete';
+import { UseRFHIntegration, useRFHIntegration } from './useRFHIntegration';
 
 export interface UseFormCreateUpdate<
   TFieldValues extends FieldValues = FieldValues,

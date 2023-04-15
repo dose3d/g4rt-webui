@@ -1,5 +1,5 @@
 import { FieldValues } from 'react-hook-form';
-import { useDrfQuery, UseDrfQuery } from './query';
+import { useDrfQuery, UseDrfQuery } from './useDrfQuery';
 import { ActionOptions, EntityOptions, ModelOptions } from './types';
 
 export type UseEntity<

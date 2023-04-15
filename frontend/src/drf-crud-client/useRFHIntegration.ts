@@ -4,7 +4,7 @@ import { SubmitHandler, UseFormSetError } from 'react-hook-form';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
-import { UseDrfChangeReturn } from './change';
+import { UseDrfChangeReturn } from './useDrfChange';
 import { TFunction } from 'i18next';
 
 export interface UseRFHIntegration<

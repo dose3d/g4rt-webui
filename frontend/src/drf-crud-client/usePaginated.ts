@@ -2,8 +2,8 @@ import { FieldValues } from 'react-hook-form';
 import { useEffect, useState } from 'react';
 import { PaginatedResponse } from '../api/common';
 import { ModelOptions, PaginatedOptions } from './types';
-import { usePaginationController } from './paginateController';
-import { UseDrfQuery, useDrfQuery } from './query';
+import { usePaginationController } from './usePaginationController';
+import { UseDrfQuery, useDrfQuery } from './useDrfQuery';
 
 export type UsePaginated<TFieldValues extends FieldValues = FieldValues> = Omit<
   UseDrfQuery<PaginatedResponse<TFieldValues>>,

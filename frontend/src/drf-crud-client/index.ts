@@ -1,11 +1,11 @@
-import { DrfI18nResourceEn } from './i18n';
-import { PaginationController } from './paginateController';
+import { DrfI18nResourceEn } from './i18n_en';
+import { PaginationController } from './usePaginationController';
 import { DrfError, formatErrorToString, loadErrorsToRFH, useFormatErrorToString } from './errors';
-import { useEntity } from './entity';
-import { usePaginated } from './paginated';
-import { UseFormCreateUpdate, useFormCreateUpdate } from './formCreateUpdate';
-import { useRFHIntegration } from './rfhIntegration';
-import { useCreateUpdateDelete } from './createUpdateDelete';
+import { useEntity } from './useEntity';
+import { usePaginated } from './usePaginated';
+import { UseFormCreateUpdate, useFormCreateUpdate } from './useFormCreateUpdate';
+import { useRFHIntegration } from './useRFHIntegration';
+import { useCreateUpdateDelete } from './useCreateUpdateDelete';
 
 export type { DrfError, PaginationController, UseFormCreateUpdate };
 export {

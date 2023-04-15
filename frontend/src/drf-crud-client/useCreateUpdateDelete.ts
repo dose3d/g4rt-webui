@@ -1,6 +1,6 @@
 import { FieldValues } from 'react-hook-form';
 import { ActionOptions, EntityOptions, ModelOptions } from './types';
-import { useDrfChange, UseDrfChange } from './change';
+import { useDrfChange, UseDrfChange } from './useDrfChange';
 import { useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
