@@ -5,17 +5,17 @@ import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { DrfError } from './errors';
 import { useCallback, useState } from 'react';
 
-export interface UseDrfQuery<TFieldValues extends FieldValues = FieldValues>
-  extends QueryOptions<TFieldValues>,
-    Omit<UseQueryOptions<TFieldValues, AxiosError<DrfError<TFieldValues>>>, 'queryFn' | 'onSuccess' | 'onError'> {}
+export interface UseDrfQuery<Response extends FieldValues = FieldValues>
+  extends QueryOptions<Response>,
+    Omit<UseQueryOptions<Response, AxiosError<DrfError<Response>>>, 'queryFn' | 'onSuccess' | 'onError'> {}
 
-export function useDrfQuery<TFieldValues extends FieldValues = FieldValues>(params: UseDrfQuery<TFieldValues>) {
+export function useDrfQuery<Response extends FieldValues = FieldValues>(params: UseDrfQuery<Response>) {
   const { axiosInstance = axios, endpoint, config, onError, onSuccess, ...rest } = params;
 
-  const [lastError, setLastError] = useState<AxiosError<DrfError<TFieldValues>> | null>(null);
+  const [lastError, setLastError] = useState<AxiosError<DrfError<Response>> | null>(null);
 
   const hookOnSuccess = useCallback(
-    (data: TFieldValues) => {
+    (data: Response) => {
       setLastError(null);
       if (onSuccess) {
         onSuccess(data);
@@ -25,7 +25,7 @@ export function useDrfQuery<TFieldValues extends FieldValues = FieldValues>(para
   );
 
   const hookOnError = useCallback(
-    (err: AxiosError<DrfError<TFieldValues>>) => {
+    (err: AxiosError<DrfError<Response>>) => {
       setLastError(err);
       if (onError) {
         onError(err);
@@ -34,8 +34,8 @@ export function useDrfQuery<TFieldValues extends FieldValues = FieldValues>(para
     [onError],
   );
 
-  const query = useQuery<TFieldValues, AxiosError<DrfError<TFieldValues>>>({
-    queryFn: () => axiosInstance.get<TFieldValues>(endpoint, config).then((res) => res.data),
+  const query = useQuery<Response, AxiosError<DrfError<Response>>>({
+    queryFn: () => axiosInstance.get<Response>(endpoint, config).then((res) => res.data),
     onSuccess: hookOnSuccess,
     onError: hookOnError,
     ...rest,

@@ -5,29 +5,31 @@ import { useCreateUpdateDelete, UseCreateUpdateDelete } from './useCreateUpdateD
 import { UseRFHIntegration, useRFHIntegration } from './useRFHIntegration';
 
 export interface UseFormCreateUpdate<
-  TFieldValues extends FieldValues = FieldValues,
+  Request extends FieldValues = FieldValues,
   PK extends number | string = number | string,
+  Response extends FieldValues = Request,
   RFHContext = any,
   TQContext = undefined,
 > {
   endpoint: string;
   queryKey: string;
   primaryKey?: PK;
-  formProps?: UseFormProps<TFieldValues, RFHContext>;
+  formProps?: UseFormProps<Request, RFHContext>;
   cudProps?: Omit<
-    UseCreateUpdateDelete<TFieldValues, TFieldValues, PK, TQContext>,
+    UseCreateUpdateDelete<Request, PK, Response, TQContext>,
     'endpoint' | 'queryKey' | 'primaryKey' | 'axiosInstance' | 'method'
   >;
-  integrationProps?: Omit<UseRFHIntegration<TFieldValues, RFHContext, TQContext>, 'form' | 'createUpdate'>;
+  integrationProps?: Omit<UseRFHIntegration<Request, Response, RFHContext, TQContext>, 'form' | 'drfMutation'>;
   axiosInstance?: AxiosInstance;
 }
 
 export function useFormCreateUpdate<
-  TFieldValues extends FieldValues = FieldValues,
+  Request extends FieldValues = FieldValues,
   PK extends number | string = number | string,
+  Response extends FieldValues = Request,
   RFHContext = any,
   TQContext = undefined,
->(params: UseFormCreateUpdate<TFieldValues, PK, RFHContext, TQContext>) {
+>(params: UseFormCreateUpdate<Request, PK, Response, RFHContext, TQContext>) {
   const {
     endpoint,
     queryKey,
@@ -40,8 +42,15 @@ export function useFormCreateUpdate<
 
   const method = primaryKey ? 'PUT' : 'POST';
   const form = useForm(formProps);
-  const createUpdate = useCreateUpdateDelete({ endpoint, queryKey, primaryKey, axiosInstance, method, ...cudProps });
-  const integration = useRFHIntegration({ form, createUpdate, ...integrationProps });
+  const createUpdate = useCreateUpdateDelete<Request, PK, Response, TQContext>({
+    endpoint,
+    queryKey,
+    primaryKey,
+    axiosInstance,
+    method,
+    ...cudProps,
+  });
+  const integration = useRFHIntegration({ form, drfMutation: createUpdate, ...integrationProps });
 
   return { ...integration, form, createUpdate };
 }

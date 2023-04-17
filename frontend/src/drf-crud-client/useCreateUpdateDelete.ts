@@ -1,25 +1,25 @@
 import { FieldValues } from 'react-hook-form';
 import { ActionOptions, EntityOptions, ModelOptions } from './types';
-import { useDrfChange, UseDrfChange } from './useDrfChange';
+import { useDrfMutation, UseDrfMutation } from './useDrfMutation';
 import { useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 export type UseCreateUpdateDelete<
-  TFieldValues extends FieldValues = FieldValues,
-  Request extends FieldValues = TFieldValues,
+  Request extends FieldValues = FieldValues,
   PK extends number | string = number | string,
+  Response extends FieldValues = Request,
   TContext = undefined,
-> = Omit<UseDrfChange<TFieldValues, Request, TContext>, 'mutationKey'> &
+> = Omit<UseDrfMutation<Request, Response, TContext>, 'mutationKey'> &
   ModelOptions &
   Partial<EntityOptions<PK>> &
   Partial<ActionOptions>;
 
 export function useCreateUpdateDelete<
-  TFieldValues extends FieldValues = FieldValues,
-  Request extends FieldValues = TFieldValues,
+  Request extends FieldValues = FieldValues,
   PK extends number | string = number | string,
+  Response extends FieldValues = Request,
   TContext = undefined,
->(params: UseCreateUpdateDelete<TFieldValues, Request, PK, TContext>) {
+>(params: UseCreateUpdateDelete<Request, PK, Response, TContext>) {
   const { endpoint, queryKey, primaryKey, action, onSuccess, ...rest } = params;
 
   const ep = primaryKey ? `${endpoint}${primaryKey}/` : endpoint;
@@ -27,7 +27,7 @@ export function useCreateUpdateDelete<
   const queryClient = useQueryClient();
 
   const hookOnSuccess = useCallback(
-    (data: TFieldValues, values: Request, context?: TContext) => {
+    (data: Response, values: Request, context?: TContext) => {
       if (queryKey) {
         if (data) {
           queryClient.setQueryData([queryKey, 'entity', primaryKey || data.id], data);
@@ -44,7 +44,7 @@ export function useCreateUpdateDelete<
     [onSuccess, primaryKey, queryClient, queryKey],
   );
 
-  return useDrfChange<TFieldValues, Request, TContext>({
+  return useDrfMutation<Request, Response, TContext>({
     mutationKey: queryKey ? [queryKey, primaryKey || 'create'] : undefined,
     endpoint: ep2,
     onSuccess: hookOnSuccess,

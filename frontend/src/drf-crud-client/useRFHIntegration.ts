@@ -4,41 +4,43 @@ import { SubmitHandler, UseFormSetError } from 'react-hook-form';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
-import { UseDrfChangeReturn } from './useDrfChange';
+import { UseDrfMutationReturn } from './useDrfMutation';
 import { TFunction } from 'i18next';
 
 export interface UseRFHIntegration<
-  TFieldValues extends FieldValues = FieldValues,
+  Request extends FieldValues = FieldValues,
+  Response extends FieldValues = Request,
   RFHContext = any,
   TQContext = undefined,
 > {
-  form: UseFormReturn<TFieldValues, RFHContext>;
-  createUpdate: UseDrfChangeReturn<TFieldValues, TFieldValues, TQContext>;
-  resetOnSuccess?: boolean | ((response: TFieldValues) => TFieldValues);
-  errorsParser?: (error: unknown, setError: UseFormSetError<TFieldValues>, t: TFunction, data: TFieldValues) => string;
+  form: UseFormReturn<Request, RFHContext>;
+  drfMutation: UseDrfMutationReturn<Request, Response, TQContext>;
+  resetOnSuccess?: boolean | ((response: Response) => Request);
+  errorsParser?: (error: unknown, setError: UseFormSetError<Request>, t: TFunction, data: Request) => string;
   t?: TFunction;
 }
 
 export function useRFHIntegration<
-  TFieldValues extends FieldValues = FieldValues,
+  Request extends FieldValues = FieldValues,
+  Response extends FieldValues = Request,
   RFHContext = any,
   TQContext = undefined,
->(params: UseRFHIntegration<TFieldValues, RFHContext, TQContext>) {
-  const { form, createUpdate, resetOnSuccess = false, t: myT, errorsParser = loadErrorsToRFH } = params;
+>(params: UseRFHIntegration<Request, Response, RFHContext, TQContext>) {
+  const { form, drfMutation, resetOnSuccess = false, t: myT, errorsParser = loadErrorsToRFH } = params;
   const { setError, reset, handleSubmit } = form;
   const [parsedError, setParsedError] = useState<string | null>(null);
   const { t } = useTranslation('drf');
 
-  const onSubmit: SubmitHandler<TFieldValues> = useCallback(
+  const onSubmit: SubmitHandler<Request> = useCallback(
     async (data) => {
       try {
-        const ret = await createUpdate.mutateAsync(data);
+        const ret = await drfMutation.mutateAsync(data);
         setParsedError(null);
         if (resetOnSuccess) {
           if (typeof resetOnSuccess === 'function') {
             reset(resetOnSuccess(ret));
           } else {
-            reset(ret);
+            reset(ret as unknown as Request);
           }
         }
       } catch (error) {
@@ -49,7 +51,7 @@ export function useRFHIntegration<
         }
       }
     },
-    [createUpdate, errorsParser, myT, reset, resetOnSuccess, setError, t],
+    [drfMutation, errorsParser, myT, reset, resetOnSuccess, setError, t],
   );
 
   // Shortcut for handleSubmit(onSubmit)
