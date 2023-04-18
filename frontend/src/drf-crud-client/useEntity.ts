@@ -2,10 +2,13 @@ import { FieldValues } from 'react-hook-form';
 import { useDrfQuery, UseDrfQuery } from './useDrfQuery';
 import { ActionOptions, EntityOptions, ModelOptions } from './types';
 
-export type UseEntity<
-  Entity extends FieldValues = FieldValues,
-  PK extends number | string = number | string,
-> = Omit<UseDrfQuery<Entity>, 'queryKey'> & ModelOptions & EntityOptions<PK> & Partial<ActionOptions>;
+export type UseEntity<Entity extends FieldValues = FieldValues, PK extends number | string = number | string> = Omit<
+  UseDrfQuery<Entity>,
+  'queryKey'
+> &
+  ModelOptions &
+  EntityOptions<PK> &
+  Partial<ActionOptions>;
 
 export function useEntity<Entity extends FieldValues = FieldValues, PK extends number | string = number | string>(
   args: UseEntity<Entity, PK>,
