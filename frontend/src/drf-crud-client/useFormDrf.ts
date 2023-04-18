@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import axios, { AxiosInstance, Method } from 'axios';
 import { UseRFHIntegration, useRFHIntegration } from './useRFHIntegration';
 import { useDrfMutation, UseDrfMutation } from './useDrfMutation';
-import { MutationKey } from '@tanstack/query-core/src/types';
+import { MutationKey } from '@tanstack/react-query';
 
 export interface UseFormDrf<
   Request extends FieldValues = FieldValues,
