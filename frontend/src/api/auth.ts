@@ -1,5 +1,3 @@
-import { useCreateUpdate, UseBackendParamsBase } from './common';
-
 export interface BearerToken {
   email: string;
   exp: number;
@@ -10,20 +8,7 @@ export interface BearerToken {
   username: string;
 }
 
-interface LoginRequest {
-  username: string;
-  password: string;
-}
-
 export interface LoginResponse {
   refresh: string;
   access: string;
-}
-
-export function useLoginApi(params: UseBackendParamsBase<LoginResponse, LoginRequest>) {
-  return useCreateUpdate({
-    endpoint: '/api/token/',
-    method: 'POST',
-    ...params,
-  });
 }

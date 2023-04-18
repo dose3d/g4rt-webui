@@ -1,6 +1,11 @@
 import { useDelete, useAction } from './common';
-import { usePaginated, useEntity, UseFormCreateUpdate, useFormCreateUpdate } from '../drf-crud-client';
-import useAxios from '../utils/useAxios';
+import {
+  usePaginated,
+  useEntity,
+  UseFormCreateUpdate,
+  useFormCreateUpdate,
+  useSimpleJwtAxios,
+} from '../drf-crud-client';
 
 export interface JobEntityList {
   id: number;
@@ -31,7 +36,7 @@ export interface JobEntity extends JobEntityList {
 export function useJobCreateUpdate(
   params: Omit<UseFormCreateUpdate<JobEntity, number>, 'endpoint' | 'queryKey' | 'axiosInstance'>,
 ) {
-  const axiosInstance = useAxios();
+  const axiosInstance = useSimpleJwtAxios();
   return useFormCreateUpdate({
     endpoint: '/api/jobs/',
     queryKey: 'jobs',
@@ -41,7 +46,7 @@ export function useJobCreateUpdate(
 }
 
 export function useJobList(pageSize = 10, refetchInterval = 10000) {
-  const axiosInstance = useAxios();
+  const axiosInstance = useSimpleJwtAxios();
 
   return usePaginated<JobEntityList>({
     queryKey: 'jobs',
@@ -53,7 +58,7 @@ export function useJobList(pageSize = 10, refetchInterval = 10000) {
 }
 
 export function useJobEntity(primaryKey: number, refetchInterval = 10000) {
-  const axiosInstance = useAxios();
+  const axiosInstance = useSimpleJwtAxios();
   return useEntity<JobEntity>({ queryKey: 'jobs', endpoint: '/api/jobs/', primaryKey, refetchInterval, axiosInstance });
 }
 

@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import AuthContext from '../context/AuthContext';
 import { CloseIcon, HamburgerIcon } from './icons';
+import { JwtAuthContext } from '../drf-crud-client';
 
 const buttonCN = 'btn btn-ghost';
 
@@ -15,7 +15,7 @@ interface Props {
 }
 
 const Navbar = ({ toggle, onToggle }: Props) => {
-  const { user, logoutUser } = useContext(AuthContext);
+  const { user, logoutUser } = useContext(JwtAuthContext);
   return (
     <nav className="fixed z-30 w-full border-b border-gray-200 bg-white">
       <div className="p-3 lg:px-5 lg:pl-3">

@@ -2,8 +2,7 @@ import React, { useContext } from 'react';
 import './index.css';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
-import { HashRouter as Router, Route, Routes } from 'react-router-dom';
-import AuthContext, { AuthProvider } from './context/AuthContext';
+import { HashRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import HomePage from './site/HomePage';
 import JobsPage from './site/jobs/JobsPage';
 import JobCreatePage from './site/jobs/JobCreatePage';
@@ -12,6 +11,7 @@ import Sidebar from './components/Sidebar';
 import useToggle from './hooks/useToggle';
 import Copyright from './components/Copyright';
 import LoginScreen from './site/LoginScreen';
+import { JwtAuthContext, JwtAuthProvider } from './drf-crud-client';
 
 function Authorized() {
   const [toggle, onToggle] = useToggle();
@@ -43,17 +43,24 @@ function NoAuthorized() {
 }
 
 function AuthRoute() {
-  const { user } = useContext(AuthContext);
+  const { user } = useContext(JwtAuthContext);
 
   return user ? <Authorized /> : <NoAuthorized />;
+}
+
+function Routed() {
+  const navigate = useNavigate();
+  return (
+    <JwtAuthProvider onLogin={() => navigate('/')} onLogout={() => navigate('/')}>
+      <AuthRoute />
+    </JwtAuthProvider>
+  );
 }
 
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <AuthRoute />
-      </AuthProvider>
+      <Routed />
     </Router>
   );
 }

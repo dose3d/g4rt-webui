@@ -57,3 +57,8 @@ export interface JwtTokens {
   refresh: string;
   access: string;
 }
+
+export interface DefaultLoginRequest {
+  username: string;
+  password: string;
+}

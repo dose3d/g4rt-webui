@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import useAxios from '../utils/useAxios';
+import { useSimpleJwtAxios } from '../drf-crud-client';
 
 function ProtectedPage() {
   const [res, setRes] = useState('');
-  const api = useAxios();
+  const api = useSimpleJwtAxios();
 
   useEffect(() => {
     const fetchData = async () => {

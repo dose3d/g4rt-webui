@@ -15,7 +15,7 @@ export interface UseFormDrf<
   method: Method;
   mutationKey: MutationKey;
   formProps?: UseFormProps<Request, RFHContext>;
-  cudProps?: Omit<UseDrfMutation<Request, Response, TQContext>, 'axiosInstance'>;
+  mutationProps?: Omit<UseDrfMutation<Request, Response, TQContext>, 'axiosInstance' | 'method' | 'endpoint'>;
   integrationProps?: Omit<UseRFHIntegration<Request, Response, RFHContext, TQContext>, 'form' | 'drfMutation'>;
   axiosInstance?: AxiosInstance;
 }
@@ -31,18 +31,18 @@ export function useFormDrf<
     method,
     mutationKey,
     formProps,
-    cudProps = {},
+    mutationProps = {},
     axiosInstance = axios,
     integrationProps = {},
   } = params;
 
   const form = useForm(formProps);
-  const drfMutation = useDrfMutation<Request, Response, TQContext>({
+  const drfMutation = useDrfMutation({
     endpoint,
     method,
     mutationKey,
     axiosInstance,
-    ...cudProps,
+    ...mutationProps,
   });
   const integration = useRFHIntegration({ form, drfMutation, ...integrationProps });
 

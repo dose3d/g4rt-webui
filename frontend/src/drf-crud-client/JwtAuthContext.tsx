@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import jwt_decode from 'jwt-decode';
 import { JwtBearerToken, JwtTokens } from './types';
+import { DEFAULT_TOKENS_KEY } from './consts';
 
 interface ContextData {
   user: JwtBearerToken | null;
@@ -64,7 +65,7 @@ export function defaultStoreTokens<LoginResponse extends JwtTokens = JwtTokens>(
 
 export const JwtAuthProvider = (props: Props) => {
   const {
-    tokensKey = 'jwtAuthTokens',
+    tokensKey = DEFAULT_TOKENS_KEY,
     loadTokens = defaultLoadTokens,
     storeTokens = defaultStoreTokens,
     children,
