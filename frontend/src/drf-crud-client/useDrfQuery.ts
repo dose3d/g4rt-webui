@@ -34,7 +34,7 @@ export function useDrfQuery<Response extends FieldValues = FieldValues>(params: 
     [onError],
   );
 
-  const query = useQuery<Response, AxiosError<DrfError<Response>>>({
+  const query = useQuery({
     queryFn: () => axiosInstance.get<Response>(endpoint, config).then((res) => res.data),
     onSuccess: hookOnSuccess,
     onError: hookOnError,

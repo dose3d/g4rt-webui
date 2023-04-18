@@ -53,7 +53,7 @@ export function useDrfMutation<
     [onError],
   );
 
-  const mutation = useMutation<Response, AxiosError<DrfError<Request>, Request>, Request, TContext>({
+  const mutation = useMutation({
     mutationFn: async (data: Request): Promise<Response> => {
       const conf = {
         url: endpoint,
