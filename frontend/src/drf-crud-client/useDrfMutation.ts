@@ -1,9 +1,10 @@
 import { ChangeOptions, MutationOptions } from './types';
 import { FieldValues } from 'react-hook-form';
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { useMutation, UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
 import { DrfError } from './errors';
 import { useCallback, useState } from 'react';
+import { useSimpleJwtAxios } from './useSimpleJwtAxios';
 
 export type UseDrfMutation<
   Request extends FieldValues = FieldValues,
@@ -29,7 +30,9 @@ export function useDrfMutation<
   Response extends FieldValues = Request,
   TContext = unknown,
 >(params: UseDrfMutation<Request, Response, TContext>): UseDrfMutationReturn<Request, Response, TContext> {
-  const { axiosInstance = axios, endpoint, config = {}, method, onError, onSuccess, ...rest } = params;
+  const jwtAxios = useSimpleJwtAxios();
+
+  const { axiosInstance = jwtAxios, endpoint, config = {}, method, onError, onSuccess, ...rest } = params;
 
   const [lastError, setLastError] = useState<AxiosError<DrfError<Request>, Request> | null>(null);
 
