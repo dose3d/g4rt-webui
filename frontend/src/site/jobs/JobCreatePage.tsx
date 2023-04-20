@@ -8,18 +8,21 @@ import {
   CardHeaderSubTitle,
   CardHeaderTitle,
   CardsContainer,
+  ErrorAlert,
   Margin,
   Page,
 } from '../../components/layout';
 import { CTextArea, CTextInput } from '../../components/forms';
 import { useNavigate } from 'react-router-dom';
+import { useFormatErrorToString } from '../../drf-crud-client';
 
 export default function JobCreatePage() {
   const navigate = useNavigate();
+  const formatErrorToString = useFormatErrorToString();
   const {
     handleSubmitShort,
     form: { control },
-    createUpdate: { isLoading },
+    createUpdate: { isLoading, lastError },
   } = useJobCreateUpdate({
     formProps: { defaultValues: { title: '', description: '' }, reValidateMode: 'onSubmit' },
     cudProps: { onSuccess: () => navigate('/jobs') },
@@ -52,6 +55,8 @@ export default function JobCreatePage() {
               <button type="submit" className={cn('btn-primary btn', { loading: isLoading })} disabled={isLoading}>
                 Send
               </button>
+
+              {!!lastError && <ErrorAlert className="my-4">{formatErrorToString(lastError)}</ErrorAlert>}
             </form>
           </Card>
         </CardsContainer>
