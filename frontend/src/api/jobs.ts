@@ -1,10 +1,9 @@
-import { useDelete, useAction } from './common';
 import {
   usePaginated,
   UseFormCreateUpdate,
   useFormCreateUpdate,
-  useSimpleJwtAxios,
   useEntity,
+  useCreateUpdateDelete,
 } from '../drf-crud-client';
 
 export interface JobEntityList {
@@ -56,15 +55,13 @@ export function useJobList(pageSize = 10, refetchInterval = 10000) {
 }
 
 export function useJobEntity(primaryKey: number, refetchInterval = 0) {
-  return useEntity<JobEntity>({ queryKey: 'jobs', endpoint: '/api/jobs/', primaryKey, refetchInterval });
+  return useEntity<JobEntity>({ ...JOB_SETTINGS, primaryKey, refetchInterval });
 }
 
 export function useJobDelete(primaryKey: number) {
-  return useDelete<JobEntity>({ queryKey: 'jobs', endpoint: '/api/jobs/', primaryKey });
+  return useCreateUpdateDelete<JobEntity>({ ...JOB_SETTINGS, primaryKey, method: 'DELETE' });
 }
 
-export function useJobAction(primaryKey: number, action: string) {
-  const axiosInstance = useSimpleJwtAxios();
-
-  return useAction<JobEntity>({ queryKey: 'jobs', endpoint: '/api/jobs/', primaryKey, action });
+export function useJobKill(primaryKey: number) {
+  return useCreateUpdateDelete<JobEntity>({ ...JOB_SETTINGS, primaryKey, action: 'kill', method: 'PUT' });
 }

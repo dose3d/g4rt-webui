@@ -9,9 +9,10 @@ import {
   Margin,
   Page,
 } from '../../components/layout';
-import { useJobEntity } from '../../api/jobs';
+import { useJobDelete, useJobEntity, useJobKill } from '../../api/jobs';
 import { formatDate, formatFileSize } from '../../utils/formatValues';
 import { CloseIcon, DeleteIcon, EditIcon, PlayIcon } from '../../components/icons';
+import ActionButton from '../../components/ActionButton';
 
 function LabelValueHOutline({ children }: { children: React.ReactNode }) {
   return <section className="table">{children}</section>;
@@ -23,6 +24,28 @@ function LabelValueH({ label, children }: { label: React.ReactNode; children: Re
       <dt className="table-cell">{label}</dt>
       <dd className="table-cell pl-8 font-bold">{children}</dd>
     </dl>
+  );
+}
+
+function JobButtons({ jobId }: { jobId: number }) {
+  const deleteAction = useJobDelete(jobId);
+  const killAction = useJobKill(jobId);
+
+  return (
+    <div className="flex gap-4">
+      <button className="btn-warning btn-sm btn">
+        <EditIcon className="mr-2 h-5 w-5" /> Edit
+      </button>
+      <button className="btn-success btn-sm btn">
+        <PlayIcon className="mr-2 h-5 w-5" /> Run
+      </button>
+      <ActionButton className="btn-error btn-sm btn" drf={killAction} icon={<CloseIcon className="h-5 w-5" />}>
+        <span className="ml-2"> Kill</span>
+      </ActionButton>
+      <ActionButton className="btn-error btn-sm btn" drf={deleteAction}>
+        <DeleteIcon className="mr-2 h-5 w-5" /> Delete
+      </ActionButton>
+    </div>
   );
 }
 
@@ -49,20 +72,7 @@ export default function JobDetailPage() {
               </div>
             </CardHeader>
 
-            <div className="flex gap-4">
-              <button className="btn-warning btn-sm btn">
-                <EditIcon className="mr-2 h-5 w-5" /> Edit
-              </button>
-              <button className="btn-success btn-sm btn">
-                <PlayIcon className="mr-2 h-5 w-5" /> Run
-              </button>
-              <button className="btn-error btn-sm btn">
-                <CloseIcon className="mr-2 h-5 w-5" /> Kill
-              </button>
-              <button className="btn-error btn-sm btn">
-                <DeleteIcon className="mr-2 h-5 w-5" /> Delete
-              </button>
-            </div>
+            {jobId && <JobButtons jobId={parseInt(jobId)} />}
 
             <h3 className="mb-2 mt-4 font-bold">Details:</h3>
             <div className="ml-4">
@@ -106,6 +116,8 @@ export default function JobDetailPage() {
               <h4 className="mt-4">TOML file content:</h4>
               <pre className="border-2 border-gray-200 bg-gray-100 p-2">{data?.toml}</pre>
             </div>
+
+            <div id="drawing" style={{ width: '800px', height: '600px' }}></div>
           </Card>
         </CardsContainer>
       </Margin>

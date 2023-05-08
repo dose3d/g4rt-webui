@@ -1,6 +1,6 @@
 import { FieldValues, UseFormProps } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
-import axios, { AxiosInstance } from 'axios';
+import { AxiosInstance } from 'axios';
 import { useCreateUpdateDelete, UseCreateUpdateDelete } from './useCreateUpdateDelete';
 import { UseRFHIntegration, useRFHIntegration } from './useRFHIntegration';
 
@@ -30,15 +30,7 @@ export function useFormCreateUpdate<
   RFHContext = any,
   TQContext = undefined,
 >(params: UseFormCreateUpdate<Request, PK, Response, RFHContext, TQContext>) {
-  const {
-    endpoint,
-    queryKey,
-    primaryKey,
-    formProps,
-    cudProps = {},
-    axiosInstance = axios,
-    integrationProps = {},
-  } = params;
+  const { endpoint, queryKey, primaryKey, formProps, cudProps = {}, axiosInstance, integrationProps = {} } = params;
 
   const method = primaryKey ? 'PUT' : 'POST';
   const form = useForm(formProps);
