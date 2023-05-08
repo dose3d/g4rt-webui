@@ -44,11 +44,11 @@ class JobViewSet(VariousSerializersViewSet):
     def perform_destroy(self, instance):
         if instance.status == RUNNING:
             raise ValidationError(_('Running jobs can not be deleted'))
-        instance.get_runner_job().purge()
+        instance.get_runners_job().purge()
         super().perform_destroy(instance)
 
     @action(detail=True, methods=['put'])
-    def kill(self, request):
+    def kill(self, request, pk=None):
         obj = self.get_object()
         if obj.status != RUNNING:
             raise ValidationError(_('Job must be in RUNNING state'))
