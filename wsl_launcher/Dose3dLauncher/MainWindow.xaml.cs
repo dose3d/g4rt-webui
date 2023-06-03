@@ -155,7 +155,7 @@ namespace Dose3dLauncher
                 UseShellExecute = false,
                 CreateNoWindow = true,
                 StandardOutputEncoding = System.Text.Encoding.Unicode
-        };
+            };
 
             var process = new Process();
             process.StartInfo = startInfo;
