@@ -4,6 +4,7 @@ import {
   UseFormCreateUpdate,
   useFormCreateUpdate,
   useSimpleJwtAxios,
+  useQueryWrapper,
 } from '../drf-crud-client';
 
 export interface JobEntityList {
@@ -24,11 +25,19 @@ export interface JobRootFileEntity {
   href: string;
 }
 
+export interface JobLogFileEntity {
+  id: number;
+  file_name: string;
+  size: number;
+  href: string;
+  is_output: boolean;
+}
+
 export interface JobEntity extends JobEntityList {
   toml: string;
   args: string;
 
-  logs_href: string;
+  logs_files: JobLogFileEntity[];
   root_files: JobRootFileEntity[];
 }
 
@@ -59,4 +68,12 @@ export function useJobList(pageSize = 10, refetchInterval = 10000) {
 export function useJobEntity(primaryKey: number, refetchInterval = 0) {
   const axiosInstance = useSimpleJwtAxios();
   return useEntity<JobEntity>({ queryKey: 'jobs', endpoint: '/api/jobs/', primaryKey, refetchInterval, axiosInstance });
+}
+
+export function useJobOutputLogs(primaryKey: number, refetchInterval = 1000) {
+  return useQueryWrapper<string>({
+    endpoint: `/api/jobs/${primaryKey}/output/`,
+    queryKey: ['jobs', primaryKey, 'output'],
+    refetchInterval,
+  });
 }
