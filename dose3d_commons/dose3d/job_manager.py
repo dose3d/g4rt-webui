@@ -1,129 +1,209 @@
 import os
-import pathlib
+import shutil
+import subprocess
 import psutil
 
 from dose3d.dose3d_error import Dose3DException
-from dose3d.job import Job, QUEUE, RUNNING, DONE
-from dose3d.utils import get_files_by_date, get_dirs
+from dose3d.utils import write_all_to_file, load_int_from_file, load_all_from_file, get_files_by_date
+
+QUEUE = "queue"
+RUNNING = "running"
+DONE = "done"
 
 
-class JobsManager:
-    """Manage Dose3D jobs"""
+class JobManager:
+    """Manage of single job"""
 
-    config = None
+    jm = None
+    job_id = None
+    ready = False
 
-    QUEUE_DIR = None
-    RUNNING_DIR = None
-    DONE_DIR = None
-    DOSE3D_EXEC = None
-    SLEEP = None
+    status = None
 
-    main_dir = None
+    def __init__(self, jm, job_id, ready=False, status=None):
+        self.jm = jm
+        self.job_id = job_id
+        self.ready = ready
+        self.status = status
 
-    def __init__(self, config_file=None, init_dirs=False, main_dir=None):
-        # get main dir of project
-        if main_dir is None:
-            self.main_dir = pathlib.Path(__file__).parent.resolve().parent.resolve().parent.resolve()
+    def get_job_path(self, for_status=None):
+        """Get path for job by status (for current status if for_status is None)"""
+        if for_status is None:
+            for_status = self.status
+        path = self.jm.get_path_for_status(for_status)
+        if for_status != QUEUE:
+            return os.path.join(path, self.job_id)
+        return path
+
+    def get_args_file(self, for_status=None):
+        """Get args file of Job from QUEUE_DIR"""
+        return os.path.join(self.get_job_path(for_status), self.job_id + ".args")
+
+    def get_ready_file(self):
+        """Get ready file of Job from QUEUE_DIR"""
+        return os.path.join(self.jm.QUEUE_DIR, self.job_id + ".ready")
+
+    def get_toml_file(self, for_status=None):
+        """Get TOML file of Job from QUEUE_DIR"""
+        return os.path.join(self.get_job_path(for_status), self.job_id + ".toml")
+
+    def get_pid_file(self):
+        """Get file name with PID of Dose3D process"""
+        return os.path.join(self.get_job_path(RUNNING), 'pid')
+
+    def get_ret_code_file(self, for_status=None):
+        """Get file name with PID of Dose3D process"""
+        return os.path.join(self.get_job_path(for_status), 'ret_code.txt')
+
+    def get_log_file(self, for_status=None):
+        """Get file name with PID of Dose3D process"""
+        return os.path.join(self.get_job_path(for_status), 'log.txt')
+
+    def update_job_status(self):
+        """Check status by QUEUE, PENDING and DONE dirs and update status and ready in self"""
+        if os.path.exists(self.get_job_path(DONE)):
+            self.status = DONE
+        elif os.path.exists(self.get_job_path(RUNNING)):
+            self.status = RUNNING
+        elif os.path.exists(self.get_toml_file(QUEUE)):
+            self.status = QUEUE
+            self.ready = os.path.exists(self.get_ready_file())
         else:
-            self.main_dir = main_dir
+            raise Dose3DException('Job %s not found' % self.job_id)
 
-        # load config file
-        self.load_config(config_file)
+    def flush_to_queue(self, args, toml):
+        """Flush new job to QUEUE dir"""
+        self.status = QUEUE
+        toml_file = self.get_toml_file()
+        args_file = self.get_args_file()
+        ready_file = self.get_ready_file()
 
-        # create jobs dirs if needed
-        if init_dirs:
-            self.init_dirs_if_need()
+        write_all_to_file(toml_file, toml)
+        write_all_to_file(args_file, args)
+        write_all_to_file(ready_file, "go")
 
-    def load_config(self, config_file=None):
-        """Load config from config_gile or from main_dir/config.txt"""
+    def move_from_queue_to_running(self):
+        """Move Job from QUEUE to RUNNING"""
 
-        if config_file is None:
-            config_file = os.path.join(self.main_dir, 'config.txt')
-        config_values = {}
+        if self.status != QUEUE:
+            raise Dose3DException('Job %s must be in QUEUE state, not in %s' % (self.job_id, self.status))
 
-        with open(config_file, 'rt') as c:
-            for line in c.readlines():
-                [key, value] = line.strip().split('=')
-                key = key.strip()
-                if key and key[0] != '#':  # ignore comments
-                    config_values[key] = value.strip()
-                    if key.endswith('_DIR') or key.endswith('_EXEC'):
-                        # convert relative pathes to full pathes
-                        config_values[key] = os.path.abspath(config_values[key])
+        # prepare RUNNING/job_id path
+        job_path = self.get_job_path(RUNNING)
+        os.makedirs(job_path)
 
-        # fill class values by loaded config
-        self.config = config_values
-        self.QUEUE_DIR = self.config["QUEUE_DIR"]
-        self.RUNNING_DIR = self.config["RUNNING_DIR"]
-        self.DONE_DIR = self.config["DONE_DIR"]
-        self.DOSE3D_EXEC = self.config["DOSE3D_EXEC"]
+        # move job_id.toml and job_id.args from QUEUE/ to RUNNING/job_id/
+        shutil.move(self.get_toml_file(QUEUE), self.get_toml_file(RUNNING))
+        shutil.move(self.get_args_file(QUEUE), self.get_args_file(RUNNING))
 
-        # validate SLEEP number value
-        try:
-            self.SLEEP = int(self.config["SLEEP"])
-        except ValueError:
-            raise Dose3DException('SLEEP must be number')
+        # and remove QUEUE/job_id.ready
+        os.remove(self.get_ready_file())
 
-    def get_path_for_status(self, status):
-        """Get path for Jobs by status"""
-        if status == QUEUE:
-            return self.QUEUE_DIR
-        if status == RUNNING:
-            return self.RUNNING_DIR
-        if status == DONE:
-            return self.DONE_DIR
-        raise Dose3DException('Invalid status: %s, should be QUEUE, RUNNING or DONE' % status)
+        self.status = RUNNING
 
-    def init_dirs_if_need(self):
-        """Create JOBs dirs if not exists"""
-        os.makedirs(self.QUEUE_DIR, exist_ok=True)
-        os.makedirs(self.RUNNING_DIR, exist_ok=True)
-        os.makedirs(self.DONE_DIR, exist_ok=True)
+    def load_dose3d_running_args(self):
+        """Load Dose3D command line args"""
+        args_file = self.get_args_file()
+        with open(args_file, 'rt') as af:
+            args = af.readline().split()
+        return args
 
-    def get_jobs_from_queue(self):
-        """
-        Get list of job_id in queue sorted by create date.
-        Return: list of objects of Job class
-        """
+    def execute_dose3d(self, log_callback):
+        """Execute Dose3D process and waiting for finish"""
 
-        jobs = []
-        new_files = get_files_by_date(self.QUEUE_DIR)
-        for f in new_files:
-            if f.endswith('.toml'):
-                base_file = os.path.basename(f)
-                job_id = os.path.splitext(base_file)[0]
-                ready_file = os.path.join(self.QUEUE_DIR, job_id + '.ready')
-                if os.path.exists(ready_file):
-                    jobs.append(Job(self, job_id, True, QUEUE))
-                    break
-                else:
-                    jobs.append(Job(self, job_id, False, QUEUE))
+        if self.status != RUNNING:
+            raise Dose3DException('Job %s must be in RUNNING state, not in %s' % (self.job_id, self.status))
 
-        return jobs
+        # read args from QUEUE/job_id.args
+        args = self.load_dose3d_running_args()
 
-    def get_running_jobs(self):
-        """Get list of running jobs"""
-        jobs = []
-        running_jobs = get_dirs(self.RUNNING_DIR)
-        for d in running_jobs:
-            job_id = os.path.basename(d)
-            jobs.append(Job(self, job_id, status=RUNNING))
-        return jobs
+        # execute Dose3D: DOSE3D_EXEC -t PENDING/job_id/input.toml -f
+        input_toml = self.get_toml_file()
+        job_path = self.get_job_path()
+        exe = [self.jm.DOSE3D_EXEC, '-t', input_toml, '-o', job_path, *args]
+        log_callback('Execute: %s' % ' '.join(exe))
+        p = subprocess.Popen(exe, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
-    def check_pid_is_dose3d(self, pid):
-        """Check if PID process is Dose3D process. None - no process with this PID"""
-        try:
+        # write PID to PENDING/job_id/pid file
+        pid_fn = self.get_pid_file()
+        with open(pid_fn, 'wt') as pf:
+            pf.write('%d' % p.pid)
+        log_callback('PID of process: %d' % p.pid)
+
+        # waiting for logs line or close process and write logs to PENDING/job_id/log.txt
+        log_fn = self.get_log_file()
+        while True:
+            ret_code = p.poll()
+            line = p.stdout.readline()
+            with open(log_fn, 'ab') as fl:
+                fl.write(line)
+                log_callback('> %s' % line.decode("utf-8"), end='')
+
+            # if process closed break loop and remove pid file and write return code to PENDING/job_id/ret_code.txt
+            if ret_code is not None:
+                # remove pid file
+                os.remove(pid_fn)
+
+                # write return code to file
+                ret_code_fn = self.get_ret_code_file()
+                with open(ret_code_fn, 'wt') as rf:
+                    rf.write('%d' % ret_code)
+                log_callback('\nEnd with code: %d' % ret_code)
+                break
+
+    def move_from_running_to_done(self):
+        """Move Job from RUNNING/job_id to DONE/job_id"""
+
+        if self.status != RUNNING:
+            raise Dose3DException('Job %s must be in RUNNING state, not in %s' % (self.job_id, self.status))
+
+        shutil.move(self.get_job_path(RUNNING), self.get_job_path(DONE))
+        self.status = DONE
+
+    def get_pid(self):
+        """Load PID of running Job"""
+        return load_int_from_file(self.get_pid_file())
+
+    def get_ret_code(self):
+        """Load PID of running Job"""
+        return load_int_from_file(self.get_ret_code_file())
+
+    def load_logs(self):
+        """Load logs to one string"""
+        return load_all_from_file(self.get_log_file())
+
+    def get_root_files(self):
+        """Load list of ROOT files"""
+        ret = []
+        fns = get_files_by_date(self.get_job_path())
+        for fn in fns:
+            if fn.endswith('.root'):
+                ret.append(fn)
+        return ret
+
+    def get_log_files(self):
+        """Load list of log files from ROOT"""
+        ret = []
+        logs_path = os.path.join(self.get_job_path(), 'log')
+        if os.path.exists(logs_path):
+            fns = get_files_by_date(logs_path)
+            for fn in fns:
+                if fn.endswith('.log'):
+                    ret.append(fn)
+        return ret
+
+    def kill(self):
+        """Kill Dose3D process. Runner should move from RUNNING to DONE."""
+        pid = self.get_pid()
+        if pid is not None and self.jm.check_pid_is_dose3d(pid):
             process = psutil.Process(pid)
+            process.kill()
 
-            # check if it is Dose3D process
-            return process.name() == os.path.basename(self.DOSE3D_EXEC)
-
-        except psutil.NoSuchProcess:
-            return None  # process done
-
-    def get_job(self, job_id, update_status=True):
-        """Build job instance and update status from dirs if update_status is true"""
-        job = Job(self, job_id)
-        if update_status:
-            job.update_job_status()
-        return job
+    def purge(self):
+        """Remove jobs files"""
+        if self.status == QUEUE:
+            os.remove(self.get_ready_file())
+            os.remove(self.get_toml_file())
+            os.remove(self.get_args_file())
+        else:
+            shutil.rmtree(self.get_job_path())
