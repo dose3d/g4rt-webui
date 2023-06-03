@@ -1,9 +1,9 @@
 import {
   usePaginated,
+  useEntity,
   UseFormCreateUpdate,
   useFormCreateUpdate,
-  useEntity,
-  useCreateUpdateDelete,
+  useSimpleJwtAxios,
 } from '../drf-crud-client';
 
 export interface JobEntityList {
@@ -32,36 +32,31 @@ export interface JobEntity extends JobEntityList {
   root_files: JobRootFileEntity[];
 }
 
-const JOB_SETTINGS = {
-  endpoint: '/api/jobs/',
-  queryKey: 'jobs',
-};
-
 export function useJobCreateUpdate(
   params: Omit<UseFormCreateUpdate<JobEntity, number>, 'endpoint' | 'queryKey' | 'axiosInstance'>,
 ) {
+  const axiosInstance = useSimpleJwtAxios();
   return useFormCreateUpdate({
-    ...JOB_SETTINGS,
+    endpoint: '/api/jobs/',
+    queryKey: 'jobs',
+    axiosInstance,
     ...params,
   });
 }
 
 export function useJobList(pageSize = 10, refetchInterval = 10000) {
+  const axiosInstance = useSimpleJwtAxios();
+
   return usePaginated<JobEntityList>({
-    ...JOB_SETTINGS,
+    queryKey: 'jobs',
+    endpoint: '/api/jobs/',
     refetchInterval,
     pageSize,
+    axiosInstance,
   });
 }
 
 export function useJobEntity(primaryKey: number, refetchInterval = 0) {
-  return useEntity<JobEntity>({ ...JOB_SETTINGS, primaryKey, refetchInterval });
-}
-
-export function useJobDelete(primaryKey: number) {
-  return useCreateUpdateDelete<JobEntity>({ ...JOB_SETTINGS, primaryKey, method: 'DELETE' });
-}
-
-export function useJobKill(primaryKey: number) {
-  return useCreateUpdateDelete<JobEntity>({ ...JOB_SETTINGS, primaryKey, action: 'kill', method: 'PUT' });
+  const axiosInstance = useSimpleJwtAxios();
+  return useEntity<JobEntity>({ queryKey: 'jobs', endpoint: '/api/jobs/', primaryKey, refetchInterval, axiosInstance });
 }
