@@ -41,11 +41,15 @@ def download_root_file(identify):
 
 
 def download_logs_file(identify):
-    from tnd3d.models import Job
+    from tnd3d.models import JobLogFile
 
-    job = get_object_or_404(Job, pk=identify)
-    fn = job.get_runners_job().get_log_file()
-    return download_file(fn, None, 'text/plain; charset=UTF-8')
+    jrf = get_object_or_404(JobLogFile, pk=identify)
+    job = jrf.job
+    if jrf.is_output:
+        fn = os.path.join(job.get_runners_job().get_job_path(), 'log.txt')
+    else:
+        fn = os.path.join(job.get_runners_job().get_job_path(), 'log', jrf.file_name)
+    return download_file(fn, jrf.file_name, 'text/plain; charset=UTF-8')
 
 
 def download_file(file_path, file_name, content_type, chunk_size=8192):

@@ -52,14 +52,22 @@ class JobViewSet(VariousSerializersViewSet):
         obj = self.get_object()
         if obj.status != RUNNING:
             raise ValidationError(_('Job must be in RUNNING state'))
-        obj.get_runner_job().kill()
+        obj.get_runners_job().kill()
         return Response({})
 
     @action(detail=True, methods=['get'])
     def logs(self, request):
         """Download logs file API, not used by Frontend"""
         obj = self.get_object()
-        job = obj.get_runner_job()
+        job = obj.get_runners_job()
+        fn = job.get_log_file()
+        return download_file(fn, None, 'text/plain; charset=UTF-8')
+
+    @action(detail=True, methods=['get'])
+    def output(self, request, pk=None):
+        """Download output logs file API"""
+        obj = self.get_object()
+        job = obj.get_runners_job()
         fn = job.get_log_file()
         return download_file(fn, None, 'text/plain; charset=UTF-8')
 

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from tnd3d.download import generate_download_href, MODULE_ROOT, MODULE_LOGS
-from tnd3d.models import Job, JobRootFile
+from tnd3d.models import Job, JobRootFile, JobLogFile
 
 
 class JobListSerializer(serializers.ModelSerializer):
@@ -26,18 +26,28 @@ class JobRootFileSerializer(serializers.ModelSerializer):
         return generate_download_href(MODULE_ROOT, obj.id)
 
 
+class JobLogFileSerializer(serializers.ModelSerializer):
+
+    href = serializers.SerializerMethodField()
+
+    class Meta:
+        model = JobLogFile
+        fields = '__all__'
+        read_only_fields = ('id', 'file_name', 'size', 'is_output')
+
+    def get_href(self, obj):
+        return generate_download_href(MODULE_LOGS, obj.id)
+
+
 class JobSerializer(serializers.ModelSerializer):
 
     root_files = JobRootFileSerializer(many=True, source='jobrootfile_set', read_only=True)
-    logs_href = serializers.SerializerMethodField(read_only=True)
+    logs_files = JobLogFileSerializer(many=True, source='joblogfile_set', read_only=True)
 
     class Meta:
         model = Job
         fields = '__all__'
         read_only_fields = ('id', 'status', 'ret_code', 'created_at', 'updated_at')
-
-    def get_logs_href(self, obj):
-        return generate_download_href(MODULE_LOGS, obj.id)
 
 
 class JobSerializerPending(JobSerializer):
