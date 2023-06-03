@@ -16,7 +16,7 @@ MODULE_ROOT = 'root'
 MODULE_LOGS = 'logs'
 
 
-@api_view(['GET'])
+@api_view(['GET', 'HEAD'])
 @permission_classes([permissions.AllowAny])
 def download_by_token(request, module, identify, ts, sha):
     if sha == make_hash(ts, module, identify):
