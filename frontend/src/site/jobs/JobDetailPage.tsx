@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   Card,
   CardHeader,
@@ -9,9 +9,10 @@ import {
   Margin,
   Page,
 } from '../../components/layout';
-import { useJobEntity, useJobOutputLogs } from '../../api/jobs';
+import { JobStatus, useJobDelete, useJobEntity, useJobKill, useJobOutputLogs } from '../../api/jobs';
 import { formatDate, formatFileSize } from '../../utils/formatValues';
-import { CloseIcon, DeleteIcon, EditIcon, PlayIcon } from '../../components/icons';
+import { CloseIcon, DeleteIcon, EditIcon } from '../../components/icons';
+import ActionButton from '../../components/ActionButton';
 
 function LabelValueHOutline({ children }: { children: React.ReactNode }) {
   return <section className="table w-auto">{children}</section>;
@@ -31,8 +32,51 @@ function LogsAutoRefresh({ id, interval }: { id: number; interval: number }) {
   return <>{data}</>;
 }
 
+function JobButtons({ jobId, status }: { jobId: number; status: JobStatus }) {
+  const deleteAction = useJobDelete(jobId);
+  const killAction = useJobKill(jobId);
+  const navigate = useNavigate();
+
+  return (
+    <div className="flex gap-4">
+      <button
+        className="btn-warning btn-sm btn"
+        title="Create new job using settings from this job. Not implemented yet."
+        disabled
+      >
+        <EditIcon className="mr-2 h-5 w-5" /> Edit as new job
+      </button>
+      <ActionButton
+        className="btn-error btn-sm btn"
+        drf={killAction}
+        disabled={status != 'running'}
+        icon={<CloseIcon className="h-5 w-5" />}
+        title="Kill the ROOT process"
+        confirm="Are you sure to kill ROOT process?"
+      >
+        <span className="ml-2"> Kill</span>
+      </ActionButton>
+      <ActionButton
+        className="btn-error btn-sm btn"
+        drf={deleteAction}
+        disabled={status == 'running'}
+        title="Remove job from queue or dones, if running you must kill before delete"
+        confirm="Are you sure to remove this job and all files from this job?"
+        mutateOptions={{
+          onSuccess: () => {
+            navigate('/jobs/');
+          },
+        }}
+      >
+        <DeleteIcon className="mr-2 h-5 w-5" /> Delete
+      </ActionButton>
+    </div>
+  );
+}
+
 export default function JobDetailPage() {
   const { jobId } = useParams();
+  // TODO: optimize refetchInterval and caching for done
   const { data } = useJobEntity(parseInt(`${jobId}`));
 
   return (
@@ -54,20 +98,7 @@ export default function JobDetailPage() {
               </div>
             </CardHeader>
 
-            <div className="flex gap-4">
-              <button className="btn-warning btn-sm btn">
-                <EditIcon className="mr-2 h-5 w-5" /> Edit
-              </button>
-              <button className="btn-success btn-sm btn">
-                <PlayIcon className="mr-2 h-5 w-5" /> Run
-              </button>
-              <button className="btn-error btn-sm btn">
-                <CloseIcon className="mr-2 h-5 w-5" /> Kill
-              </button>
-              <button className="btn-error btn-sm btn">
-                <DeleteIcon className="mr-2 h-5 w-5" /> Delete
-              </button>
-            </div>
+            {data && <JobButtons jobId={data.id} status={data.status} />}
 
             <h3 className="mb-2 mt-4 font-bold">Details:</h3>
             <div className="ml-4">
@@ -86,9 +117,10 @@ export default function JobDetailPage() {
                 <ol className="list-inside list-decimal">
                   {data?.root_files.map((o, i) => (
                     <li key={i}>
-                      <a href={o.href}>
-                        {o.file_name} ({formatFileSize(o.size)})
-                      </a>
+                      {o.file_name} ({formatFileSize(o.size)}){', '}
+                      <Link to={`/jobs/${data.id}/root/${o.id}`}>open</Link>
+                      {', '}
+                      <a href={o.href}>download</a>
                     </li>
                   ))}
                 </ol>

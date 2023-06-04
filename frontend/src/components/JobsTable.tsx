@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { JobEntityList } from '../api/jobs';
+import { JobEntityListItem } from '../api/jobs';
 import { EditIcon } from './icons';
 import { Content } from './layout';
 import { formatDate } from '../utils/formatValues';
@@ -33,7 +33,7 @@ function TableHeader() {
 }
 
 interface JobTableRow {
-  job: JobEntityList;
+  job: JobEntityListItem;
 }
 
 function TableRow({ job: { id, title, description, status, updated_at, created_at } }: JobTableRow) {
@@ -59,7 +59,7 @@ function TableRow({ job: { id, title, description, status, updated_at, created_a
 }
 
 interface Props {
-  jobs: JobEntityList[] | undefined;
+  jobs: JobEntityListItem[] | undefined;
   isLoading: boolean;
 }
 

@@ -12,6 +12,7 @@ import useToggle from './hooks/useToggle';
 import Copyright from './components/Copyright';
 import LoginScreen from './site/LoginScreen';
 import { JwtAuthContext, JwtAuthProvider } from './drf-crud-client';
+import JobRootDetailPage from './site/root/JobRootDetailPage';
 
 function Authorized() {
   const [toggle, onToggle] = useToggle();
@@ -27,6 +28,7 @@ function Authorized() {
               <Route element={<JobsPage />} path="" />
               <Route element={<JobCreatePage />} path="create" />
               <Route element={<JobDetailPage />} path=":jobId" />
+              <Route element={<JobRootDetailPage />} path=":jobId/root/:fileId" />
             </Route>
             <Route element={<HomePage />} path="/" />
           </Routes>
