@@ -1,5 +1,5 @@
-import { useCreateUpdateDelete, useEntity, useQueryWrapper } from "../drf-crud-client";
-import { JobEntity, JobEntityListItem, JobRootFileEntity } from "./jobs";
+import { useCreateUpdateDelete, useEntity, useQueryWrapper } from '../drf-crud-client';
+import { JobEntity, JobEntityListItem, JobRootFileEntity } from './jobs';
 
 export interface JobRootFileDetail extends JobRootFileEntity {
   id: number;
