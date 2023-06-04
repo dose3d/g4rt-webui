@@ -10,7 +10,7 @@ from commons.views import CustomPageNumberPagination, VariousSerializersViewSet
 from tnd3d.download import download_file
 from tnd3d.models import Job, JobRootFile
 from tnd3d.serializer import JobSerializer, JobSerializerPending, JobRootFileSerializer, \
-    JobListSerializer
+    JobListSerializer, JobRootFileDetailSerializer
 from django.utils.translation import gettext_lazy as _
 
 
@@ -73,6 +73,7 @@ class JobViewSet(VariousSerializersViewSet):
 
 
 class JobRootFileViewSet(viewsets.ReadOnlyModelViewSet):
+    # FIXME: not used?
     """Download ROOT file API, not used by Frontend"""
     queryset = JobRootFile.objects.all()
     serializer_class = JobRootFileSerializer
@@ -90,5 +91,17 @@ class JobRootFileViewSet(viewsets.ReadOnlyModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         f = self.get_object()
         job = f.job.get_runner_job()
+        fn = os.path.join(job.get_job_path(), f.file_name)
+        return download_file(fn, f.file_name, 'application/octet-stream')
+
+
+class JobRootFileDetailViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = JobRootFile.objects.all()
+    serializer_class = JobRootFileDetailSerializer
+
+    @action(detail=True, methods=['get'])
+    def download(self, request, pk=None):
+        f = self.get_object()
+        job = f.job.get_runners_job()
         fn = os.path.join(job.get_job_path(), f.file_name)
         return download_file(fn, f.file_name, 'application/octet-stream')

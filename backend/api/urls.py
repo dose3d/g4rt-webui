@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from tnd3d.views import JobViewSet
+from tnd3d.views import JobViewSet, JobRootFileDetailViewSet
 from . import views
 
 from rest_framework_simplejwt.views import (
@@ -10,6 +10,7 @@ from rest_framework_simplejwt.views import (
 
 router = routers.DefaultRouter()
 router.register(r'jobs', JobViewSet)
+router.register(r'jrf', JobRootFileDetailViewSet)
 
 urlpatterns = [
     path('token/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
