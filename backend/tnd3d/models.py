@@ -98,8 +98,7 @@ class Job(models.Model):
             file_stats = os.stat(rf)
             jrf, created = JobLogFile.objects.get_or_create(
                 job=self,
-                file_name=fn,
-                size=0
+                file_name=fn
             )
 
             # update size only when changed or created (prevent to unnecessary SQL UPDATE)
