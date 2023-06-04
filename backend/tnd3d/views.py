@@ -105,3 +105,29 @@ class JobRootFileDetailViewSet(viewsets.ReadOnlyModelViewSet):
         job = f.job.get_runners_job()
         fn = os.path.join(job.get_job_path(), f.file_name)
         return download_file(fn, f.file_name, 'application/octet-stream')
+
+    @action(detail=True, methods=['post'])
+    def render(self, request, pk=None):
+        f = self.get_object()
+        job = f.job.get_runners_job()
+        fn = os.path.join(job.get_job_path(), f.file_name)
+
+        json_output_file = os.path.join(job.get_job_path(), f.file_name.replace('.root', '_visualize.json'))
+        root_output_file = os.path.join(job.get_job_path(), f.file_name.replace('.root', '_visualize.root'))
+
+        try:
+            from pydose3d.svc.dose3d import Dose3DSvc
+            from pydose3d.svc.ntuple_data import NTupleDataSvc
+
+            NTupleDataSvc.ImplicitMT = True
+            d3dsvc = Dose3DSvc()
+            d3dsvc.set_data(fn, "Dose3DVoxelisedTTree")
+
+            d3dsvc.write_dose_z_profile_to_json(json_output_file, MLayer=0, MColumn=0, CLayer=2, CColumn=2, normalized=True)
+            d3dsvc.write_module_dose_map(root_output_file, MLayer=0, CLayer=2)
+        except:
+            pass
+
+        f.job.sync_status(force=True)
+
+        return Response({})
