@@ -22,7 +22,7 @@ class Job(models.Model):
     title = models.CharField(max_length=64, verbose_name=_('Jobs title'))
     description = models.TextField(blank=True, default='', verbose_name=_('Jobs description'))
     status = models.CharField(max_length=16, choices=STATUS, default=INIT, verbose_name=_('Current status'))
-    ret_code = models.BooleanField(null=True, blank=True, verbose_name=_('Return code of Dose3D process'))
+    ret_code = models.IntegerField(null=True, blank=True, verbose_name=_('Return code of Dose3D process'))
     toml = models.TextField(blank=True, default='', verbose_name=_('Content of TOML file'))
     args = models.CharField(max_length=255, default='', verbose_name=_('Dose3D command line args'))
 
