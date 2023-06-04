@@ -10,6 +10,14 @@ export type UseEntity<Entity extends FieldValues = FieldValues, PK extends numbe
   EntityOptions<PK> &
   Partial<ActionOptions>;
 
+export function getEntityQueryKey<PK extends number | string = number | string>(
+  queryKey: string,
+  primaryKey: PK,
+  action?: string,
+) {
+  return [queryKey, 'entity', `${primaryKey}`, action];
+}
+
 export function useEntity<Entity extends FieldValues = FieldValues, PK extends number | string = number | string>(
   args: UseEntity<Entity, PK>,
 ) {
@@ -19,7 +27,7 @@ export function useEntity<Entity extends FieldValues = FieldValues, PK extends n
   const ep2 = action ? `${endpoint}${primaryKey}/${action}/` : ep;
 
   return useDrfQuery<Entity>({
-    queryKey: queryKey ? [queryKey, 'entity', `${primaryKey}`, action] : undefined,
+    queryKey: queryKey ? getEntityQueryKey(queryKey, primaryKey, action) : undefined,
     endpoint: ep2,
     ...rest,
   });

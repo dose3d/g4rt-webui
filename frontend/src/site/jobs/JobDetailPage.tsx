@@ -13,6 +13,9 @@ import { JobStatus, useJobDelete, useJobEntity, useJobKill, useJobOutputLogs } f
 import { formatDate, formatFileSize } from '../../utils/formatValues';
 import { CloseIcon, DeleteIcon, EditIcon } from '../../components/icons';
 import ActionButton from '../../components/ActionButton';
+import { useJobRootFileRender } from '../../api/jobsRootFile';
+import { useQueryClient } from '@tanstack/react-query';
+import { getEntityQueryKey } from '../../drf-crud-client/useEntity';
 
 function LabelValueHOutline({ children }: { children: React.ReactNode }) {
   return <section className="table w-auto">{children}</section>;
@@ -74,6 +77,26 @@ function JobButtons({ jobId, status }: { jobId: number; status: JobStatus }) {
   );
 }
 
+function RenderButton({ fileId, jobId }: { fileId: number; jobId: number }) {
+  const render = useJobRootFileRender(fileId);
+  const queryClient = useQueryClient();
+
+  return (
+    <ActionButton
+      className="btn-secondary btn-xs btn"
+      drf={render}
+      title="Generate .root file with visualization"
+      mutateOptions={{
+        onSuccess: () => {
+          queryClient.invalidateQueries(getEntityQueryKey('jobs', jobId)).then();
+        },
+      }}
+    >
+      Render
+    </ActionButton>
+  );
+}
+
 export default function JobDetailPage() {
   const { jobId } = useParams();
   // TODO: optimize refetchInterval and caching for done
@@ -116,11 +139,15 @@ export default function JobDetailPage() {
               {data?.root_files ? (
                 <ol className="list-inside list-decimal">
                   {data?.root_files.map((o, i) => (
-                    <li key={i}>
-                      {o.file_name} ({formatFileSize(o.size)}){', '}
-                      <Link to={`/jobs/${data.id}/root/${o.id}`}>open</Link>
-                      {', '}
-                      <a href={o.href}>download</a>
+                    <li key={i} className="mb-2">
+                      {o.file_name} ({formatFileSize(o.size)})
+                      <Link to={`/jobs/${data.id}/root/${o.id}`} className="btn-info btn-xs btn ml-2">
+                        open
+                      </Link>
+                      <a href={o.href} className="btn-warning btn-xs btn mx-2">
+                        download
+                      </a>
+                      <RenderButton jobId={data?.id} fileId={o.id} />
                     </li>
                   ))}
                 </ol>

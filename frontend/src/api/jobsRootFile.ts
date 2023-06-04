@@ -1,5 +1,5 @@
-import { useEntity, useQueryWrapper } from '../drf-crud-client';
-import { JobEntityListItem, JobRootFileEntity } from './jobs';
+import { useCreateUpdateDelete, useEntity, useQueryWrapper } from "../drf-crud-client";
+import { JobEntity, JobEntityListItem, JobRootFileEntity } from "./jobs";
 
 export interface JobRootFileDetail extends JobRootFileEntity {
   id: number;
@@ -19,11 +19,15 @@ export function useJobRootFileEntity(primaryKey: number, refetchInterval = 0) {
 }
 
 export function useJobRootFileDownload(primaryKey: number) {
-  return useQueryWrapper<string>({
+  return useQueryWrapper<ArrayBuffer>({
     endpoint: `/api/jrf/${primaryKey}/download/`,
     queryKey: ['jrf', primaryKey, 'download'],
     config: { responseType: 'arraybuffer' },
     cacheTime: 24 * 3600000,
     staleTime: 24 * 3600000,
   });
+}
+
+export function useJobRootFileRender(primaryKey: number) {
+  return useCreateUpdateDelete<JobEntity>({ ...JOB_ROOT_SETTINGS, primaryKey, action: 'render', method: 'POST' });
 }

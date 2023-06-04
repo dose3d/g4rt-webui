@@ -13,11 +13,11 @@ import {
 import { formatDate } from "../../utils/formatValues";
 import { draw, openFile } from "jsroot";
 
-async function LoadJsRoot(data: string) {
+async function LoadJsRoot(data: ArrayBuffer) {
   console.log(data);
   const file = await openFile(data);
   console.log(file.fKeys);
-  const obj = await file.readObject("StreamerInfo");
+  const obj = await file.readObject("WorldGeometry");
   console.log(obj);
   draw('drawing', obj, '');
 }
@@ -48,7 +48,7 @@ export default function JobRootDetailPage() {
           </CardHeader>
 
           <h3 className="mb-2 mt-4 font-bold">Details:</h3>
-          <div id="drawing" style={{ width: '800px', height: '600px' }}></div>
+          <div id="drawing" style={{ width: '100%' }}></div>
         </Card>
       </CardsContainer>
     </Margin>
