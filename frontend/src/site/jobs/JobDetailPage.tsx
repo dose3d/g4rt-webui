@@ -9,7 +9,7 @@ import {
   Margin,
   Page,
 } from '../../components/layout';
-import { JobStatus, useJobDelete, useJobEntity, useJobKill, useJobOutputLogs } from '../../api/jobs';
+import { JOB_STATUS_NAME, JobStatus, useJobDelete, useJobEntity, useJobKill, useJobOutputLogs } from '../../api/jobs';
 import { formatDate, formatFileSize } from '../../utils/formatValues';
 import { CloseIcon, DeleteIcon, DocumentIcon, EditIcon } from '../../components/icons';
 import ActionButton from '../../components/ActionButton';
@@ -129,7 +129,7 @@ export default function JobDetailPage() {
               </CardHeaderMain>
               <div className="inline-flex items-center p-2 text-sm font-medium">
                 <LabelValueHOutline>
-                  <LabelValueH label="Status:">{data?.status}</LabelValueH>
+                  <LabelValueH label="Status:">{data ? JOB_STATUS_NAME[data?.status] : ''}</LabelValueH>
                 </LabelValueHOutline>
               </div>
             </CardHeader>

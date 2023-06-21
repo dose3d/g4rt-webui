@@ -7,7 +7,7 @@ import {
   useQueryWrapper,
 } from '../drf-crud-client';
 
-export type JobStatus = 'queue' | 'running' | 'done';
+export type JobStatus = 'init' | 'queue' | 'running' | 'done';
 
 export interface JobEntityListItem {
   id: number;
@@ -86,3 +86,10 @@ export function useJobOutputLogs(primaryKey: number, refetchInterval = 1000) {
     staleTime: 24 * 3600000,
   });
 }
+
+export const JOB_STATUS_NAME: { [key in JobStatus]: string } = {
+  init: 'new',
+  queue: 'queue',
+  running: 'running',
+  done: 'done',
+};
