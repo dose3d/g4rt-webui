@@ -11,11 +11,13 @@ import {
 } from '../../components/layout';
 import { JobStatus, useJobDelete, useJobEntity, useJobKill, useJobOutputLogs } from '../../api/jobs';
 import { formatDate, formatFileSize } from '../../utils/formatValues';
-import { CloseIcon, DeleteIcon, EditIcon } from '../../components/icons';
+import { CloseIcon, DeleteIcon, DocumentIcon, EditIcon } from '../../components/icons';
 import ActionButton from '../../components/ActionButton';
 import { useJobRootFileRender } from '../../api/jobsRootFile';
 import { useQueryClient } from '@tanstack/react-query';
 import { getEntityQueryKey } from '../../drf-crud-client/useEntity';
+import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
+import { JobsPageBreadcrumbs } from './JobsPage';
 
 function LabelValueHOutline({ children }: { children: React.ReactNode }) {
   return <section className="table w-auto">{children}</section>;
@@ -97,6 +99,16 @@ function RenderButton({ fileId, jobId }: { fileId: number; jobId: number }) {
   );
 }
 
+export const JobDetailPageBreadcrumbs = (id: number | undefined) =>
+  [
+    ...JobsPageBreadcrumbs,
+    {
+      icon: <DocumentIcon className={BreadcrumbsIconClass} />,
+      label: `Job #${id}`,
+      to: `/jobs/${id}`,
+    },
+  ] as Breadcrumb[];
+
 export default function JobDetailPage() {
   const { jobId } = useParams();
   // TODO: optimize refetchInterval and caching for done
@@ -109,6 +121,7 @@ export default function JobDetailPage() {
           <Card>
             <CardHeader>
               <CardHeaderMain>
+                <Breadcrumbs breadcrumbs={JobDetailPageBreadcrumbs(data?.id)} />
                 <CardHeaderTitle>{`#${data?.id}: ${data?.title}`}</CardHeaderTitle>
                 <div className="text-xs font-bold text-gray-500">
                   Created: {formatDate(data?.created_at)}, updated: {formatDate(data?.updated_at)}

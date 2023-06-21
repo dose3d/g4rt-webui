@@ -15,6 +15,18 @@ import {
 import { CTextArea, CTextInput } from '../../components/forms';
 import { useNavigate } from 'react-router-dom';
 import { useFormatErrorToString } from '../../drf-crud-client';
+import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
+import { JobsPageBreadcrumbs } from './JobsPage';
+import { DocumentPlusIcon } from '../../components/icons';
+
+const JobCreatePageBreadcrumbs: Breadcrumb[] = [
+  ...JobsPageBreadcrumbs,
+  {
+    icon: <DocumentPlusIcon className={BreadcrumbsIconClass} />,
+    label: 'New job',
+    to: '/jobs/create',
+  },
+];
 
 export default function JobCreatePage() {
   const navigate = useNavigate();
@@ -35,6 +47,7 @@ export default function JobCreatePage() {
           <Card>
             <CardHeader>
               <CardHeaderMain>
+                <Breadcrumbs breadcrumbs={JobCreatePageBreadcrumbs} />
                 <CardHeaderTitle>Create a new job</CardHeaderTitle>
                 <CardHeaderSubTitle>
                   After create, the new job will be added to queue. You can remove job from queue or break pending job.

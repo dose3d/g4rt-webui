@@ -12,6 +12,9 @@ import {
 } from '../../components/layout';
 import { formatDate } from '../../utils/formatValues';
 import { draw, openFile } from 'jsroot';
+import { DocumentIcon } from '../../components/icons';
+import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
+import { JobDetailPageBreadcrumbs } from '../jobs/JobDetailPage';
 
 interface FKey {
   fClassName: string;
@@ -23,6 +26,20 @@ interface TFile {
   fKeys: FKey[];
   readObject: (fName: string) => Promise<any>;
 }
+
+const JobRootDetailPageBreadcrumbs = (
+  jobId: number | undefined,
+  rootId: number | undefined,
+  name: string | undefined,
+) =>
+  [
+    ...JobDetailPageBreadcrumbs(jobId),
+    {
+      icon: <DocumentIcon className={BreadcrumbsIconClass} />,
+      label: name,
+      to: `/jobs/${jobId}/root/${rootId}`,
+    },
+  ] as Breadcrumb[];
 
 export default function JobRootDetailPage() {
   const { fileId } = useParams();
@@ -49,6 +66,7 @@ export default function JobRootDetailPage() {
           <Card>
             <CardHeader>
               <CardHeaderMain>
+                <Breadcrumbs breadcrumbs={JobRootDetailPageBreadcrumbs(data?.job.id, data?.id, data?.file_name)} />
                 <CardHeaderTitle>{`#${data?.id}: ${data?.file_name}`}</CardHeaderTitle>
                 <div className="text-xs font-bold text-gray-500">
                   Job: {`#${data?.job.id}: ${data?.job.title}`}, Date: {formatDate(data?.job.updated_at)}

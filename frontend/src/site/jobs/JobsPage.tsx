@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ErrorAlert, Page, PageHeader, Title } from '../../components/layout';
-import { AddIcon } from '../../components/icons';
+import { AddIcon, RocketLaunchIcon } from '../../components/icons';
 import JobsTable from '../../components/JobsTable';
 import Pagination from '../../components/Pagination';
 import { useJobList } from '../../api/jobs';
 import { useFormatErrorToString } from '../../drf-crud-client';
+import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
+
+export const JobsPageBreadcrumbs: Breadcrumb[] = [
+  { icon: <RocketLaunchIcon className={BreadcrumbsIconClass} />, label: 'Jobs', to: '/jobs' },
+];
 
 export default function JobsPage() {
   const [pageSize, setPageSize] = useState(10);
@@ -15,6 +20,7 @@ export default function JobsPage() {
   return (
     <Page>
       <PageHeader>
+        <Breadcrumbs breadcrumbs={JobsPageBreadcrumbs} />
         <Title>List of jobs</Title>
         {!!lastError && <ErrorAlert className="my-4">{formatErrorToString(lastError)}</ErrorAlert>}
 
