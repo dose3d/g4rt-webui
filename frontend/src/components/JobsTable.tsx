@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { JobEntityListItem } from '../api/jobs';
-import { EditIcon } from './icons';
+import { ArrowTopRightOnSquareIcon } from './icons';
 import { Content } from './layout';
 import { formatDate } from '../utils/formatValues';
 
@@ -51,7 +51,7 @@ function TableRow({ job: { id, title, description, status, updated_at, created_a
       <td className="whitespace-nowrap p-4 text-center text-sm font-normal text-gray-900">{formatDate(updated_at)}</td>
       <td className="space-x-2 whitespace-nowrap p-4 text-center">
         <Link to={`/jobs/${id}`} data-modal-toggle="product-modal" className="btn-ghost btn">
-          <EditIcon />
+          <ArrowTopRightOnSquareIcon />
         </Link>
       </td>
     </tr>
