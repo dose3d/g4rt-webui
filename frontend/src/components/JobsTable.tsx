@@ -52,7 +52,7 @@ function TableRow({ job: { id, title, description, status, updated_at, created_a
       <td className="whitespace-nowrap p-4 text-center text-sm font-normal text-gray-900">{formatDate(created_at)}</td>
       <td className="whitespace-nowrap p-4 text-center text-sm font-normal text-gray-900">{formatDate(updated_at)}</td>
       <td className="space-x-2 whitespace-nowrap p-4 text-center">
-        <Link to={`/jobs/${id}`} data-modal-toggle="product-modal" className="btn-ghost btn">
+        <Link to={`/jobs/${id}`} data-modal-toggle="product-modal" className="btn-ghost btn h-12">
           <ArrowTopRightOnSquareIcon />
         </Link>
       </td>
@@ -60,12 +60,38 @@ function TableRow({ job: { id, title, description, status, updated_at, created_a
   );
 }
 
+function TableEmptyRows({ count }: { count: number }) {
+  if (!count) {
+    return null;
+  }
+
+  const rows = Array.from(Array(count).keys());
+
+  return (
+    <>
+      {rows.map((o, i) => (
+        <tr className="hover:bg-gray-100" key={i}>
+          <td className="whitespace-nowrap p-4 text-right text-base font-medium text-gray-900"></td>
+          <td className="whitespace-nowrap p-4 text-sm font-normal text-gray-500"></td>
+          <td className="whitespace-nowrap p-4 text-center text-base font-medium text-gray-900"></td>
+          <td className="whitespace-nowrap p-4 text-center text-sm font-normal text-gray-900"></td>
+          <td className="whitespace-nowrap p-4 text-center text-sm font-normal text-gray-900"></td>
+          <td className="space-x-2 whitespace-nowrap p-4 text-center">
+            <div className="h-12" />
+          </td>
+        </tr>
+      ))}
+    </>
+  );
+}
+
 interface Props {
   jobs: JobEntityListItem[] | undefined;
   isLoading: boolean;
+  pageSize: number;
 }
 
-function JobsTable({ jobs }: Props) {
+function JobsTable({ jobs, pageSize }: Props) {
   return (
     <Content>
       <table className="w-full table-fixed divide-y divide-gray-200">
@@ -74,6 +100,7 @@ function JobsTable({ jobs }: Props) {
           {(jobs || []).map((o, i) => (
             <TableRow key={i} job={o} />
           ))}
+          <TableEmptyRows count={pageSize - (jobs || []).length} />
         </tbody>
       </table>
     </Content>

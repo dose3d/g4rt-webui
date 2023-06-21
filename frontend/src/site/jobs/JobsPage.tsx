@@ -68,7 +68,7 @@ export default function JobsPage() {
             </CardHeader>
             {!!data && (
               <>
-                <JobsTable isLoading={isLoading} jobs={data?.results} />
+                <JobsTable isLoading={isLoading} jobs={data?.results} pageSize={pageSize} />
                 <Pagination controller={controller} pageSize={pageSize} setPageSize={setPageSize} />
               </>
             )}
