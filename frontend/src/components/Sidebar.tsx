@@ -46,13 +46,7 @@ const Sidebar = ({ toggle, onToggle }: Props) => {
               <h3 className="pb-2 pt-4 text-base font-bold text-gray-500">Simulation</h3>
               <ul className="space-y-2 pb-2">
                 <li>
-                  <NavLink to="/jobs/create" label="Define">
-                    <DocumentPlusIcon />
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink to="/jobs/" label="Run">
+                  <NavLink to="/jobs/" label="Jobs">
                     <RocketLaunchIcon />
                   </NavLink>
                 </li>
