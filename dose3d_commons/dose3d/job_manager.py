@@ -84,6 +84,13 @@ class JobManager:
             ready_file = self.get_ready_file()
             write_all_to_file(ready_file, "go")
 
+    def dequeue(self):
+        """Rollback of flush new hob to QUEUE dir"""
+        if self.status != QUEUE:
+            raise Dose3DException('Job %s must be in QUEUE state, not in %s' % (self.job_id, self.status))
+        os.remove(self.get_ready_file())
+        self.status = INIT
+
     def move_from_queue_to_running(self):
         """Move Job from QUEUE to RUNNING"""
 
