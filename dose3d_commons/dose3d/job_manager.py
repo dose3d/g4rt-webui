@@ -72,16 +72,17 @@ class JobManager:
         else:
             raise Dose3DException('Job %s not found' % self.job_id)
 
-    def flush_to_queue(self, args, toml):
+    def flush_to_queue(self, args, toml, ready):
         """Flush new job to QUEUE dir"""
         self.status = QUEUE
         toml_file = self.get_toml_file()
         args_file = self.get_args_file()
-        ready_file = self.get_ready_file()
 
         write_all_to_file(toml_file, toml)
         write_all_to_file(args_file, args)
-        write_all_to_file(ready_file, "go")
+        if ready:
+            ready_file = self.get_ready_file()
+            write_all_to_file(ready_file, "go")
 
     def move_from_queue_to_running(self):
         """Move Job from QUEUE to RUNNING"""
