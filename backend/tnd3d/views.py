@@ -53,7 +53,7 @@ class JobViewSet(VariousSerializersViewSet):
         if obj.status != RUNNING:
             raise ValidationError(_('Job must be in RUNNING state'))
         obj.get_runners_job().kill()
-        return Response({})
+        return self.retrieve(request)
 
     @action(detail=True, methods=['get'])
     def logs(self, request):
