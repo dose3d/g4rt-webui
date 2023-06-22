@@ -213,8 +213,17 @@ export default function JobDetailPage() {
                 <ol className="list-inside list-decimal">
                   {data?.logs_files.map((o, i) => (
                     <li key={i}>
-                      <a href={o.href}>
-                        {o.file_name} ({formatFileSize(o.size)})
+                      {o.file_name} ({formatFileSize(o.size)})
+                      <a
+                        href={`${o.href}?plain=text`}
+                        className="btn-info btn-xs btn ml-2"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        open
+                      </a>
+                      <a href={o.href} className="btn-warning btn-xs btn mx-2">
+                        download
                       </a>
                     </li>
                   ))}

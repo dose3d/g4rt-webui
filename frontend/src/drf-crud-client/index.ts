@@ -15,7 +15,7 @@
  *    - provide lastError, cleared after response with success instead new fetching.
  *    (I'm don't known why TanStack Query not handle it)
  *    Please use for any queries for backend for authenticated users.
- * 2. TODO
+ * 2.
  */
 
 import { DrfI18nResourceEn } from './i18n_en';
