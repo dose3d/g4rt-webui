@@ -3,10 +3,7 @@ import os
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from dose3d import JobsManager, QUEUE, RUNNING, DONE, Dose3DException
-
-
-INIT = 'init'
+from dose3d import JobsManager, INIT, QUEUE, RUNNING, DONE, Dose3DException
 
 
 class Job(models.Model):
@@ -35,15 +32,32 @@ class Job(models.Model):
         jm = JobsManager(settings.CONFIG_FILE)
         return jm.get_job(str(self.id), update_state)
 
-    def flush_job_to_queue(self):
+    def init_job(self):
         job = self.get_runners_job(False)
 
         if self.status == INIT:
-            job.flush_to_queue(self.args, self.toml)
+            job.flush_to_queue(self.args, self.toml, False)
+        else:
+            raise Dose3DException('Job must be in INIT state, not in %s' % self.status)
+
+    def flush_job_to_queue(self):
+        job = self.get_runners_job()
+
+        if self.status == INIT:
+            job.flush_to_queue(self.args, self.toml, True)
             self.status = QUEUE
             self.save()
         else:
             raise Dose3DException('Job must be in INIT state, not in %s' % self.status)
+
+    def remove_from_queue(self):
+        job = self.get_runners_job()
+        if self.status == QUEUE:
+            job.dequeue()
+            self.status = INIT
+            self.save()
+        else:
+            raise Dose3DException('Job must be in QUEUE state, not in %s' % self.status)
 
     def sync_status(self, force=False):
         old_status = self.status
@@ -55,7 +69,8 @@ class Job(models.Model):
             self.ret_code = job.get_ret_code()
             self.save()
         if force or self.status == DONE:
-            self.reload_files()
+            if self.status != INIT and self.status != QUEUE:
+                self.reload_files()
 
     def reload_files(self):
         self.reload_root_files()

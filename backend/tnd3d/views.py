@@ -8,7 +8,7 @@ from rest_framework.response import Response
 
 from commons.views import CustomPageNumberPagination, VariousSerializersViewSet
 from tnd3d.download import download_file
-from tnd3d.models import Job, JobRootFile
+from tnd3d.models import Job, JobRootFile, INIT
 from tnd3d.serializer import JobSerializer, JobSerializerPending, JobRootFileSerializer, \
     JobListSerializer, JobRootFileDetailSerializer
 from django.utils.translation import gettext_lazy as _
@@ -39,13 +39,30 @@ class JobViewSet(VariousSerializersViewSet):
 
     def perform_create(self, serializer):
         job = serializer.save()
-        job.flush_job_to_queue()
+        job.init_job()
 
     def perform_destroy(self, instance):
         if instance.status == RUNNING:
             raise ValidationError(_('Running jobs can not be deleted'))
         instance.get_runners_job().purge()
         super().perform_destroy(instance)
+
+    @action(detail=True, methods=['put'])
+    def run(self, request, pk=None):
+        obj = self.get_object()
+        if obj.status != INIT:
+            raise ValidationError(_('Job must be in INIT state'))
+        obj.flush_job_to_queue()
+        obj.save()
+        return self.retrieve(request)
+
+    @action(detail=True, methods=['put'])
+    def remove_from_queue(self, request, pk=None):
+        obj = self.get_object()
+        if obj.status != QUEUE:
+            raise ValidationError(_('Job must be in QUEUE state'))
+        obj.remove_from_queue()
+        return self.retrieve(request)
 
     @action(detail=True, methods=['put'])
     def kill(self, request, pk=None):
