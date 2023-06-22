@@ -3,7 +3,7 @@ import pathlib
 import psutil
 
 from dose3d.dose3d_error import Dose3DException
-from dose3d.job_manager import JobManager, QUEUE, RUNNING, DONE
+from dose3d.job_manager import JobManager, INIT, QUEUE, RUNNING, DONE
 from dose3d.utils import get_files_by_date, get_dirs
 
 
@@ -66,6 +66,8 @@ class JobsManager:
 
     def get_path_for_status(self, status):
         """Get path for Jobs by status"""
+        if status == INIT:
+            return self.QUEUE_DIR
         if status == QUEUE:
             return self.QUEUE_DIR
         if status == RUNNING:

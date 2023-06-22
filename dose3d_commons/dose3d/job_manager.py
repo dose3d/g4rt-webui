@@ -6,6 +6,7 @@ import psutil
 from dose3d.dose3d_error import Dose3DException
 from dose3d.utils import write_all_to_file, load_int_from_file, load_all_from_file, get_files_by_date
 
+INIT = "init"
 QUEUE = "queue"
 RUNNING = "running"
 DONE = "done"
@@ -31,7 +32,7 @@ class JobManager:
         if for_status is None:
             for_status = self.status
         path = self.jm.get_path_for_status(for_status)
-        if for_status != QUEUE:
+        if for_status not in [INIT, QUEUE]:
             return os.path.join(path, self.job_id)
         return path
 
@@ -66,8 +67,8 @@ class JobManager:
         elif os.path.exists(self.get_job_path(RUNNING)):
             self.status = RUNNING
         elif os.path.exists(self.get_toml_file(QUEUE)):
-            self.status = QUEUE
             self.ready = os.path.exists(self.get_ready_file())
+            self.status = QUEUE if self.ready else INIT
         else:
             raise Dose3DException('Job %s not found' % self.job_id)
 
@@ -201,8 +202,11 @@ class JobManager:
 
     def purge(self):
         """Remove jobs files"""
-        if self.status == QUEUE:
-            os.remove(self.get_ready_file())
+        if self.status in [INIT, QUEUE]:
+            try:
+                os.remove(self.get_ready_file())
+            except FileNotFoundError:
+                pass
             os.remove(self.get_toml_file())
             os.remove(self.get_args_file())
         else:
