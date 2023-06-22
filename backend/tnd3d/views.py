@@ -78,7 +78,7 @@ class JobViewSet(VariousSerializersViewSet):
         obj = self.get_object()
         job = obj.get_runners_job()
         fn = job.get_log_file()
-        return download_file(fn, None, 'text/plain; charset=UTF-8')
+        return download_file(fn, None, 'text/plain; charset=UTF-8', True)
 
     @action(detail=True, methods=['get'])
     def output(self, request, pk=None):
@@ -86,7 +86,7 @@ class JobViewSet(VariousSerializersViewSet):
         obj = self.get_object()
         job = obj.get_runners_job()
         fn = job.get_log_file()
-        return download_file(fn, None, 'text/plain; charset=UTF-8')
+        return download_file(fn, None, 'text/plain; charset=UTF-8', False)
 
 
 class JobRootFileViewSet(viewsets.ReadOnlyModelViewSet):
@@ -109,7 +109,7 @@ class JobRootFileViewSet(viewsets.ReadOnlyModelViewSet):
         f = self.get_object()
         job = f.job.get_runner_job()
         fn = os.path.join(job.get_job_path(), f.file_name)
-        return download_file(fn, f.file_name, 'application/octet-stream')
+        return download_file(fn, f.file_name, 'application/octet-stream', False)
 
 
 class JobRootFileDetailViewSet(viewsets.ReadOnlyModelViewSet):
@@ -121,7 +121,7 @@ class JobRootFileDetailViewSet(viewsets.ReadOnlyModelViewSet):
         f = self.get_object()
         job = f.job.get_runners_job()
         fn = os.path.join(job.get_job_path(), f.file_name)
-        return download_file(fn, f.file_name, 'application/octet-stream')
+        return download_file(fn, f.file_name, 'application/octet-stream', False)
 
     @action(detail=True, methods=['post'])
     def render(self, request, pk=None):
