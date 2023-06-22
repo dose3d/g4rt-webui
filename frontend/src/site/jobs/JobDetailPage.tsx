@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   Card,
@@ -20,7 +20,7 @@ import {
   useJobRun,
 } from '../../api/jobs';
 import { formatDate, formatFileSize } from '../../utils/formatValues';
-import { CloseIcon, DeleteIcon, DocumentIcon, EditIcon, PlayIcon } from '../../components/icons';
+import { CloseIcon, DeleteIcon, DocumentIcon, EditIcon, PauseIcon, PlayIcon } from "../../components/icons";
 import ActionButton from '../../components/ActionButton';
 import { useJobRootFileRender } from '../../api/jobsRootFile';
 import { useQueryClient } from '@tanstack/react-query';
@@ -65,21 +65,14 @@ function JobButtons({ jobId, status }: { jobId: number; status: JobStatus }) {
         <span className="ml-2"> Run</span>
       </ActionButton>
       <ActionButton
-        className="btn-success btn-sm btn"
+        className="btn-warning btn-sm btn"
         drf={rfkAction}
         disabled={status != 'queue'}
-        icon={<PlayIcon className="h-5 w-5" />}
+        icon={<PauseIcon className="h-5 w-5" />}
         title="Remove from queue"
       >
         <span className="ml-2"> Dequeue</span>
       </ActionButton>
-      <button
-        className="btn-warning btn-sm btn"
-        title="Create new job using settings from this job. Not implemented yet."
-        disabled
-      >
-        <PlayIcon className="mr-2 h-5 w-5" /> Run
-      </button>
       <button
         className="btn-warning btn-sm btn"
         title="Create new job using settings from this job. Not implemented yet."
@@ -147,8 +140,17 @@ export const JobDetailPageBreadcrumbs = (id: number | undefined) =>
 
 export default function JobDetailPage() {
   const { jobId } = useParams();
-  // TODO: optimize refetchInterval and caching for done
-  const { data } = useJobEntity(parseInt(`${jobId}`));
+  const [refetchInterval, setRefetchInterval] = useState(10000);
+
+  const { data } = useJobEntity(parseInt(`${jobId}`), refetchInterval);
+
+  useEffect(() => {
+    if (data?.status === 'queue') {
+      setRefetchInterval(1000);
+    } else {
+      setRefetchInterval(10000);
+    }
+  }, [data]);
 
   return (
     <Page>
