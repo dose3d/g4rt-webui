@@ -177,13 +177,15 @@ export default function JobDetailPage() {
               <LabelValueHOutline>
                 <LabelValueH label="Status:">{data?.status}</LabelValueH>
                 <LabelValueH label="Return code:">{data?.ret_code}</LabelValueH>
+                <LabelValueH label="Created:">{formatDate(data?.created_at)}</LabelValueH>
+                <LabelValueH label="Updated:">{formatDate(data?.updated_at)}</LabelValueH>
               </LabelValueHOutline>
             </div>
 
             <h3 className="mb-2 mt-4 font-bold">Description:</h3>
             <div className="ml-4 whitespace-pre-line text-base font-normal text-gray-500">{data?.description}</div>
 
-            <h3 className="mb-2 mt-4 font-bold">Results:</h3>
+            <h3 className="mb-2 mt-4 font-bold">Output:</h3>
             <div className="ml-4">
               {data?.root_files ? (
                 <ol className="list-inside list-decimal">
