@@ -37,7 +37,7 @@ def download_root_file(identify):
     jrf = get_object_or_404(JobRootFile, pk=identify)
     job = jrf.job
     fn = os.path.join(job.get_runners_job().get_job_path(), jrf.file_name)
-    return download_file(fn, jrf.file_name, 'application/octet-stream')
+    return download_file(fn, jrf.file_name, 'application/octet-stream', False)
 
 
 def download_logs_file(identify, plain):
