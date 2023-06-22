@@ -3,6 +3,7 @@ import { ActionOptions, EntityOptions, ModelOptions } from './types';
 import { useDrfMutation, UseDrfMutation } from './useDrfMutation';
 import { useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import { getEntityQueryKey } from './utils';
 
 export type UseCreateUpdateDelete<
   Request extends FieldValues = FieldValues,
@@ -14,6 +15,10 @@ export type UseCreateUpdateDelete<
   Partial<EntityOptions<PK>> &
   Partial<ActionOptions>;
 
+/**
+ * Hook for write entity and update cache when success (or invalidate when delete).
+ * @param params
+ */
 export function useCreateUpdateDelete<
   Request extends FieldValues = FieldValues,
   PK extends number | string = number | string,
@@ -30,9 +35,9 @@ export function useCreateUpdateDelete<
     (data: Response, values: Request, context?: TContext) => {
       if (queryKey) {
         if (data) {
-          queryClient.setQueryData([queryKey, 'entity', primaryKey || data.id], data);
+          queryClient.setQueryData(getEntityQueryKey(queryKey, primaryKey || data.id), data);
         } else if (primaryKey) {
-          queryClient.invalidateQueries({ queryKey: [queryKey, 'entity', primaryKey] }).then();
+          queryClient.invalidateQueries({ queryKey: getEntityQueryKey(queryKey, primaryKey) }).then();
         } else {
           queryClient.invalidateQueries({ queryKey: [queryKey] }).then();
         }
