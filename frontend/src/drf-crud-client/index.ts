@@ -31,6 +31,7 @@ import { JwtAuthContext, JwtAuthProvider } from './JwtAuthContext';
 import { useSimpleJwtForm } from './useSimpleJwtForm';
 import { useSimpleJwtAxios } from './useSimpleJwtAxios';
 import { useQueryWrapper } from './useQueryWrapper';
+import { getEntityQueryKey } from './utils';
 
 export type { DrfError, PaginationController, UseFormCreateUpdate };
 export {
@@ -49,4 +50,5 @@ export {
   useSimpleJwtForm,
   useSimpleJwtAxios,
   useQueryWrapper,
+  getEntityQueryKey,
 };

@@ -77,6 +77,14 @@ export function useJobKill(primaryKey: number) {
   return useCreateUpdateDelete<JobEntity>({ ...JOB_SETTINGS, primaryKey, action: 'kill', method: 'PUT' });
 }
 
+export function useJobRun(primaryKey: number) {
+  return useCreateUpdateDelete<JobEntity>({ ...JOB_SETTINGS, primaryKey, action: 'run', method: 'PUT' });
+}
+
+export function useJobRemoveFromQueue(primaryKey: number) {
+  return useCreateUpdateDelete<JobEntity>({ ...JOB_SETTINGS, primaryKey, action: 'remove_from_queue', method: 'PUT' });
+}
+
 export function useJobOutputLogs(primaryKey: number, refetchInterval = 1000) {
   return useQueryWrapper<string>({
     endpoint: `/api/jobs/${primaryKey}/output/`,

@@ -9,15 +9,24 @@ import {
   Margin,
   Page,
 } from '../../components/layout';
-import { JOB_STATUS_NAME, JobStatus, useJobDelete, useJobEntity, useJobKill, useJobOutputLogs } from '../../api/jobs';
+import {
+  JOB_STATUS_NAME,
+  JobStatus,
+  useJobDelete,
+  useJobEntity,
+  useJobKill,
+  useJobOutputLogs,
+  useJobRemoveFromQueue,
+  useJobRun,
+} from '../../api/jobs';
 import { formatDate, formatFileSize } from '../../utils/formatValues';
-import { CloseIcon, DeleteIcon, DocumentIcon, EditIcon } from '../../components/icons';
+import { CloseIcon, DeleteIcon, DocumentIcon, EditIcon, PlayIcon } from '../../components/icons';
 import ActionButton from '../../components/ActionButton';
 import { useJobRootFileRender } from '../../api/jobsRootFile';
 import { useQueryClient } from '@tanstack/react-query';
-import { getEntityQueryKey } from '../../drf-crud-client/useEntity';
 import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
 import { JobsPageBreadcrumbs } from './JobsPage';
+import { getEntityQueryKey } from '../../drf-crud-client';
 
 function LabelValueHOutline({ children }: { children: React.ReactNode }) {
   return <section className="table w-auto">{children}</section>;
@@ -38,12 +47,39 @@ function LogsAutoRefresh({ id, interval }: { id: number; interval: number }) {
 }
 
 function JobButtons({ jobId, status }: { jobId: number; status: JobStatus }) {
-  const deleteAction = useJobDelete(jobId);
   const killAction = useJobKill(jobId);
+  const deleteAction = useJobDelete(jobId);
+  const runAction = useJobRun(jobId);
+  const rfkAction = useJobRemoveFromQueue(jobId);
   const navigate = useNavigate();
 
   return (
     <div className="flex gap-4">
+      <ActionButton
+        className="btn-success btn-sm btn"
+        drf={runAction}
+        disabled={status != 'init'}
+        icon={<PlayIcon className="h-5 w-5" />}
+        title="Run immediatelly or add to queue"
+      >
+        <span className="ml-2"> Run</span>
+      </ActionButton>
+      <ActionButton
+        className="btn-success btn-sm btn"
+        drf={rfkAction}
+        disabled={status != 'queue'}
+        icon={<PlayIcon className="h-5 w-5" />}
+        title="Remove from queue"
+      >
+        <span className="ml-2"> Dequeue</span>
+      </ActionButton>
+      <button
+        className="btn-warning btn-sm btn"
+        title="Create new job using settings from this job. Not implemented yet."
+        disabled
+      >
+        <PlayIcon className="mr-2 h-5 w-5" /> Run
+      </button>
       <button
         className="btn-warning btn-sm btn"
         title="Create new job using settings from this job. Not implemented yet."
@@ -201,7 +237,12 @@ export default function JobDetailPage() {
             <h3 className="mb-2 mt-4 font-bold">Run output:</h3>
             <div className="ml-4">
               <pre className="border-2 border-gray-200 bg-gray-100 p-2">
-                {data && <LogsAutoRefresh id={data?.id} interval={data?.status == 'running' ? 1000 : 0} />}
+                {data &&
+                  (data.status == 'running' ? (
+                    <LogsAutoRefresh id={data.id} interval={1000} />
+                  ) : (
+                    data.status == 'done' && <LogsAutoRefresh id={data.id} interval={0} />
+                  ))}
               </pre>
             </div>
           </Card>
