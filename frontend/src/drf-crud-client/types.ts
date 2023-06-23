@@ -22,20 +22,71 @@ export interface MutationOptions<
   endpoint: string;
 }
 
+/**
+ * REST API general options
+ */
+export interface ApiOptions {
+  /**
+   * Prefix for REST API endpoint.
+   *
+   * @see buildEndpoint
+   */
+  api: string;
+}
+
+/**
+ * REST API resource options
+ */
+export interface ResourceOptions {
+  /**
+   * Resource name in REST API requests.
+   *
+   * @see buildEndpoint
+   */
+  resource: string;
+
+  /**
+   * Part of queryKey in useQuery cache.
+   * If not provided the resource value will be used.
+   */
+  resourceQK?: string;
+}
+
+/**
+ * REST API single entity options.
+ *
+ * @template PK type of entity unique identifier (primary key)
+ */
+export interface EntityOptions<PK extends number | string = number | string> {
+  /**
+   * Unique identifier of entity.
+   *
+   * @see buildEndpoint
+   */
+  primaryKey: PK;
+
+  /**
+   * Unique identifier used as a part of queryKey in useQuery cache.
+   * If not provided the primaryKey value will be used.
+   */
+  primaryKeyQK?: PK;
+}
+
+export interface ActionOptions {
+  /**
+   * Action endpoint for resource or entity.
+   *
+   * @see buildEndpoint
+   */
+  action: string;
+}
+
 export interface ModelOptions {
   queryKey: string;
 }
 
 export interface ChangeOptions {
   method: Method;
-}
-
-export interface ActionOptions {
-  action: string;
-}
-
-export interface EntityOptions<PK extends number | string = number | string> {
-  primaryKey: PK;
 }
 
 export interface PaginatedOptions {

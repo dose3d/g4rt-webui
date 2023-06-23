@@ -21,7 +21,6 @@
 import { DrfI18nResourceEn } from './i18n_en';
 import { PaginationController } from './usePaginationController';
 import { DrfError, formatErrorToString, loadErrorsToRFH, useFormatErrorToString } from './errors';
-import { useEntity } from './useEntity';
 import { usePaginated } from './usePaginated';
 import { UseFormCreateUpdate, useFormCreateUpdate } from './useFormCreateUpdate';
 import { useRFHIntegration } from './useRFHIntegration';
@@ -32,6 +31,7 @@ import { useSimpleJwtForm } from './useSimpleJwtForm';
 import { useSimpleJwtAxios } from './useSimpleJwtAxios';
 import { useQueryWrapper } from './useQueryWrapper';
 import { getEntityQueryKey } from './utils';
+import { useDrfEntity } from './useDrfEntity';
 
 export type { DrfError, PaginationController, UseFormCreateUpdate };
 export {
@@ -39,7 +39,6 @@ export {
   formatErrorToString,
   loadErrorsToRFH,
   useFormatErrorToString,
-  useEntity,
   usePaginated,
   useRFHIntegration,
   useFormCreateUpdate,
@@ -51,4 +50,5 @@ export {
   useSimpleJwtAxios,
   useQueryWrapper,
   getEntityQueryKey,
+  useDrfEntity,
 };

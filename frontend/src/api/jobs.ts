@@ -2,9 +2,9 @@ import {
   usePaginated,
   UseFormCreateUpdate,
   useFormCreateUpdate,
-  useEntity,
   useCreateUpdateDelete,
   useQueryWrapper,
+  useDrfEntity,
 } from '../drf-crud-client';
 
 export type JobStatus = 'init' | 'queue' | 'running' | 'done';
@@ -48,6 +48,11 @@ const JOB_SETTINGS = {
   queryKey: 'jobs',
 };
 
+const JOB_ENDPOINT = {
+  api: '/api/',
+  resource: 'jobs',
+};
+
 export function useJobCreateUpdate(
   params: Omit<UseFormCreateUpdate<JobEntity, number>, 'endpoint' | 'queryKey' | 'axiosInstance'>,
 ) {
@@ -66,7 +71,7 @@ export function useJobList(pageSize = 10, refetchInterval = 10000) {
 }
 
 export function useJobEntity(primaryKey: number, refetchInterval = 10000) {
-  return useEntity<JobEntity>({ ...JOB_SETTINGS, primaryKey, refetchInterval });
+  return useDrfEntity<JobEntity>({ ...JOB_ENDPOINT, primaryKey, refetchInterval });
 }
 
 export function useJobDelete(primaryKey: number) {

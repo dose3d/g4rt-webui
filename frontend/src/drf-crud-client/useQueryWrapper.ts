@@ -61,6 +61,8 @@ export type UseQueryWrapperResult<TData = unknown, WrappedError = unknown> = Use
 /**
  * Wrapper for useQuery from TanStack Query.
  *
+ * Dedicated for fetch universal GET requests.
+ *
  * Implements queryFn for making fetches by axios.get(endpoint, config).
  * Stores error response in lastError and clean after success of fetch instead before starte new fetch.
  *
@@ -70,6 +72,10 @@ export type UseQueryWrapperResult<TData = unknown, WrappedError = unknown> = Use
  *
  * All params without queryFn are passed directly to useQuery and axios.get(endpoint, config).
  * Return of useQuery are passed directly with lastError inclusion.
+ *
+ * Example: GET /api/v1/hello
+ *
+ * const { data } = useQueryWrapper({endpoint: '/api/v1/hello'});
  *
  * @param params @see UseQueryWrapper
  * @return @see UseQueryWrapperResult
