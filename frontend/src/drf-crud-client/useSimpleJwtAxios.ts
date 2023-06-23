@@ -1,3 +1,7 @@
+/**
+ * TODO: move building of axiosInstance to JwtAuthContext
+ * TODO: return naked default axiosInstance when component is not wrapped by JwtAuthContext context provider
+ */
 import { useContext } from 'react';
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';

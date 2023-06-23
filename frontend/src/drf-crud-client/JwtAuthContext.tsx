@@ -1,3 +1,6 @@
+/**
+ * TODO: move axiosInstance build function to context provider
+ */
 import React, { createContext, useState, useEffect } from 'react';
 import jwt_decode from 'jwt-decode';
 import { JwtBearerToken, JwtTokens } from './types';
