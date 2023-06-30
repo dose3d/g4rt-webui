@@ -90,8 +90,8 @@ export interface ChangeOptions {
 }
 
 export interface PaginatedOptions {
+  page?: number;
   pageSize?: number;
-  initialPage?: number;
 }
 
 export interface JwtBearerToken {

@@ -1,10 +1,10 @@
 import {
-  usePaginated,
   UseFormCreateUpdate,
   useFormCreateUpdate,
   useCreateUpdateDelete,
   useQueryWrapper,
   useDrfEntity,
+  useDrfPaginatedControlled,
 } from '../drf-crud-client';
 
 export type JobStatus = 'init' | 'queue' | 'running' | 'done';
@@ -63,8 +63,8 @@ export function useJobCreateUpdate(
 }
 
 export function useJobList(pageSize = 10, refetchInterval = 10000) {
-  return usePaginated<JobEntityListItem>({
-    ...JOB_SETTINGS,
+  return useDrfPaginatedControlled<JobEntityListItem>({
+    ...JOB_ENDPOINT,
     refetchInterval,
     pageSize,
   });

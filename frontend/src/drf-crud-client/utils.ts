@@ -64,7 +64,7 @@ export function buildEndpoint<PK extends number | string = number | string>(
  * @param resourceQK part of queryKey identifies resource
  * @param primaryKeyQK (optional) part of queryKey identifies single entity
  */
-export function buildQueryKey<PK extends number | string = number | string>(resourceQK: string, primaryKeyQK: PK) {
+export function buildQueryKey<PK extends number | string = number | string>(resourceQK: string, primaryKeyQK?: PK) {
   if (primaryKeyQK === undefined) {
     return [resourceQK, 'list'];
   }

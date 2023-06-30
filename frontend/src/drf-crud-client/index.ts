@@ -19,9 +19,7 @@
  */
 
 import { DrfI18nResourceEn } from './i18n_en';
-import { PaginationController } from './usePaginationController';
 import { DrfError, formatErrorToString, loadErrorsToRFH, useFormatErrorToString } from './errors';
-import { usePaginated } from './usePaginated';
 import { UseFormCreateUpdate, useFormCreateUpdate } from './useFormCreateUpdate';
 import { useRFHIntegration } from './useRFHIntegration';
 import { useCreateUpdateDelete } from './useCreateUpdateDelete';
@@ -32,14 +30,16 @@ import { useSimpleJwtAxios } from './useSimpleJwtAxios';
 import { useQueryWrapper } from './useQueryWrapper';
 import { getEntityQueryKey } from './utils';
 import { useDrfEntity } from './useDrfEntity';
+import { PaginationController, useDrfPaginatedControlled } from './useDrfPaginatedControlled';
+import { useDrfPaginated } from './useDrfPaginated';
+import { usePagesController } from './usePagesController';
 
-export type { DrfError, PaginationController, UseFormCreateUpdate };
+export type { DrfError, UseFormCreateUpdate, PaginationController };
 export {
   DrfI18nResourceEn,
   formatErrorToString,
   loadErrorsToRFH,
   useFormatErrorToString,
-  usePaginated,
   useRFHIntegration,
   useFormCreateUpdate,
   useCreateUpdateDelete,
@@ -51,4 +51,7 @@ export {
   useQueryWrapper,
   getEntityQueryKey,
   useDrfEntity,
+  useDrfPaginated,
+  usePagesController,
+  useDrfPaginatedControlled,
 };
