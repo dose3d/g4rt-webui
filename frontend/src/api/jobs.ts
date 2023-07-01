@@ -5,6 +5,7 @@ import {
   useQueryWrapper,
   useDrfEntity,
   useDrfPaginatedControlled,
+  useDrfDelete,
 } from '../drf-crud-client';
 
 export type JobStatus = 'init' | 'queue' | 'running' | 'done';
@@ -75,7 +76,7 @@ export function useJobEntity(primaryKey: number, refetchInterval = 10000) {
 }
 
 export function useJobDelete(primaryKey: number) {
-  return useCreateUpdateDelete<JobEntity>({ ...JOB_SETTINGS, primaryKey, method: 'DELETE' });
+  return useDrfDelete({ ...JOB_ENDPOINT, primaryKey });
 }
 
 export function useJobKill(primaryKey: number) {

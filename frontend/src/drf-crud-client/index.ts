@@ -33,8 +33,13 @@ import { useDrfEntity } from './useDrfEntity';
 import { PaginationController, useDrfPaginatedControlled } from './useDrfPaginatedControlled';
 import { useDrfPaginated } from './useDrfPaginated';
 import { usePagesController } from './usePagesController';
+import { useMutationWrapper } from './useMutationWrapper';
+import { useDrfCUD } from './useDrfCUD';
+import { useDrfDelete } from './useDrfDelete';
+import { useDrfForm } from './useDrfForm';
+import { Partial2nd } from './types';
 
-export type { DrfError, UseFormCreateUpdate, PaginationController };
+export type { DrfError, UseFormCreateUpdate, PaginationController, Partial2nd };
 export {
   DrfI18nResourceEn,
   formatErrorToString,
@@ -54,4 +59,8 @@ export {
   useDrfPaginated,
   usePagesController,
   useDrfPaginatedControlled,
+  useMutationWrapper,
+  useDrfCUD,
+  useDrfDelete,
+  useDrfForm,
 };

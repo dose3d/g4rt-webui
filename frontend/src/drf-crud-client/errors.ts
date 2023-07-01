@@ -5,9 +5,13 @@ import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import { useCallback } from 'react';
 
+export interface DrfErrorSimple {
+  detail: string;
+}
+
 export type DrfError<TFieldValues extends FieldValues = FieldValues> = {
   [V in FieldPath<TFieldValues>]?: string[];
-} & { detail?: string };
+} & Partial<DrfErrorSimple>;
 
 export function formatErrorToString(err: unknown, t: TFunction): string {
   if (axios.isAxiosError(err)) {

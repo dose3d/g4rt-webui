@@ -10,7 +10,7 @@ function LoginScreen() {
   const {
     form: { control },
     handleSubmitShort,
-    drfMutation: { isLoading, lastError },
+    mutation: { isLoading, failureReason },
   } = useSimpleJwtForm({
     mutationProps: { onSuccess: (r) => loginUser(r) },
     formProps: { defaultValues: { username: 'admin', password: 'admin' }, reValidateMode: 'onSubmit' },
@@ -29,7 +29,7 @@ function LoginScreen() {
               Login
             </button>
           </form>
-          {lastError && <ErrorAlert>{formatErrorToString(lastError)}</ErrorAlert>}
+          {failureReason && <ErrorAlert>{formatErrorToString(failureReason)}</ErrorAlert>}
         </div>
       </div>
     </div>

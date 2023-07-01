@@ -2,12 +2,24 @@ import { AxiosError, AxiosInstance, AxiosRequestConfig, Method } from 'axios';
 import { DrfError } from './errors';
 import { FieldValues } from 'react-hook-form';
 
-export interface QueryOptions<Response extends FieldValues = FieldValues> {
+/**
+ * Wrap by Partial<> first and second deep in interface.
+ */
+export type Partial2nd<T> = T extends object ? {
+  [P in keyof T]?: Partial<T[P]>;
+} : T;
+
+
+/**
+ * Options for axios request.
+ */
+export interface AxiosOptions {
+  /**
+   * The axios instance for fetches. Please use for implement interceptors for authentication.
+   *
+   * If not provided, the useSimpleJwtAxios is used by default.
+   */
   axiosInstance?: AxiosInstance;
-  config?: Omit<AxiosRequestConfig, 'url' | 'method'>;
-  onSuccess?: (data: Response) => void;
-  onError?: (err: AxiosError<DrfError<Response>>) => void;
-  endpoint: string;
 }
 
 export interface MutationOptions<
