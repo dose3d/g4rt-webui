@@ -23,7 +23,7 @@ export const JobsPageBreadcrumbs: Breadcrumb[] = [
 
 export default function JobsPage() {
   const [pageSize, setPageSize] = useState(10);
-  const { data, isLoading, controller, lastError, isFetching } = useJobList(pageSize);
+  const { data, isLoading, controller, failureReason, isFetching } = useJobList(pageSize);
   const formatErrorToString = useFormatErrorToString();
 
   return (
@@ -36,7 +36,7 @@ export default function JobsPage() {
                 <Breadcrumbs breadcrumbs={JobsPageBreadcrumbs} />
                 <Title>List of jobs</Title>
               </CardHeaderMain>
-              {!!lastError && <ErrorAlert className="my-4">{formatErrorToString(lastError)}</ErrorAlert>}
+              {!!failureReason && <ErrorAlert className="my-4">{formatErrorToString(failureReason)}</ErrorAlert>}
 
               <div className="h-6">{isFetching && <progress className="progress" />}</div>
 

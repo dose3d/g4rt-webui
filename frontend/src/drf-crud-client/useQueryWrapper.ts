@@ -1,9 +1,8 @@
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosRequestConfig } from 'axios';
 import { useQuery, UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
 import { useSimpleJwtAxios } from './useSimpleJwtAxios';
-import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { QueryKey } from '@tanstack/query-core';
+import { AxiosOptions } from './types';
 
 /**
  * Options for useQueryWrapper.
@@ -21,14 +20,8 @@ export interface UseQueryWrapper<
   WrappedError = unknown,
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
-> extends Omit<UseQueryOptions<TQueryFnData, AxiosError<WrappedError>, TData, TQueryKey>, 'queryFn'> {
-  /**
-   * The axios instance for fetches. Please use for implement interceptors for authentication.
-   *
-   * If not provided, the useSimpleJwtAxios is used by default.
-   */
-  axiosInstance?: AxiosInstance;
-
+> extends Omit<UseQueryOptions<TQueryFnData, AxiosError<WrappedError>, TData, TQueryKey>, 'queryFn'>,
+    AxiosOptions {
   /**
    * Values passed directly to axios.get(endpoint, config)
    */
@@ -43,7 +36,7 @@ export interface UseQueryWrapper<
 /**
  * Values returned from useQueryWrapper.
  *
- * All values are passed directly from useQuery including lastError.
+ * All values are passed directly from useQuery.
  *
  * @template TData passed directly to UseQueryResult
  * @template WrappedError passed to TError with wrapping by AxiosError<WrappedError>
@@ -51,12 +44,7 @@ export interface UseQueryWrapper<
 export type UseQueryWrapperResult<TData = unknown, WrappedError = unknown> = UseQueryResult<
   TData,
   AxiosError<WrappedError>
-> & {
-  /**
-   *
-   */
-  lastError: AxiosError<WrappedError> | null;
-};
+>;
 
 /**
  * Wrapper for useQuery from TanStack Query.
@@ -64,14 +52,13 @@ export type UseQueryWrapperResult<TData = unknown, WrappedError = unknown> = Use
  * Dedicated for fetch universal GET requests.
  *
  * Implements queryFn for making fetches by axios.get(endpoint, config).
- * Stores error response in lastError and clean after success of fetch instead before starte new fetch.
  *
  * Auth headers is provided by interceptors configured in axiosInstance.
  * If axiosInstance is not provided in params then will be got from JwtAuthContext.
  * If component is not wrapped by JwtAuthContext context provider, the default axios will be used.
  *
  * All params without queryFn are passed directly to useQuery and axios.get(endpoint, config).
- * Return of useQuery are passed directly with lastError inclusion.
+ * Return of useQuery are passed directly.
  *
  * Example: GET /api/v1/hello
  *
@@ -93,22 +80,8 @@ export function useQueryWrapper<
   const { axiosInstance = jwtAxios, endpoint, config, ...rest } = params;
 
   // useQuery execution
-  const query = useQuery({
+  return useQuery({
     queryFn: () => axiosInstance.get<TQueryFnData>(endpoint, config).then((res) => res.data),
     ...rest,
   });
-
-  // handle error value and store in lastError
-  const [lastError, setLastError] = useState<AxiosError<WrappedError> | null>(null);
-  const { status, error } = query;
-  useEffect(() => {
-    if (status == 'success') {
-      // clean lastError after success instead before new fetch
-      setLastError(null);
-    } else if (status == 'error') {
-      setLastError(error);
-    }
-  }, [status, error]);
-
-  return { ...query, lastError };
 }
