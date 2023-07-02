@@ -12,7 +12,7 @@ function LoginScreen() {
     handleSubmitShort,
     mutation: { isLoading, failureReason },
   } = useSimpleJwtForm({
-    mutationProps: { onSuccess: (r) => loginUser(r) },
+    onSuccess: (r) => loginUser(r),
     formProps: { defaultValues: { username: 'admin', password: 'admin' }, reValidateMode: 'onSubmit' },
   });
 

@@ -3,14 +3,6 @@ import { DrfError } from './errors';
 import { FieldValues } from 'react-hook-form';
 
 /**
- * Wrap by Partial<> first and second deep in interface.
- */
-export type Partial2nd<T> = T extends object ? {
-  [P in keyof T]?: Partial<T[P]>;
-} : T;
-
-
-/**
  * Options for axios request.
  */
 export interface AxiosOptions {

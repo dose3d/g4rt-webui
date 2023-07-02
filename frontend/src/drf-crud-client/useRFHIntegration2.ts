@@ -3,9 +3,9 @@ import { DrfError, loadErrorsToRFH } from './errors';
 import { SubmitHandler, UseFormSetError } from 'react-hook-form';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { TFunction } from 'i18next';
-import { UseMutationWrapperResult } from './useMutationWrapper';
+import { MutateFunction } from '@tanstack/query-core';
 
 /**
  * Options for useRFHIntegration.
@@ -27,9 +27,9 @@ export interface UseRFHIntegration<
   form: UseFormReturn<TRequest, RFHContext>;
 
   /**
-   * Result of useMutationWrapper
+   * For launch the mutation request.
    */
-  mutation: UseMutationWrapperResult<TResponse, DrfError<TRequest>, TRequest, TQContext>;
+  mutateAsync: MutateFunction<TResponse, AxiosError<DrfError<TRequest>>, TRequest, TQContext>;
 
   /**
    * Behaviour after success of submit:
@@ -99,7 +99,7 @@ export function useRFHIntegration<
   RFHContext = any,
   TQContext = undefined,
 >(params: UseRFHIntegration<TRequest, TResponse, RFHContext, TQContext>): UseRFHIntegrationResult<TRequest> {
-  const { form, mutation, resetOnSuccess = false, t: myT, errorsParser = loadErrorsToRFH } = params;
+  const { form, mutateAsync, resetOnSuccess = false, t: myT, errorsParser = loadErrorsToRFH } = params;
   const { setError, reset, handleSubmit } = form;
   const [parsedError, setParsedError] = useState<string | null>(null);
   const { t } = useTranslation('drf');
@@ -107,7 +107,7 @@ export function useRFHIntegration<
   const onSubmit: SubmitHandler<TRequest> = useCallback(
     async (data) => {
       try {
-        const ret = await mutation.mutateAsync(data);
+        const ret = await mutateAsync(data);
         setParsedError(null);
         if (resetOnSuccess) {
           if (typeof resetOnSuccess === 'function') {
@@ -124,7 +124,7 @@ export function useRFHIntegration<
         }
       }
     },
-    [mutation, errorsParser, myT, reset, resetOnSuccess, setError, t],
+    [mutateAsync, errorsParser, myT, reset, resetOnSuccess, setError, t],
   );
 
   // Shortcut for handleSubmit(onSubmit)

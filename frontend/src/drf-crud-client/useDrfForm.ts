@@ -17,16 +17,11 @@ export interface UseDrfForm<
   TResponse extends FieldValues = TRequest,
   RFHContext = any,
   TQContext = undefined,
-> {
+> extends UseMutationWrapper<TResponse, DrfError<TRequest>, TRequest, TQContext> {
   /**
    * Options passed directly to useForm.
    */
   formProps?: UseFormProps<TRequest, RFHContext>;
-
-  /**
-   * Options passed directly to useMutationWrapper.
-   */
-  mutationProps: UseMutationWrapper<TResponse, DrfError<TRequest>, TRequest, TQContext>;
 
   /**
    * Additional options passed directly to useRFHIntegration
@@ -80,11 +75,12 @@ export function useDrfForm<
 >(
   params: UseDrfForm<TRequest, TResponse, RFHContext, TQContext>,
 ): UseDrfFormResult<TRequest, TResponse, RFHContext, TQContext> {
-  const { formProps, mutationProps, integrationProps = {} } = params;
+  const { formProps, integrationProps = {}, ...mutationProps } = params;
 
   const form = useForm(formProps);
   const mutation = useMutationWrapper(mutationProps);
-  const integration = useRFHIntegration({ form, mutation, ...integrationProps });
+  const { mutateAsync } = mutation;
+  const integration = useRFHIntegration({ form, mutateAsync, ...integrationProps });
 
   return { ...integration, form, mutation };
 }

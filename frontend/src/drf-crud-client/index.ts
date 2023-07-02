@@ -10,12 +10,22 @@
  * Otherwise, please implement your own axiosInstance with your own interceptors.
  *
  * The layers of library for fetching data without mutation:
- * 1. useQueryWrapper - join Axios and TanStack Query,
- *    - uses useSimpleJwtAxios by default,
- *    - provide lastError, cleared after response with success instead new fetching.
- *    (I'm don't known why TanStack Query not handle it)
- *    Please use for any queries for backend for authenticated users.
- * 2.
+ *
+ * 1st layer: making RAW requests via axios with auth data injection
+ *   - useQueryWrapper - GET requests
+ *   - useMutationWrapper - POST (default), PUT, DELETE requests
+ *
+ * 2nd layer: making CRUD operations to Django Rest Framework (DRF) resources
+ *   - useDrfEntity - fetch entity by primary key and caching
+ *   - useDrfList - fetch list of entities and caching
+ *   - useDrfPaginated - fetch page of paginated resource and caching
+ *   - useDrfCUD - modify entity and update/invalidate cache
+ *   - useDrfDelete - remove entity and invalidate cache
+ *
+ * 3rd layer: passing backend validation errors to react-form-hooks errors
+ *   - useDrfForm - RAW form and load validation errors from response
+ *   - useDrfEntityForm - join useDrfForm and useDrfCUD functionality
+ *
  */
 
 import { DrfI18nResourceEn } from './i18n_en';
@@ -37,9 +47,8 @@ import { useMutationWrapper } from './useMutationWrapper';
 import { useDrfCUD } from './useDrfCUD';
 import { useDrfDelete } from './useDrfDelete';
 import { useDrfForm } from './useDrfForm';
-import { Partial2nd } from './types';
 
-export type { DrfError, UseFormCreateUpdate, PaginationController, Partial2nd };
+export type { DrfError, UseFormCreateUpdate, PaginationController };
 export {
   DrfI18nResourceEn,
   formatErrorToString,

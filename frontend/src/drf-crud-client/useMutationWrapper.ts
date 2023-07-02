@@ -49,7 +49,8 @@ export type UseMutationWrapperResult<
  *
  * Dedicated for fetch universal HTTP requests (i.e. POST, PUT, DELETE etc.).
  *
- * Implements mutationFn for making fetches by axios.request(endpoint, config).
+ * Implements mutationFn for making fetches by axios.request(endpoint, config)
+ * but default HTTP method is POST instead GET.
  *
  * Auth headers is provided by interceptors configured in axiosInstance.
  * If axiosInstance is not provided in params then will be got from JwtAuthContext.
@@ -58,9 +59,9 @@ export type UseMutationWrapperResult<
  * All params without mutationFn are passed directly to useQuery and axios.request(endpoint, config).
  * Return of useQuery are passed directly.
  *
- * Example: POST /api/v1/hello
+ * Example: PUT /api/v1/hello
  * const requestData = {...};
- * const { data, mutate, mutateAsync } = useMutationWrapper({config: {url: '/api/v1/hello', method: 'POST'}});
+ * const { data, mutate, mutateAsync } = useMutationWrapper({config: {url: '/api/v1/hello', method: 'PUT'}});
  * mutate(requestData);
  * // or
  * mutateAsync(requestData).then();
@@ -75,13 +76,18 @@ export function useMutationWrapper<TData = unknown, WrappedError = unknown, TVar
   const jwtAxios = useSimpleJwtAxios();
 
   // use axiosInstance from JwtAuthContext when not provided in params
-  const { axiosInstance = jwtAxios, config: { data: confData = {}, ...confRest } = {}, ...rest } = params;
+  const {
+    axiosInstance = jwtAxios,
+    config: { data: confData = {}, method = 'POST', ...confRest } = {},
+    ...rest
+  } = params;
 
   // useMutation execution
   return useMutation({
     mutationFn: async (data: TVariables): Promise<TData> => {
       const conf = {
         data: merge(confData, data),
+        method,
         ...confRest,
       };
 
