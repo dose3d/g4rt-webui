@@ -30,8 +30,6 @@
 
 import { DrfI18nResourceEn } from './i18n_en';
 import { DrfError, formatErrorToString, loadErrorsToRFH, useFormatErrorToString } from './errors';
-import { UseFormCreateUpdate, useFormCreateUpdate } from './useFormCreateUpdate';
-import { useRFHIntegration } from './useRFHIntegration';
 import { useCreateUpdateDelete } from './useCreateUpdateDelete';
 import { useSimpleJwtClient } from './useSimpleJwtClient';
 import { JwtAuthContext, JwtAuthProvider } from './JwtAuthContext';
@@ -44,18 +42,17 @@ import { PaginationController, useDrfPaginatedControlled } from './useDrfPaginat
 import { useDrfPaginated } from './useDrfPaginated';
 import { usePagesController } from './usePagesController';
 import { useMutationWrapper } from './useMutationWrapper';
-import { useDrfCUD } from './useDrfCUD';
+import { useDrfCUD, UseDrfCUD } from './useDrfCUD';
 import { useDrfDelete } from './useDrfDelete';
 import { useDrfForm } from './useDrfForm';
+import { useDrfEntityForm, UseDrfEntityForm } from './useDrfEntityForm';
 
-export type { DrfError, UseFormCreateUpdate, PaginationController };
+export type { DrfError, PaginationController, UseDrfCUD, UseDrfEntityForm };
 export {
   DrfI18nResourceEn,
   formatErrorToString,
   loadErrorsToRFH,
   useFormatErrorToString,
-  useRFHIntegration,
-  useFormCreateUpdate,
   useCreateUpdateDelete,
   useSimpleJwtClient,
   JwtAuthProvider,
@@ -72,4 +69,5 @@ export {
   useDrfCUD,
   useDrfDelete,
   useDrfForm,
+  useDrfEntityForm,
 };

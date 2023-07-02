@@ -34,10 +34,10 @@ export default function JobCreatePage() {
   const {
     handleSubmitShort,
     form: { control },
-    createUpdate: { isLoading, lastError },
+    cud: { isLoading, failureReason },
   } = useJobCreateUpdate({
     formProps: { defaultValues: { title: '', description: '' }, reValidateMode: 'onSubmit' },
-    cudProps: { onSuccess: () => navigate('/jobs') },
+    onSuccess: () => navigate('/jobs'),
   });
 
   return (
@@ -69,7 +69,7 @@ export default function JobCreatePage() {
                 Send
               </button>
 
-              {!!lastError && <ErrorAlert className="my-4">{formatErrorToString(lastError)}</ErrorAlert>}
+              {!!failureReason && <ErrorAlert className="my-4">{formatErrorToString(failureReason)}</ErrorAlert>}
             </form>
           </Card>
         </CardsContainer>

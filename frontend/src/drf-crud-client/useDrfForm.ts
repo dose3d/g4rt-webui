@@ -1,6 +1,6 @@
 import { FieldValues, UseFormProps, UseFormReturn } from 'react-hook-form';
 import { useForm } from 'react-hook-form';
-import { UseRFHIntegration, useRFHIntegration, UseRFHIntegrationResult } from './useRFHIntegration2';
+import { UseRFHIntegration, useRFHIntegration, UseRFHIntegrationResult } from './useRFHIntegration';
 import { UseMutationWrapper, useMutationWrapper, UseMutationWrapperResult } from './useMutationWrapper';
 import { DrfError } from './errors';
 
@@ -25,9 +25,9 @@ export interface UseDrfForm<
 
   /**
    * Additional options passed directly to useRFHIntegration
-   * (without form and mutation because they are filled by this hook).
+   * (without form and mutateAsync because they are filled by this hook).
    */
-  integrationProps?: Omit<UseRFHIntegration<TRequest, TResponse, RFHContext, TQContext>, 'form' | 'mutation'>;
+  integrationProps?: Omit<UseRFHIntegration<TRequest, TResponse, RFHContext, TQContext>, 'form' | 'mutateAsync'>;
 }
 
 /**
@@ -61,7 +61,7 @@ export interface UseDrfFormResult<
  *
  * Crates useForm and useMutationWrapper and integrate via useRFHIntegration.
  *
- * Please use for universal non-CRUD forms passed to DRF backend and parse
+ * Dedicated to use for universal non-CRUD forms passed to DRF backend and parse
  * validation errors from backend.
  *
  * @see useMutationWrapper

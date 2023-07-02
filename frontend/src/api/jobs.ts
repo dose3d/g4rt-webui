@@ -1,11 +1,11 @@
 import {
-  UseFormCreateUpdate,
-  useFormCreateUpdate,
   useCreateUpdateDelete,
   useQueryWrapper,
   useDrfEntity,
   useDrfPaginatedControlled,
   useDrfDelete,
+  useDrfEntityForm,
+  UseDrfEntityForm,
 } from '../drf-crud-client';
 
 export type JobStatus = 'init' | 'queue' | 'running' | 'done';
@@ -54,11 +54,9 @@ const JOB_ENDPOINT = {
   resource: 'jobs',
 };
 
-export function useJobCreateUpdate(
-  params: Omit<UseFormCreateUpdate<JobEntity, number>, 'endpoint' | 'queryKey' | 'axiosInstance'>,
-) {
-  return useFormCreateUpdate({
-    ...JOB_SETTINGS,
+export function useJobCreateUpdate(params: Omit<UseDrfEntityForm<JobEntity, number>, keyof typeof JOB_ENDPOINT>) {
+  return useDrfEntityForm({
+    ...JOB_ENDPOINT,
     ...params,
   });
 }
