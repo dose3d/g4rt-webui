@@ -28,7 +28,23 @@ export type UseDrfDelete<
   ApiOptions &
   ResourceOptions &
   EntityOptions<PK> & {
+    /**
+     * Cache update behaviour.
+     *
+     * Cause follow action on [resourceQK, 'entity', primaryKeyQK]:
+     * - default = invalidate - invalidateQueries on [resourceQK, 'entity', primaryKeyQK]
+     * - none - no action on [resourceQK, 'entity', primaryKeyQK]
+     */
     cacheBehaviour?: 'default' | 'invalidate' | 'none';
+
+    /**
+     * Invalidate [resourceQK, 'list']. Default: true.
+     */
+    cacheInvalidateList?: boolean;
+
+    /**
+     * Optional config for axios. The method is filled by DELETE, url by buildEndpoint.
+     */
     config?: AxiosRequestConfig<TRequest>;
   };
 
@@ -82,6 +98,7 @@ export function useDrfDelete<
     primaryKeyQK = primaryKey,
     onSuccess,
     cacheBehaviour = 'default',
+    cacheInvalidateList = true,
     config,
     ...rest
   } = params;
@@ -93,7 +110,7 @@ export function useDrfDelete<
     (data: TResponse, values: TRequest, context?: TContext) => {
       const queryKey = buildQueryKey(resourceQK, primaryKeyQK || data.id);
 
-      if (cacheBehaviour !== 'none') {
+      if (cacheInvalidateList) {
         queryClient.invalidateQueries({ queryKey: buildQueryKey(resourceQK) }).then();
       }
 
@@ -108,7 +125,7 @@ export function useDrfDelete<
         onSuccess(data, values, context);
       }
     },
-    [cacheBehaviour, onSuccess, primaryKeyQK, queryClient, resourceQK],
+    [cacheBehaviour, cacheInvalidateList, onSuccess, primaryKeyQK, queryClient, resourceQK],
   );
 
   return useMutationWrapper<TResponse, DrfError<TDeleteEntityError>, TRequest, TContext>({

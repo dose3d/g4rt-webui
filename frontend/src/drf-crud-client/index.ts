@@ -30,7 +30,6 @@
 
 import { DrfI18nResourceEn } from './i18n_en';
 import { DrfError, formatErrorToString, loadErrorsToRFH, useFormatErrorToString } from './errors';
-import { useCreateUpdateDelete } from './useCreateUpdateDelete';
 import { useSimpleJwtClient } from './useSimpleJwtClient';
 import { JwtAuthContext, JwtAuthProvider } from './JwtAuthContext';
 import { useSimpleJwtForm } from './useSimpleJwtForm';
@@ -53,7 +52,6 @@ export {
   formatErrorToString,
   loadErrorsToRFH,
   useFormatErrorToString,
-  useCreateUpdateDelete,
   useSimpleJwtClient,
   JwtAuthProvider,
   JwtAuthContext,

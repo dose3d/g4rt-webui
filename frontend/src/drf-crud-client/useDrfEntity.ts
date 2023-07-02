@@ -1,5 +1,5 @@
 import { FieldValues } from 'react-hook-form';
-import { ApiOptions, EntityOptions, ResourceOptions } from './types';
+import { ActionOptions, ApiOptions, EntityOptions, ResourceOptions } from './types';
 import { buildEndpoint, buildQueryKey } from './utils';
 import { useQueryWrapper, UseQueryWrapper, UseQueryWrapperResult } from './useQueryWrapper';
 
@@ -19,7 +19,8 @@ export type UseDrfEntity<
 > = Omit<UseQueryWrapper<TEntity, TFetchEntityError>, 'queryKey' | 'endpoint'> &
   ApiOptions &
   ResourceOptions &
-  EntityOptions<PK>;
+  EntityOptions<PK> &
+  ActionOptions;
 
 /**
  * Wrap UseQueryWrapperResult by set templates for Entity end error of fetching entity.
@@ -41,6 +42,18 @@ export type UseDrfEntityResult<
  * Example: GET /api/v1/users/7/
  *
  * const { data: user } = useDrfEntity({api: '/api/v1/', resource: 'users', primaryKey: 7});
+ * Data will be cached using key: ['users', 'entity', '7']
+ *
+ * Example with action: GET /api/v1/users/7/details/
+ *
+ * const { data: userDetails } = useDrfEntity({
+ *   api: '/api/v1/',
+ *   resource: 'users',
+ *   primaryKey: 7,
+ *   action: 'details'
+ * });
+ *
+ * Data will be cached using key: ['users', 'entity', '7', 'details']
  *
  * @see buildEndpoint for configure endpoint
  */
@@ -49,9 +62,18 @@ export function useDrfEntity<
   PK extends number | string = number | string,
   TFetchEntityError extends FieldValues = FieldValues,
 >(args: UseDrfEntity<TEntity, PK, TFetchEntityError>): UseDrfEntityResult<TEntity, TFetchEntityError> {
-  const { api, resource, resourceQK = resource, primaryKey, primaryKeyQK = primaryKey, ...rest } = args;
-  const endpoint = buildEndpoint(api, resource, primaryKey);
-  const queryKey = buildQueryKey(resourceQK, primaryKeyQK);
+  const {
+    api,
+    resource,
+    resourceQK = resource,
+    primaryKey,
+    primaryKeyQK = primaryKey,
+    action,
+    actionQK = action,
+    ...rest
+  } = args;
+  const endpoint = buildEndpoint(api, resource, primaryKey, action);
+  const queryKey = buildQueryKey(resourceQK, primaryKeyQK, actionQK);
 
   return useQueryWrapper<TEntity, TFetchEntityError>({
     queryKey,

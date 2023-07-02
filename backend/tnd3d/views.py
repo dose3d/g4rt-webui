@@ -47,7 +47,7 @@ class JobViewSet(VariousSerializersViewSet):
         instance.get_runners_job().purge()
         super().perform_destroy(instance)
 
-    @action(detail=True, methods=['put'])
+    @action(detail=True, methods=['post'])
     def run(self, request, pk=None):
         obj = self.get_object()
         if obj.status != INIT:
@@ -56,7 +56,7 @@ class JobViewSet(VariousSerializersViewSet):
         obj.save()
         return self.retrieve(request)
 
-    @action(detail=True, methods=['put'])
+    @action(detail=True, methods=['post'])
     def remove_from_queue(self, request, pk=None):
         obj = self.get_object()
         if obj.status != QUEUE:
@@ -64,7 +64,7 @@ class JobViewSet(VariousSerializersViewSet):
         obj.remove_from_queue()
         return self.retrieve(request)
 
-    @action(detail=True, methods=['put'])
+    @action(detail=True, methods=['post'])
     def kill(self, request, pk=None):
         obj = self.get_object()
         if obj.status != RUNNING:

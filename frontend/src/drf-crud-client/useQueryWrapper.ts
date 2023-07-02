@@ -20,7 +20,7 @@ export interface UseQueryWrapper<
   WrappedError = unknown,
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
-> extends Omit<UseQueryOptions<TQueryFnData, AxiosError<WrappedError>, TData, TQueryKey>, 'queryFn'>,
+> extends Omit<UseQueryOptions<TQueryFnData, AxiosError<WrappedError, TData>, TData, TQueryKey>, 'queryFn'>,
     AxiosOptions {
   /**
    * Values passed directly to axios.get(endpoint, config)
@@ -43,7 +43,7 @@ export interface UseQueryWrapper<
  */
 export type UseQueryWrapperResult<TData = unknown, WrappedError = unknown> = UseQueryResult<
   TData,
-  AxiosError<WrappedError>
+  AxiosError<WrappedError, TData>
 >;
 
 /**

@@ -1,11 +1,11 @@
 import {
-  useCreateUpdateDelete,
   useQueryWrapper,
   useDrfEntity,
   useDrfPaginatedControlled,
   useDrfDelete,
   useDrfEntityForm,
   UseDrfEntityForm,
+  useDrfCUD,
 } from '../drf-crud-client';
 
 export type JobStatus = 'init' | 'queue' | 'running' | 'done';
@@ -44,11 +44,6 @@ export interface JobEntity extends JobEntityListItem {
   root_files: JobRootFileEntity[];
 }
 
-const JOB_SETTINGS = {
-  endpoint: '/api/jobs/',
-  queryKey: 'jobs',
-};
-
 const JOB_ENDPOINT = {
   api: '/api/',
   resource: 'jobs',
@@ -78,15 +73,15 @@ export function useJobDelete(primaryKey: number) {
 }
 
 export function useJobKill(primaryKey: number) {
-  return useCreateUpdateDelete<JobEntity>({ ...JOB_SETTINGS, primaryKey, action: 'kill', method: 'PUT' });
+  return useDrfCUD<JobEntity>({ ...JOB_ENDPOINT, primaryKey, action: 'kill' });
 }
 
 export function useJobRun(primaryKey: number) {
-  return useCreateUpdateDelete<JobEntity>({ ...JOB_SETTINGS, primaryKey, action: 'run', method: 'PUT' });
+  return useDrfCUD<JobEntity>({ ...JOB_ENDPOINT, primaryKey, action: 'run' });
 }
 
 export function useJobRemoveFromQueue(primaryKey: number) {
-  return useCreateUpdateDelete<JobEntity>({ ...JOB_SETTINGS, primaryKey, action: 'remove_from_queue', method: 'PUT' });
+  return useDrfCUD<JobEntity>({ ...JOB_ENDPOINT, primaryKey, action: 'remove_from_queue' });
 }
 
 export function useJobOutputLogs(primaryKey: number, refetchInterval = 1000) {

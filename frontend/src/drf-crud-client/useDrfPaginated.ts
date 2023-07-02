@@ -1,5 +1,5 @@
 import { FieldValues } from 'react-hook-form';
-import { ApiOptions, PaginatedOptions, ResourceOptions } from './types';
+import { ActionOptions, ApiOptions, PaginatedOptions, ResourceOptions } from './types';
 import { buildEndpoint, buildQueryKey } from './utils';
 import { useQueryWrapper, UseQueryWrapper, UseQueryWrapperResult } from './useQueryWrapper';
 
@@ -44,7 +44,8 @@ export type UseDrfPaginated<
 > = Omit<UseQueryWrapper<PaginatedResponse<TEntity>, TFetchPaginatedError>, 'queryKey' | 'endpoint'> &
   ApiOptions &
   ResourceOptions &
-  PaginatedOptions;
+  PaginatedOptions &
+  ActionOptions;
 
 /**
  * Wrap UseQueryWrapperResult by set templates for Entity and error of fetching page of entities.
@@ -71,6 +72,8 @@ export type UseDrfPaginatedResult<
  *   pageSize: 100
  * });
  *
+ * Data will be cached using key: ['users', 'list', 'page', '100', '4']
+ *
  * If you want to pass query params i.e. for backend filters:
  *
  * Example: GET /api/v1/users/?page=4&page_size=100&category=gamers&age=16
@@ -84,7 +87,19 @@ export type UseDrfPaginatedResult<
  *   config: { params },
  * });
  *
- * The filter parameters are serialized to string and store in different queryKey.
+ * Data will be cached using key: ['users', 'list', 'page', '100', '4', stringify(params)]
+ *
+ * Example with action: GET /api/v1/users/active/?page=4&page_size=100
+ *
+ * const { data: { results: users } = {} } = useDrfPaginated({
+ *   api: '/api/v1/',
+ *   resource: 'users',
+ *   page: 4,
+ *   pageSize: 100,
+ *   action: 'active',
+ * });
+ *
+ * Data will be cached using key: ['users', 'list', 'active', 'page', '100', '4']
  *
  * @see buildEndpoint for configure endpoint
  */
@@ -92,11 +107,21 @@ export function useDrfPaginated<
   TEntity extends FieldValues = FieldValues,
   TFetchPaginatedError extends FieldValues = FieldValues,
 >(args: UseDrfPaginated<TEntity, TFetchPaginatedError>): UseDrfPaginatedResult<TEntity, TFetchPaginatedError> {
-  const { api, resource, resourceQK = resource, pageSize = 10, page = 1, config, ...rest } = args;
+  const {
+    api,
+    resource,
+    resourceQK = resource,
+    action,
+    actionQK = action,
+    pageSize = 10,
+    page = 1,
+    config,
+    ...rest
+  } = args;
 
   const { params, ...configRest } = config || {};
-  const endpoint = buildEndpoint(api, resource);
-  const queryKey = buildQueryKey(resourceQK);
+  const endpoint = buildEndpoint(api, resource, undefined, action);
+  const queryKey = buildQueryKey(resourceQK, undefined, actionQK);
 
   // Append page size and page number to queryKey
   queryKey.push('page', `${pageSize}`, `${page}`);

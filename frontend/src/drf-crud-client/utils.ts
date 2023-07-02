@@ -56,18 +56,31 @@ export function buildEndpoint<PK extends number | string = number | string>(
  * Build queryKey for caching by TanStack Query library.
  *
  * When primaryKeyQK is not provided, uses schema for whole resource:
- * [resourceQK, 'list']
+ * [resourceQK, 'list', action]
  *
  * Otherwise, uses schema for single entity:
- * [resourceQK, 'entity', primaryKeyQK]
+ * [resourceQK, 'entity', primaryKeyQK, action]
  *
  * @param resourceQK part of queryKey identifies resource
  * @param primaryKeyQK (optional) part of queryKey identifies single entity
+ * @param actionQK (optional) action for resource of single entity
  */
-export function buildQueryKey<PK extends number | string = number | string>(resourceQK: string, primaryKeyQK?: PK) {
+export function buildQueryKey<PK extends number | string = number | string>(
+  resourceQK: string,
+  primaryKeyQK?: PK,
+  actionQK?: string,
+) {
+  let qk;
+
   if (primaryKeyQK === undefined) {
-    return [resourceQK, 'list'];
+    qk = [resourceQK, 'list'];
+  } else {
+    qk = [resourceQK, 'entity', `${primaryKeyQK}`];
   }
 
-  return [resourceQK, 'entity', `${primaryKeyQK}`];
+  if (actionQK) {
+    qk.push(actionQK);
+  }
+
+  return qk;
 }

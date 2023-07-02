@@ -82,7 +82,15 @@ export interface ActionOptions {
    *
    * @see buildEndpoint
    */
-  action: string;
+  action?: string;
+
+  /**
+   * Unique identifier used as a part of queryKey in useQuery cache.
+   * If not provided the action value will be used.
+   *
+   * @see buildEndpoint
+   */
+  actionQK?: string;
 }
 
 export interface ModelOptions {

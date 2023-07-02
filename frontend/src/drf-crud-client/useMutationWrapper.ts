@@ -16,7 +16,7 @@ import { merge } from 'lodash';
  * @template TContext passed directly
  */
 export interface UseMutationWrapper<TData = unknown, WrappedError = unknown, TVariables = void, TContext = unknown>
-  extends Omit<UseMutationOptions<TData, AxiosError<WrappedError>, TVariables, TContext>, 'mutationFn'>,
+  extends Omit<UseMutationOptions<TData, AxiosError<WrappedError, TVariables>, TVariables, TContext>, 'mutationFn'>,
     AxiosOptions {
   /**
    * Values passed directly to axios.request(config).
@@ -42,7 +42,7 @@ export type UseMutationWrapperResult<
   WrappedError = unknown,
   TVariables = unknown,
   TContext = unknown,
-> = UseMutationResult<TData, AxiosError<WrappedError>, TVariables, TContext>;
+> = UseMutationResult<TData, AxiosError<WrappedError, TVariables>, TVariables, TContext>;
 
 /**
  * Wrapper for useMutation from TanStack Query.
