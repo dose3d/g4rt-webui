@@ -6,7 +6,7 @@ cffi==1.15.1
 constantly==15.1.0
 cryptography==41.0.1
 daphne==4.0.0
-Django==4.2.2
+Django==4.2.3
 django-cors-headers==4.1.0
 django-filter==23.2
 django-rest-framework==0.1.0
@@ -28,7 +28,7 @@ six==1.16.0
 sqlparse==0.4.4
 Twisted==22.10.0
 txaio==23.1.1
-typing_extensions==4.6.3
+typing_extensions==4.7.1
 tzdata==2023.3
 zope.interface==6.0
 -e ./dose3d_commons
