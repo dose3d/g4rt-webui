@@ -45,6 +45,7 @@ import { useDrfCUD, UseDrfCUD } from './useDrfCUD';
 import { useDrfDelete } from './useDrfDelete';
 import { useDrfForm } from './useDrfForm';
 import { useDrfEntityForm, UseDrfEntityForm } from './useDrfEntityForm';
+import { useDrfList } from './useDrfList';
 
 export type { DrfError, PaginationController, UseDrfCUD, UseDrfEntityForm };
 export {
@@ -60,6 +61,7 @@ export {
   useQueryWrapper,
   getEntityQueryKey,
   useDrfEntity,
+  useDrfList,
   useDrfPaginated,
   usePagesController,
   useDrfPaginatedControlled,
