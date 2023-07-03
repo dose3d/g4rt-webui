@@ -55,7 +55,7 @@ export type UseDrfCUD<
     /**
      * Optional config for axios. The url is filled by buildEndpoint.
      */
-    config?: AxiosRequestConfig<TRequest>;
+    config?: AxiosRequestConfig<Partial<TRequest>>;
   };
 
 /**

@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form';
 import { UseRFHIntegration, useRFHIntegration } from './useRFHIntegration';
 import { UseRFHIntegrationResult } from './useRFHIntegration';
 import { useDrfCUD, UseDrfCUD, UseDrfCUDResult } from './useDrfCUD';
-import { AxiosRequestConfig } from 'axios';
 
 /**
  * Options for useDrfEntityForm.
@@ -20,12 +19,7 @@ export interface UseDrfEntityForm<
   TResponse extends FieldValues = Request,
   RFHContext = any,
   TQContext = undefined,
-> extends Omit<UseDrfCUD<TRequest, PK, TResponse, TQContext>, 'config'> {
-  /**
-   * Optional additional options for axios used in useMutationWrapper.
-   */
-  config?: AxiosRequestConfig<TRequest>;
-
+> extends UseDrfCUD<TRequest, PK, TResponse, TQContext> {
   /**
    * Options passed directly to useForm.
    */

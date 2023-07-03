@@ -23,8 +23,10 @@ export interface UseMutationWrapper<TData = unknown, WrappedError = unknown, TVa
    *
    * Config.data will be merged with values passed with mutate or mutateAsync
    * so config.data can be used for provide default values.
+   *
+   * The Partial<TVariables> is used because config.data is optional.
    */
-  config: AxiosRequestConfig<TVariables>;
+  config: AxiosRequestConfig<Partial<TVariables>>;
 }
 
 /**

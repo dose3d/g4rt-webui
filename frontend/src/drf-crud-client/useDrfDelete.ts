@@ -45,7 +45,7 @@ export type UseDrfDelete<
     /**
      * Optional config for axios. The method is filled by DELETE, url by buildEndpoint.
      */
-    config?: AxiosRequestConfig<TRequest>;
+    config?: AxiosRequestConfig<Partial<TRequest>>;
   };
 
 /**
