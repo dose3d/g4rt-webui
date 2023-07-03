@@ -1,6 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
-import { useJobCreateUpdate } from '../../api/jobs';
+import { useJobForm } from '../../api/jobs';
 import {
   Card,
   CardHeader,
@@ -35,7 +35,7 @@ export default function JobCreatePage() {
     handleSubmitShort,
     form: { control },
     cud: { isLoading, failureReason },
-  } = useJobCreateUpdate({
+  } = useJobForm({
     formProps: { defaultValues: { title: '', description: '' }, reValidateMode: 'onSubmit' },
     onSuccess: () => navigate('/jobs'),
   });

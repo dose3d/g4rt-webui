@@ -49,7 +49,7 @@ const JOB_ENDPOINT = {
   resource: 'jobs',
 };
 
-export function useJobCreateUpdate(params: Omit<UseDrfEntityForm<JobEntity, number>, keyof typeof JOB_ENDPOINT>) {
+export function useJobForm(params: Omit<UseDrfEntityForm<JobEntity, number>, keyof typeof JOB_ENDPOINT>) {
   return useDrfEntityForm({
     ...JOB_ENDPOINT,
     ...params,
