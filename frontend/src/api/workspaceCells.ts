@@ -1,11 +1,4 @@
-import {
-  useDrfCUD,
-  useDrfDelete,
-  useDrfEntity,
-  useDrfEntityForm,
-  UseDrfEntityForm,
-  useDrfList,
-} from '../drf-crud-client';
+import { useDrfCUD, useDrfDelete, useDrfEntity, useDrfEntityForm, useDrfList } from '../drf-crud-client';
 
 export interface WorkspaceCellEntity {
   id: number;
@@ -27,13 +20,12 @@ export function useWorkspaceCellCAddNew(workspace: number, type: 'm' | 'j') {
   });
 }
 
-export function useWorkspaceCellForm(
-  workspace: number,
-  params?: Omit<UseDrfEntityForm<WorkspaceCellEntity, number>, keyof typeof WORKSPACE_CELL_ENDPOINT>,
-) {
+export function useWorkspaceCellForm(cell: WorkspaceCellEntity) {
   return useDrfEntityForm({
     ...WORKSPACE_CELL_ENDPOINT,
-    ...params,
+    primaryKey: cell.id,
+    config: { data: { workspace: cell.workspace } },
+    formProps: { defaultValues: cell, mode: 'onBlur' },
   });
 }
 
