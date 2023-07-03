@@ -125,8 +125,12 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'dose3d_test',
+        'USER': 'dose3d',
+        'PASSWORD': 'dose3d',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
         'ATOMIC_REQUESTS': True
     }
 }
