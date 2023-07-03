@@ -13,6 +13,9 @@ import Copyright from './components/Copyright';
 import LoginScreen from './site/LoginScreen';
 import { JwtAuthContext, JwtAuthProvider } from './drf-crud-client';
 import JobRootDetailPage from './site/root/JobRootDetailPage';
+import WorkspacesPage from './site/workspaces/WorkspacesPage';
+import WorkspaceCreatePage from './site/workspaces/WorkspaceCreatePage';
+import WorkspaceDetailPage from './site/workspaces/WorkspaceDetailPage';
 
 function Authorized() {
   const [toggle, onToggle] = useToggle();
@@ -29,6 +32,11 @@ function Authorized() {
               <Route element={<JobCreatePage />} path="create" />
               <Route element={<JobDetailPage />} path=":jobId" />
               <Route element={<JobRootDetailPage />} path=":jobId/root/:fileId" />
+            </Route>
+            <Route path="/workspaces">
+              <Route element={<WorkspacesPage />} path="" />
+              <Route element={<WorkspaceCreatePage />} path="create" />
+              <Route element={<WorkspaceDetailPage />} path=":workspaceId" />
             </Route>
             <Route element={<HomePage />} path="/" />
           </Routes>

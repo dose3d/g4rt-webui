@@ -1,0 +1,53 @@
+import {
+  useDrfCUD,
+  useDrfDelete,
+  useDrfEntity,
+  useDrfEntityForm,
+  UseDrfEntityForm,
+  useDrfList,
+} from '../drf-crud-client';
+
+export interface WorkspaceCellEntity {
+  id: number;
+  workspace: number;
+  pos: number;
+  type: 'm' | 'j';
+  content: string;
+}
+
+const WORKSPACE_CELL_ENDPOINT = {
+  api: '/api/',
+  resource: 'wsc',
+};
+
+export function useWorkspaceCellCAddNew(workspace: number, type: 'm' | 'j') {
+  return useDrfCUD({
+    ...WORKSPACE_CELL_ENDPOINT,
+    config: { data: { workspace, type }, method: 'POST' },
+  });
+}
+
+export function useWorkspaceCellForm(
+  workspace: number,
+  params?: Omit<UseDrfEntityForm<WorkspaceCellEntity, number>, keyof typeof WORKSPACE_CELL_ENDPOINT>,
+) {
+  return useDrfEntityForm({
+    ...WORKSPACE_CELL_ENDPOINT,
+    ...params,
+  });
+}
+
+export function useWorkspaceCellList(workspace: number) {
+  return useDrfList<WorkspaceCellEntity>({
+    ...WORKSPACE_CELL_ENDPOINT,
+    config: { params: { workspace } },
+  });
+}
+
+export function useWorkspaceCellEntity(primaryKey: number) {
+  return useDrfEntity<WorkspaceCellEntity>({ ...WORKSPACE_CELL_ENDPOINT, primaryKey });
+}
+
+export function useWorkspaceCellDelete(primaryKey: number) {
+  return useDrfDelete({ ...WORKSPACE_CELL_ENDPOINT, primaryKey });
+}

@@ -55,6 +55,12 @@ const Sidebar = ({ toggle, onToggle }: Props) => {
               <h3 className="pb-2 pt-4 text-base font-bold text-gray-500">Analysis</h3>
               <ul className="space-y-2 pb-2">
                 <li>
+                  <NavLink to="/workspaces" label="Workspaces">
+                    <ServerStackIcon />
+                  </NavLink>
+                </li>
+
+                <li>
                   <NavLink to="/load" label="Load data">
                     <ServerStackIcon />
                   </NavLink>

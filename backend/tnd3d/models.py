@@ -2,8 +2,17 @@ import os
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Max
 from django.utils.translation import gettext_lazy as _
 from dose3d import JobsManager, INIT, QUEUE, RUNNING, DONE, Dose3DException
+
+MARKDOWN = 'markdown'
+JSON = 'json'
+
+
+def get_max_or_one(qs, field):
+    v = qs.aggregate(v=Max(field))['v']
+    return v + 1 if v else 1
 
 
 class Job(models.Model):
@@ -161,3 +170,46 @@ class JobLogFile(models.Model):
         verbose_name = _('Logs file')
         verbose_name_plural = _('Logs files')
         unique_together = (('job', 'file_name'),)
+
+
+class Workspace(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_('Creation date'))
+    updated_at = models.DateTimeField(auto_now=True, verbose_name=_('Last updated'))
+    title = models.CharField(max_length=64, verbose_name=_('Jobs title'))
+    description = models.TextField(blank=True, default='', verbose_name=_('Jobs description'))
+
+    def update_pos(self):
+        pos = 1
+        for o in self.workspacecell_set.all():
+            o.pos = pos
+            o.save(update_fields=['pos'])
+            pos += 1
+
+    class Meta:
+        ordering = ('created_at',)
+        verbose_name = _('Workspace')
+        verbose_name_plural = _('Workspaces')
+
+
+class WorkspaceCell(models.Model):
+    TYPE = [
+        ('m', MARKDOWN),
+        ('j', JSON),
+    ]
+
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, verbose_name=_('Workspace'))
+    pos = models.IntegerField(verbose_name=_('Position in workspace'))
+    type = models.CharField(max_length=1, choices=TYPE)
+    content = models.TextField(blank=True, default='', verbose_name=_('Cell content'))
+
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.pos is None:
+            qs = WorkspaceCell.objects.filter(workspace=self.workspace)
+            self.pos = get_max_or_one(qs, 'pos')
+        super().save(force_insert, force_update, using, update_fields)
+
+    class Meta:
+        unique_together = (('workspace', 'pos'),)
+        ordering = ('pos',)
+        verbose_name = _('Workspace cell')
+        verbose_name_plural = _('Workspace cells')
