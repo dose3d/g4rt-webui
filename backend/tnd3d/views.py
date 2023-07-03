@@ -162,3 +162,4 @@ class WorkspaceCellViewSet(VariousSerializersViewSet):
     queryset = WorkspaceCell.objects.all()
     serializer_class = WorkspaceCellSerializer
     create_serializer_class = WorkspaceCellCreateSerializer
+    filterset_fields = ['workspace']
