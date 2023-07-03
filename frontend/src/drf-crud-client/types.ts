@@ -1,6 +1,4 @@
-import { AxiosError, AxiosInstance, AxiosRequestConfig, Method } from 'axios';
-import { DrfError } from './errors';
-import { FieldValues } from 'react-hook-form';
+import { AxiosInstance } from 'axios';
 
 /**
  * Options for axios request.
@@ -12,18 +10,6 @@ export interface AxiosOptions {
    * If not provided, the useSimpleJwtAxios is used by default.
    */
   axiosInstance?: AxiosInstance;
-}
-
-export interface MutationOptions<
-  Request extends FieldValues = FieldValues,
-  Response extends FieldValues = Request,
-  TContext = undefined,
-> {
-  axiosInstance?: AxiosInstance;
-  config?: Omit<AxiosRequestConfig<Request>, 'data' | 'url' | 'method'>;
-  onSuccess?: (data: Response, values: Request, context?: TContext) => void;
-  onError?: (err: AxiosError<DrfError<Request>, Request>, values: Request, context?: TContext) => void;
-  endpoint: string;
 }
 
 /**
@@ -91,14 +77,6 @@ export interface ActionOptions {
    * @see buildEndpoint
    */
   actionQK?: string;
-}
-
-export interface ModelOptions {
-  queryKey: string;
-}
-
-export interface ChangeOptions {
-  method: Method;
 }
 
 export interface PaginatedOptions {

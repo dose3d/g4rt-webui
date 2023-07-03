@@ -1,25 +1,24 @@
 import { DefaultLoginRequest, JwtTokens } from './types';
-import { UseDrfMutation, useDrfMutation } from './useDrfMutation';
+import { UseMutationWrapper, useMutationWrapper } from './useMutationWrapper';
 import { FieldValues } from 'react-hook-form';
 import { DEFAULT_LOGIN_ENDPOINT, DEFAULT_MUTATION_KEY } from './consts';
 import axios from 'axios';
 
 export function useSimpleJwtClient<LoginRequest extends FieldValues = DefaultLoginRequest, TContext = unknown>(
-  params: UseDrfMutation<JwtTokens, LoginRequest, TContext>,
+  params: UseMutationWrapper<JwtTokens, LoginRequest, TContext> & { url?: string },
 ) {
   const {
-    endpoint = DEFAULT_LOGIN_ENDPOINT,
-    method = 'POST',
+    url = DEFAULT_LOGIN_ENDPOINT,
     mutationKey = [DEFAULT_MUTATION_KEY],
     axiosInstance = axios,
+    config = {},
     ...rest
   } = params;
 
-  return useDrfMutation<JwtTokens, LoginRequest, TContext>({
-    endpoint,
-    method,
+  return useMutationWrapper<JwtTokens, LoginRequest, TContext>({
     mutationKey,
     axiosInstance,
+    config: { url, ...config },
     ...rest,
   });
 }
