@@ -1,8 +1,8 @@
 import { AxiosError, AxiosRequestConfig } from 'axios';
 import { useQuery, UseQueryOptions, UseQueryResult } from '@tanstack/react-query';
-import { useSimpleJwtAxios } from './useSimpleJwtAxios';
 import { QueryKey } from '@tanstack/query-core';
 import { AxiosOptions } from './types';
+import { useAuthContext } from './useAuthContext';
 
 /**
  * Options for useQueryWrapper.
@@ -73,15 +73,16 @@ export function useQueryWrapper<
   TData = TQueryFnData,
   TQueryKey extends QueryKey = QueryKey,
 >(params: UseQueryWrapper<TQueryFnData, WrappedError, TData, TQueryKey>): UseQueryWrapperResult<TData, WrappedError> {
-  // get axiosInstance from JwtAuthContext context provider
-  const jwtAxios = useSimpleJwtAxios();
-
   // use axiosInstance from JwtAuthContext when not provided in params
-  const { axiosInstance = jwtAxios, endpoint, config, ...rest } = params;
+  const { axiosInstance, endpoint, config, ...rest } = params;
+
+  // get axiosInstance from AuthContext if not provided
+  const authContext = useAuthContext();
+  const ai = axiosInstance || authContext.buildAxiosInstance();
 
   // useQuery execution
   return useQuery({
-    queryFn: () => axiosInstance.get<TQueryFnData>(endpoint, config).then((res) => res.data),
+    queryFn: () => ai.get<TQueryFnData>(endpoint, config).then((res) => res.data),
     ...rest,
   });
 }

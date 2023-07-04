@@ -1,8 +1,8 @@
 import { AxiosError, AxiosResponse, AxiosRequestConfig } from 'axios';
 import { useMutation, UseMutationOptions, UseMutationResult } from '@tanstack/react-query';
-import { useSimpleJwtAxios } from './useSimpleJwtAxios';
 import { AxiosOptions } from './types';
 import { merge } from 'lodash';
+import { useAuthContext } from './useAuthContext';
 
 /**
  * Options for useMutationWrapper.
@@ -74,15 +74,12 @@ export type UseMutationWrapperResult<
 export function useMutationWrapper<TData = unknown, WrappedError = unknown, TVariables = void, TContext = unknown>(
   params: UseMutationWrapper<TData, WrappedError, TVariables, TContext>,
 ): UseMutationWrapperResult<TData, WrappedError, TVariables, TContext> {
-  // get axiosInstance from JwtAuthContext context provider
-  const jwtAxios = useSimpleJwtAxios();
-
   // use axiosInstance from JwtAuthContext when not provided in params
-  const {
-    axiosInstance = jwtAxios,
-    config: { data: confData = {}, method = 'POST', ...confRest } = {},
-    ...rest
-  } = params;
+  const { axiosInstance, config: { data: confData = {}, method = 'POST', ...confRest } = {}, ...rest } = params;
+
+  // get axiosInstance from AuthContext if not provided
+  const authContext = useAuthContext();
+  const ai = axiosInstance || authContext.buildAxiosInstance();
 
   // useMutation execution
   return useMutation({
@@ -93,7 +90,7 @@ export function useMutationWrapper<TData = unknown, WrappedError = unknown, TVar
         ...confRest,
       };
 
-      const ret = await axiosInstance.request<TData, AxiosResponse<TData>, TVariables>(conf);
+      const ret = await ai.request<TData, AxiosResponse<TData>, TVariables>(conf);
       return ret.data;
     },
     ...rest,

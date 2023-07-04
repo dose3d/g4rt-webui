@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { CloseIcon, HamburgerIcon } from './icons';
-import { JwtAuthContext } from '../drf-crud-client';
+import { useAuthContext } from '../drf-crud-client';
 
 const buttonCN = 'btn btn-ghost';
 
@@ -15,7 +15,7 @@ interface Props {
 }
 
 const Navbar = ({ toggle, onToggle }: Props) => {
-  const { user, logoutUser } = useContext(JwtAuthContext);
+  const { authData, cleanAuthData } = useAuthContext();
   return (
     <nav className="fixed z-30 w-full border-b border-gray-200 bg-white">
       <div className="p-3 lg:px-5 lg:pl-3">
@@ -31,9 +31,9 @@ const Navbar = ({ toggle, onToggle }: Props) => {
             </Link>
           </div>
           <div className="flex items-center">
-            {user ? (
+            {authData ? (
               <>
-                <button onClick={logoutUser} className={buttonCN}>
+                <button onClick={cleanAuthData} className={buttonCN}>
                   Logout
                 </button>
               </>

@@ -30,10 +30,7 @@
 
 import { DrfI18nResourceEn } from './i18n_en';
 import { DrfError, formatErrorToString, loadErrorsToRFH, useFormatErrorToString } from './errors';
-import { useSimpleJwtClient } from './useSimpleJwtClient';
-import { JwtAuthContext, JwtAuthProvider } from './JwtAuthContext';
 import { useSimpleJwtForm } from './useSimpleJwtForm';
-import { useSimpleJwtAxios } from './useSimpleJwtAxios';
 import { useQueryWrapper } from './useQueryWrapper';
 import { getEntityQueryKey } from './utils';
 import { useDrfEntity } from './useDrfEntity';
@@ -46,6 +43,10 @@ import { useDrfDelete } from './useDrfDelete';
 import { useDrfForm } from './useDrfForm';
 import { useDrfEntityForm, UseDrfEntityForm } from './useDrfEntityForm';
 import { useDrfList } from './useDrfList';
+import { AuthContext, AuthProvider } from './AuthContext';
+import { useAuthContext } from './useAuthContext';
+import { AuthManager } from './AuthManager';
+import { decodeJwtOrNull, SimpleJwtAuthManager } from './SimpleJwtAuthManager';
 
 export type { DrfError, PaginationController, UseDrfCUD, UseDrfEntityForm };
 export {
@@ -53,11 +54,7 @@ export {
   formatErrorToString,
   loadErrorsToRFH,
   useFormatErrorToString,
-  useSimpleJwtClient,
-  JwtAuthProvider,
-  JwtAuthContext,
   useSimpleJwtForm,
-  useSimpleJwtAxios,
   useQueryWrapper,
   getEntityQueryKey,
   useDrfEntity,
@@ -70,4 +67,10 @@ export {
   useDrfDelete,
   useDrfForm,
   useDrfEntityForm,
+  AuthProvider,
+  AuthContext,
+  useAuthContext,
+  AuthManager,
+  SimpleJwtAuthManager,
+  decodeJwtOrNull,
 };

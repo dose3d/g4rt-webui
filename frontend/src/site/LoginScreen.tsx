@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { CTextInput } from '../components/forms';
 import { ErrorAlert } from '../components/layout';
-import { JwtAuthContext, useFormatErrorToString, useSimpleJwtForm } from '../drf-crud-client';
+import { useAuthContext, useFormatErrorToString, useSimpleJwtForm } from '../drf-crud-client';
 
 function LoginScreen() {
-  const { loginUser } = useContext(JwtAuthContext);
+  const { setAuthData } = useAuthContext();
   const formatErrorToString = useFormatErrorToString();
 
   const {
@@ -12,7 +12,7 @@ function LoginScreen() {
     handleSubmitShort,
     mutation: { isLoading, failureReason },
   } = useSimpleJwtForm({
-    onSuccess: (r) => loginUser(r),
+    onSuccess: (r) => setAuthData(r, true),
     formProps: { defaultValues: { username: 'admin', password: 'admin' }, reValidateMode: 'onSubmit' },
   });
 
