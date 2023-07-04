@@ -5,15 +5,22 @@
  * - Axios - for web communication with JWT auth token (Bearer token),
  * - TanStack Query - for handle fetching, caching, synchronizing and updating server state,
  * - React Forms Hook - parse backend validation errors from DRF and insert to RFH validation errors.
+ * - i18next - translate frontend error messages.
  *
- * If you want to use SimpleJWT authentication please wrap by JwtAuthProvider.
- * Otherwise, please implement your own axiosInstance with your own interceptors.
- *
- * The layers of library for fetching data without mutation:
+ * The layers of library for fetching data:
  *
  * 1st layer: making RAW requests via axios with auth data injection
  *   - useQueryWrapper - GET requests
  *   - useMutationWrapper - POST (default), PUT, DELETE requests
+ *
+ * Auth data is injected from AuthProvider context provider.
+ * AuthProvider uses object of class AuthManager that implements methods
+ * for auth data injection to HTTP requests, load and store auth data in
+ * client's storage (i.e. localStorage or sessionStorage) and handle auth
+ * errors (i.e. session expiration in backend).
+ *
+ * By default, AuthProvider uses SimpleJwtAuthManager that implements these
+ * methods to work with SimpleJWT python's module.
  *
  * 2nd layer: making CRUD operations to Django Rest Framework (DRF) resources
  *   - useDrfEntity - fetch entity by primary key and caching
@@ -25,7 +32,9 @@
  * 3rd layer: passing backend validation errors to react-form-hooks errors
  *   - useDrfForm - RAW form and load validation errors from response
  *   - useDrfEntityForm - join useDrfForm and useDrfCUD functionality
- *
+ * The frontend errors (i.e. connection error) are translate by i18next.
+ * Errors from backend are passed to react-form-hooks directly as validation
+ * error of fields.
  */
 
 import { DrfI18nResourceEn } from './i18n_en';
