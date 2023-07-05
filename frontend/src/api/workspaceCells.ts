@@ -16,7 +16,10 @@ const WORKSPACE_CELL_ENDPOINT = {
 export function useWorkspaceCellCAddNew(workspace: number, type: 'm' | 'j') {
   return useDrfCUD({
     ...WORKSPACE_CELL_ENDPOINT,
-    config: { data: { workspace, type }, method: 'POST' },
+    config: {
+      data: { workspace, type, content: JSON.stringify({ fileId: 3, path: 'Dose3DTTree;1/CellDose', height: 400 }) },
+      method: 'POST',
+    },
   });
 }
 

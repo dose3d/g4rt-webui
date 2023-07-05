@@ -24,12 +24,12 @@ export function WorkspaceCells({ workspace }: Props) {
         <WorkspaceCell cell={o} key={i} />
       ))}
 
-      <ActionButton className="btn-info btn" drf={addMarkdownCell} icon={<AddIcon className="mr-2 h-5 w-5" />}>
-        Add description cell
+      <ActionButton className="btn-info btn" drf={addROOTCell} icon={<AddIcon className="h-6 w-6" />}>
+        Add ROOT cell
       </ActionButton>
 
-      <ActionButton className="btn-warning btn ml-2" drf={addROOTCell} icon={<AddIcon className="mr-2 h-5 w-5" />}>
-        Add ROOT cell
+      <ActionButton className="btn-warning btn ml-2" drf={addMarkdownCell} icon={<AddIcon className="h-6 w-6" />}>
+        Add description cell
       </ActionButton>
     </div>
   );
