@@ -28,7 +28,7 @@ function EditCell({ cell, onLeave }: EditCellProps) {
             onLeave();
           },
         })}
-        className="textarea-bordered textarea w-full"
+        className="textarea-bordered textarea h-48 w-full font-mono leading-tight"
       />
     </form>
   );
@@ -44,7 +44,7 @@ interface Props {
   cell: WorkspaceCellEntity;
 }
 
-function RenderRootCell({ fileId, path, height, pos }: JsonCellContent & {pos:number}) {
+function RenderRootCell({ fileId, path, height, pos }: JsonCellContent & { pos: number }) {
   const id = `cell_${pos}`;
 
   const { data: rootFile, isSuccess } = useJobRootFileDownload(fileId);
@@ -57,10 +57,14 @@ function RenderRootCell({ fileId, path, height, pos }: JsonCellContent & {pos:nu
     }
   }, [id, isSuccess, path, rootFile]);
 
-  return <div id={id} className="w-full" style={{ height }} />;
+  return (
+    <div className="mt-4">
+      <div id={id} className="w-full" style={{ height }} />
+    </div>
+  );
 }
 
-function RootCell({ content, pos }: { content: string, pos:number }) {
+function RootCell({ content, pos }: { content: string; pos: number }) {
   try {
     const { fileId, path, height } = JSON.parse(content) as JsonCellContent;
     return <RenderRootCell fileId={fileId} path={path} height={height} pos={pos} />;
@@ -70,10 +74,10 @@ function RootCell({ content, pos }: { content: string, pos:number }) {
 }
 
 function MarkdownCell({ content }: { content: string }) {
-  return <ReactMarkdown className="bg-amber-50">{content}</ReactMarkdown>;
+  return <ReactMarkdown className="prose w-full max-w-none">{content}</ReactMarkdown>;
 }
 
-function RenderCell({ content, type, pos }: { content: string; type: 'm' | 'j', pos:number }) {
+function RenderCell({ content, type, pos }: { content: string; type: 'm' | 'j'; pos: number }) {
   if (type === 'm') {
     return <MarkdownCell content={content} />;
   } else {
@@ -89,7 +93,7 @@ export function WorkspaceCell({ cell }: Props) {
   return (
     <div className="relative my-1 flex flex-row">
       <div className="basis-12 pt-1 text-center font-mono">[{cell.pos}]</div>
-      <div className={cn('grow p-1', { 'border border-gray-300': !edit })}>
+      <div className={cn('grow p-1', { 'border border-gray-300': !edit, 'bg-gray-50': !edit && type === 'm' })}>
         {edit ? <EditCell cell={cell} onLeave={stopEdit} /> : <RenderCell content={content} type={type} pos={pos} />}
       </div>
       <div className="absolute end-0 top-0 text-xs">
