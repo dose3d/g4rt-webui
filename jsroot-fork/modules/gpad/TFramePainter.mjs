@@ -782,8 +782,10 @@ const FrameInteractive = {
             this.zoom(zoom.name, zoom.min, zoom.max);
             this.zoomChangedInteractive(zoom.name, true);
          }
-         evnt.stopPropagation();
-         evnt.preventDefault();
+         // NKG: no lock global keys because they are used in other controls
+         // evnt.stopPropagation();
+         // evnt.preventDefault();
+         // NKG: end
       } else {
          let func = pp?.findPadButton(key);
          if (func) {
