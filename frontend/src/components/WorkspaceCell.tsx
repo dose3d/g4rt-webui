@@ -50,11 +50,16 @@ function RenderRootCell({ fileId, path, height, pos }: JsonCellContent & { pos: 
   const { data: rootFile, isSuccess } = useJobRootFileDownload(fileId);
 
   useEffect(() => {
+    let h: any = null;
     if (isSuccess && rootFile) {
-      const h = new HierarchyPainter('example', 'myTreeDiv');
+      h = new HierarchyPainter();
       h.setDisplay('simple', id);
       h.openRootFile(rootFile).then(() => h.display(path, '', true));
     }
+
+    return () => {
+      h?.cleanup();
+    };
   }, [id, isSuccess, path, rootFile]);
 
   return (
