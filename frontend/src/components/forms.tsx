@@ -138,3 +138,84 @@ export function CTextArea<TFieldValues extends FieldValues = FieldValues>({
 }: CTextAreaProps<TFieldValues>) {
   return <Controller name={name} control={control} render={(p) => <TextArea {...p} {...rest} />} />;
 }
+
+interface SelectAdds extends CommonAdds {
+  children: React.ReactNode;
+}
+
+interface SelectProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
+  extends SelectAdds,
+    RFHAdds<TFieldValues, TName> {}
+
+export function Select<
+  TFieldValues extends FieldValues = FieldValues,
+  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+>({
+  field,
+  fieldState,
+  title,
+  subtitle,
+  bottomRight,
+  placeHolder,
+  inputCN,
+  children,
+}: SelectProps<TFieldValues, TName>) {
+  const hasError = !!fieldState.error?.message;
+
+  return (
+    <LabelOutline title={title} subtitle={subtitle} bottomRight={bottomRight} error={fieldState.error?.message}>
+      <select
+        placeholder={placeHolder}
+        className={cn('select-bordered select w-full', inputCN, { 'select-error': hasError })}
+        {...field}
+      >
+        {children}
+      </select>
+    </LabelOutline>
+  );
+}
+
+interface CSelectProps<TFieldValues extends FieldValues = FieldValues> extends SelectAdds, ControlAdds<TFieldValues> {}
+
+export function CSelect<TFieldValues extends FieldValues = FieldValues>({
+  control,
+  name,
+  children,
+  ...rest
+}: CSelectProps<TFieldValues>) {
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={(p) => (
+        <Select {...p} {...rest}>
+          {children}
+        </Select>
+      )}
+    />
+  );
+}
+
+export function SelectOptions<T>({
+  options,
+  labelValue,
+  nullValue,
+}: {
+  options: T[];
+  labelValue: (o: T) => { label: string; value: string };
+  nullValue?: boolean | string;
+}) {
+  return (
+    <>
+      {nullValue && <option value="">{nullValue === true ? '-- select --' : nullValue}</option>}
+      {options.map((o, i) => {
+        const { label, value } = labelValue(o);
+        return (
+          <option key={i} value={value}>
+            {label}
+          </option>
+        );
+      })}
+    </>
+  );
+}
