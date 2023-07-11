@@ -748,6 +748,12 @@ class HierarchyPainter extends BasePainter {
          setHPainter(this);
    }
 
+   // NKG: onDisplay
+   setOnDisplay(onDisplay) {
+      this.onDisplay = onDisplay;
+   }
+   // NKG: end
+
    /** @summary Set basic colors
      * @private */
    setBasicColors() {
@@ -1910,6 +1916,13 @@ class HierarchyPainter extends BasePainter {
      * @param {boolean} [interactive] - if display was called in interactive mode, will activate selected drawing
      * @return {Promise} with created painter object */
    async display(itemname, drawopt, interactive) {
+
+      // NKG: launch onDisplay hook
+      if (this.onDisplay) {
+         this.onDisplay(itemname);
+      }
+      // NKG: end
+
       let painter = null,
           updating = false,
           item = null,
