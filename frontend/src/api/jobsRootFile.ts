@@ -1,4 +1,4 @@
-import { useDrfCUD, useDrfEntity, useQueryWrapper } from '../drf-crud-client';
+import { useDrfCUD, useDrfEntity, useDrfList, useQueryWrapper } from '../drf-crud-client';
 import { JobEntity, JobEntityListItem, JobRootFileEntity } from './jobs';
 
 export interface JobRootFileDetail extends JobRootFileEntity {
@@ -13,6 +13,12 @@ const JOB_ROOT_ENDPOINT = {
   api: '/api/',
   resource: 'jrf',
 };
+
+export function useJobRootFileList() {
+  return useDrfList<JobRootFileDetail>({
+    ...JOB_ROOT_ENDPOINT,
+  });
+}
 
 export function useJobRootFileEntity(primaryKey: number, refetchInterval = 0) {
   return useDrfEntity<JobRootFileDetail>({ ...JOB_ROOT_ENDPOINT, primaryKey, refetchInterval });

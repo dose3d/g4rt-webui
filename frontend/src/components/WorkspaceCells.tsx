@@ -4,15 +4,21 @@ import { WorkspaceEntity } from '../api/workspaces';
 import { WorkspaceCell } from './WorkspaceCell';
 import ActionButton from './ActionButton';
 import { AddIcon } from './icons';
+import { useCounter } from 'usehooks-ts';
 
 interface Props {
   workspace: WorkspaceEntity;
 }
 
+// FIX: force to rerender cells component
+export const RerenderFixContext = React.createContext(() => {});
+
 export function WorkspaceCells({ workspace }: Props) {
   const { data } = useWorkspaceCellList(workspace.id);
   const addMarkdownCell = useWorkspaceCellCAddNew(workspace.id, 'm');
   const addROOTCell = useWorkspaceCellCAddNew(workspace.id, 'j');
+
+  const { increment } = useCounter(1); // FIX: force to rerender cells component
 
   if (!data) {
     return <div>Loading...</div>;
@@ -21,7 +27,9 @@ export function WorkspaceCells({ workspace }: Props) {
   return (
     <div>
       {data.map((o, i) => (
-        <WorkspaceCell cell={o} key={i} />
+        <RerenderFixContext.Provider key={i} value={increment}>
+          <WorkspaceCell cell={o} />
+        </RerenderFixContext.Provider>
       ))}
 
       <ActionButton className="btn-info btn" drf={addROOTCell} icon={<AddIcon className="h-6 w-6" />}>

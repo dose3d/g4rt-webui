@@ -17,8 +17,19 @@ export function useWorkspaceCellCAddNew(workspace: number, type: 'm' | 'j') {
   return useDrfCUD({
     ...WORKSPACE_CELL_ENDPOINT,
     config: {
-      data: { workspace, type, content: JSON.stringify({ fileId: 3, path: 'Dose3DTTree;1/CellDose', height: 400 }) },
+      data: { workspace, type, content: JSON.stringify({ fileId: 0, path: '', height: 400 }) },
       method: 'POST',
+    },
+  });
+}
+
+export function useWorkspaceRootCellUpdate(data: WorkspaceCellEntity) {
+  return useDrfCUD<Partial<WorkspaceCellEntity>>({
+    ...WORKSPACE_CELL_ENDPOINT,
+    primaryKey: data.id,
+    config: {
+      method: 'PUT',
+      data,
     },
   });
 }

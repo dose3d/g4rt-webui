@@ -36,8 +36,8 @@ export function useWorkspaceList(pageSize = 10, refetchInterval = 10000) {
   });
 }
 
-export function useWorkspaceEntity(primaryKey: number, refetchInterval = 10000) {
-  return useDrfEntity<WorkspaceEntity>({ ...WORKSPACE_ENDPOINT, primaryKey, refetchInterval });
+export function useWorkspaceEntity(primaryKey: number) {
+  return useDrfEntity<WorkspaceEntity>({ ...WORKSPACE_ENDPOINT, primaryKey });
 }
 
 export function useWorkspaceDelete(primaryKey: number) {
