@@ -22,5 +22,23 @@ namespace Dose3dLauncher.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("dose3d")]
+        public string wsl_name {
+            get {
+                return ((string)(this["wsl_name"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:8080/")]
+        public string host {
+            get {
+                return ((string)(this["host"]));
+            }
+        }
     }
 }

@@ -138,8 +138,8 @@ namespace Dose3dLauncher
 
         #region WSLManagement
 
-        private string host = "http://localhost:8080/";
-        private string wsl = "dose3d";
+        private string host = Properties.Settings.Default.host;
+        private string wsl = Properties.Settings.Default.wsl_name;
 
         static readonly HttpClient client = new HttpClient();
         private Process processWsl;
