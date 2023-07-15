@@ -26,6 +26,20 @@ Execution:
 python main.py
 ```
 
+Terminal should be look like:
+
+```
+Load config from: /home/user/webinterface/config.txt
+Used config settings:
+QUEUE_DIR = /home/user/webinterface/var/dose3d/queue
+RUNNING_DIR = /home/user/webinterface/var/dose3d/running
+DONE_DIR = /home/user/webinterface/var/dose3d/done
+DOSE3D_EXEC = /home/user/dose3d-geant4-linac/build/executables/run-toml-mode
+SLEEP = 1
+
+Start loop QUEUE_DIR crawler loop...
+```
+
 ## Test
 
 Please prepare `../test/example_job.toml` by `README.md` and execute:

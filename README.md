@@ -10,14 +10,17 @@ Runner, backend and frontend for **geant4-rt**.
 
 How to install and execute Web Interface on WSL2 with Ubuntu 20.04 with configured **geant4-rt**:
 
-First: Setup the **cmvfs** env with running and activate conda environment:
+The web application requires python and postgresql for running the **Backend** and **Runner** and nodejs for build the **Frontend**.
+
+Python should be installed with `conda` environment for `dose3d`.
+
+The `nodejs` can be installed from Ubuntu repo recommend to install from official PPA repository because you will install new version:
 
 ```
-source setup-cvmfs-ubuntu2004.sh
-conda activate g4rt-env
+$ curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh
+$ sudo bash nodesource_setup.sh
+$ sudo apt install nodejs
 ```
-
-And next:
 
 ### 1. Clone repo
 
@@ -27,6 +30,11 @@ cd webinterface
 ```
 
 ### 2. Configure: `config.txt`
+
+The `config.txt` file contains settings for **Runner** and **Backend** applications.
+In this file you must configure directiory for jobs files and dose3d-geant4-linac execution.
+
+Please use sample of settings and modify:
 
 ```cp config.txt.sample config.txt``` 
 
@@ -45,146 +53,18 @@ DOSE3D_EXEC=/home/user/dose3d-geant4-linac/build/executables/run-toml-mode
 SLEEP=1
 ```
 
-### 3. Install dependency libraries for Web Interface
- 
-```
-python -m pip install -r requirements.txt
-```
+### 3. Configure and build applications
 
-### 4. Build **Frontend**
-
-```
-cd frontend
-npx npm install
-npx npm run build
-
-# go to Backend dir:
-cd ../backend
-python manage.py collectstatic
-```
-
-If ask:
-```
-You have requested to collect static files at the destination
-location as specified in your settings:
-
-    /home/user/webinterface/backend/static_collected
-
-This will overwrite existing files!
-Are you sure you want to do this?
-
-Type 'yes' to continue, or 'no' to cancel: 
-```
-
-Please enter `yes`.
-
-### 5. Initialize **Backend** database
-
-```
-# in Backend dir:
-python manage.py migrate
-python manage.py createsuperuser --username admin --email admin@admin.com
-```
-
-Please set password `admin` and when you see the warning:
-```
-The password is too similar to the username.
-This password is too short. It must contain at least 8 characters.
-This password is too common.
-Bypass password validation and create user anyway? [y/N]:
-```
-
-Please confirm `y`.
+See `backend/README.md`.
 
 ## Run **Runner** and **Backend**
 
-In two separated terminals you must launch **Runner** and **Backend**
+For development you can run **Runner** and **Backend** in separated terminals.
 
-### Launch **Runner** 
+Please look on `run_in_screen.sh` file. Its launch **Runner** and **Backend** in **screen** terminal.
 
-In separated terminal please setup **cmvfs** and conda:
+## Upgrade from repo
 
-```
-cd dose3d-geant4-linac
-source setup-cvmfs-ubuntu2004.sh
-conda activate g4rt-env
-cd ..
+See `backend/README.md` for upgrade **Backend** and **Frontend**.
 
-# and launch Runner:
-cd webinterface/runner
-python main.py
-```
-
-Terminal should be look like:
-
-```
-Load config from: /home/user/webinterface/config.txt
-Used config settings:
-QUEUE_DIR = /home/user/webinterface/var/dose3d/queue
-RUNNING_DIR = /home/user/webinterface/var/dose3d/running
-DONE_DIR = /home/user/webinterface/var/dose3d/done
-DOSE3D_EXEC = /home/user/dose3d-geant4-linac/build/executables/run-toml-mode
-SLEEP = 1
-
-Start loop QUEUE_DIR crawler loop...
-```
-
-### Launch **Backend** 
-
-In separated terminal please setup **cmvfs** and conda:
-
-```
-cd dose3d-geant4-linac
-source setup-cvmfs-ubuntu2004.sh
-conda activate g4rt-env
-cd ..
-
-# and launch web server with Backend:
-cd webinterface/backend
-daphne -p 8080 -b 127.0.0.1 backend.asgi:application
-# you can use another free TCP port instead 8080
-```
-
-Terminal should be look like:
-
-```
-2023-04-18 13:39:44,352 INFO     Starting server at tcp:port=8080:interface=127.0.0.1
-2023-04-18 13:39:44,353 INFO     HTTP/2 support not enabled (install the http2 and tls Twisted extras)
-2023-04-18 13:39:44,353 INFO     Configuring endpoint tcp:port=8080:interface=127.0.0.1
-2023-04-18 13:39:44,354 INFO     Listening on TCP address 127.0.0.1:8080
-```
-
-Now, you can open `http://127.0.0.1:8080/` in web browser. Please sing in with credentials used on `python manage.py createsuperuser`.
-
-## How to update Web Interface
-
-For update Web Interface you must:
-* close **Runner** and **Backend** instance,
-* pull changes from git,
-* install new dependency for python,
-* compile **Frontend**,
-* run database migration scripts,
-* run **Runner** and **Backend** again.
-
-```
-# Pull changes from git:
-cd webinterface
-git pull
-
-# Install new dependency for python:
-python -m pip install --upgrade -r requirements.txt
-
-# Install new depenedncy for JavaScript and recompile frontend:
-cd frontend
-npx npm install 
-npx npm run build 
-
-# go to Backend dir and collectstatic again:
-cd ../backend
-python manage.py collectstatic
-
-# apply database migrations script:
-python manage.py migrate
-```
-
-Now you can run **Runner** and **Backend** again.
+Next, restart **Runner**.
