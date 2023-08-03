@@ -4,7 +4,6 @@ docs/jsdocfull/
 .project
 .gitattributes
 *.root
-*.json
 *.html
 demo/node/node_modules
 demo/node/*.svg
@@ -19,7 +18,6 @@ build/hist2d.min.js
 build/hist.js
 build/hist.min.js
 openui5dist
-package-lock.json
 httpcontrol.C
 httpserver.C
 Go4ExampleSimple
