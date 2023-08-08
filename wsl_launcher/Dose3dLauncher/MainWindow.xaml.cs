@@ -8,6 +8,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management;
+using Dose3dLauncher.WSLChecker;
 
 namespace Dose3dLauncher
 {
@@ -63,8 +65,45 @@ namespace Dose3dLauncher
             //notifyIcon.Click += new EventHandler(notifyIcon_Click);
             notifyIcon.DoubleClick += new EventHandler(notifyIcon_Click);
 
+            
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
             SetStatus(CheckDose3dRunning() ? "running" : "not running");
-            AppendLog("Hello, please clicks 'Start' for open Dose3D web interface");
+
+            if (!Checkers.CheckWslInstalled())
+            {
+                RunConfigWindow();
+            }
+            else
+            {
+                UpdateButtonsEnabled();
+                AppendLog("Hello, please clicks 'Open Dose3D' for open Dose3D web interface");
+            }
+        }
+
+        private void RunConfigWindow()
+        {
+            var iw = new InstallWindow();
+            iw.Owner = this;
+            iw.ShowDialog();
+
+            if (!Checkers.CheckWslInstalled())
+            {
+                AppendLog("Dose3D virtual machine is not installed. Please clicks 'Configure' button and install.");
+                StartButton.IsEnabled = false;
+                ShutdownButton.IsEnabled = false;
+            }
+            else
+            {
+                UpdateButtonsEnabled();
+            }
+        }
+
+        private void UpdateButtonsEnabled()
+        {
+            ShutdownButton.IsEnabled = Checkers.CheckWslRunning();
         }
 
         private async void notifyIcon_Click(object Sender, EventArgs e)
@@ -118,6 +157,11 @@ namespace Dose3dLauncher
             });
         }
 
+        private void AboutButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private async void StartButton_Click(object sender, RoutedEventArgs e)
         {
             await Task.Run(RunWsl);
@@ -126,6 +170,11 @@ namespace Dose3dLauncher
         private async void ShutdownButton_Click(object sender, RoutedEventArgs e)
         {
             await Task.Run(StopWsl);
+        }
+
+        private void ConfigureButton_Click(object sender, RoutedEventArgs e)
+        {
+            RunConfigWindow();
         }
 
         protected override void OnStateChanged(EventArgs e)
@@ -138,46 +187,15 @@ namespace Dose3dLauncher
 
         #region WSLManagement
 
-        private string host = Properties.Settings.Default.host;
-        private string wsl = Properties.Settings.Default.wsl_name;
-
         static readonly HttpClient client = new HttpClient();
         private Process processWsl;
 
-        private static Process RunConsoleProcessInHiddenWindow(string FileName, string Arguments)
-        {
-            var startInfo = new ProcessStartInfo
-            {
-                FileName = FileName,
-                Arguments = Arguments,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                StandardOutputEncoding = System.Text.Encoding.Unicode
-            };
-
-            var process = new Process();
-            process.StartInfo = startInfo;
-            process.EnableRaisingEvents = true;
-            process.Start();
-            return process;
-        }
-
-        private static IEnumerable<string> GetLinesFromProcess(Process process)
-        {
-            string line;
-            while ((line = process.StandardOutput.ReadLine()) != null)
-            {
-                yield return line;
-            }
-        }
 
         private bool TryConnectWebApp()
         {
             try
             {
-                var response = client.GetAsync(host);
+                var response = client.GetAsync(Checkers.Host);
                 response.Wait();
                 return response.Result.EnsureSuccessStatusCode().IsSuccessStatusCode;
             }
@@ -187,14 +205,9 @@ namespace Dose3dLauncher
             }
         }
 
-        private bool CheckWslRunning()
-        {
-            return GetLinesFromProcess(RunConsoleProcessInHiddenWindow("wsl", "-l --running")).Any(line => line.Trim() == wsl);
-        }
-
         private bool CheckDose3dRunning()
         {
-            return CheckWslRunning() && TryConnectWebApp();
+            return Checkers.CheckWslRunning() && TryConnectWebApp();
         }
 
         private void ShutdownWsl()
@@ -205,12 +218,12 @@ namespace Dose3dLauncher
                 processWsl = null;
             }
 
-            RunConsoleProcessInHiddenWindow("wsl", "--shutdown " + wsl).WaitForExit();
+            Checkers.RunConsoleProcessInHiddenWindow("wsl", "--shutdown " + Checkers.Wsl).WaitForExit();
         }
 
         private void OpenBrowser()
         {
-            Process.Start(host);
+            Process.Start(Checkers.Host);
         }
 
         private Task WaitingForBackendReady()
@@ -231,7 +244,7 @@ namespace Dose3dLauncher
 
                     if (!TryConnectWebApp()) continue;
 
-                    AppendLog("... ready, launch browser: " + host);
+                    AppendLog("... ready, launch browser: " + Checkers.Host);
                     return;
                 }
             });
@@ -254,7 +267,7 @@ namespace Dose3dLauncher
                 ShutdownWsl();*/
 
                 AppendLog("Start WSL...");
-                processWsl = RunConsoleProcessInHiddenWindow("wsl", "-d " + wsl);
+                processWsl = Checkers.RunConsoleProcessInHiddenWindow("wsl", "-d " + Checkers.Wsl);
                 AppendLog("... starting ...");
 
                 await WaitingForBackendReady();

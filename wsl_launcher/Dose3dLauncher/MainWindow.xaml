@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Dose3dLauncher"
         mc:Ignorable="d"
-        Title="Dose3D" Height="450" Width="800">
+        Title="Dose3D" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
@@ -21,8 +21,10 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Button Grid.Column="1" Content="Start" Click="StartButton_Click" Margin="4 4 32 4" Height="32"/>
-            <Button Grid.Column="2" Content="Shutdown" Click="ShutdownButton_Click" Margin="32 4 4 4" Height="32"/>
+            <Button Grid.Column="0" Content="About" Click="AboutButton_Click" Margin="4 4 4 4" Width="80" HorizontalAlignment="Left" Height="32"/>
+            <Button Grid.Column="1" Content="Open Dose3D" Click="StartButton_Click" Margin="4 4 32 4" Height="32" x:Name="StartButton" />
+            <Button Grid.Column="2" Content="Shutdown VM" Click="ShutdownButton_Click" Margin="32 4 4 4" Height="32" x:Name="ShutdownButton"/>
+            <Button Grid.Column="3" Content="Configure" Click="ConfigureButton_Click" Margin="4 4 4 4" Width="80" HorizontalAlignment="Right" Height="32"/>
         </Grid>
     </Grid>
 </Window>
