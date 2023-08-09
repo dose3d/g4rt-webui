@@ -65,7 +65,7 @@ namespace Dose3dLauncher
             //notifyIcon.Click += new EventHandler(notifyIcon_Click);
             notifyIcon.DoubleClick += new EventHandler(notifyIcon_Click);
 
-            
+            RunStatusTask();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -297,5 +297,55 @@ namespace Dose3dLauncher
             }
         }
         #endregion
+
+        #region Status
+
+        private bool closing = false;
+        private Task _statusTask;
+
+        private void RunStatusTask()
+        {
+            _statusTask = Task.Run(() =>
+            {
+                int counter = 0;
+                while (!closing)
+                {
+                    Thread.Sleep(100);
+                    counter++;
+                    if (counter > 30)
+                    {
+                        counter = 0;
+                        bool running = Checkers.CheckWslRunning();
+                        Dispatcher.Invoke(() =>
+                        {
+                            if (running)
+                            {
+                                ShutdownButton.IsEnabled = true;
+                            }
+                            else
+                            {
+                                ShutdownButton.IsEnabled = false;
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        private void CloseBackgroundTasks()
+        {
+            closing = true;
+            if (_statusTask != null)
+            {
+                _statusTask.Wait();
+            }
+        }
+
+        #endregion
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            CloseBackgroundTasks();
+        }
     }
 }
