@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Dose3dLauncher.Properties;
+using static System.Windows.Forms.LinkLabel;
 using Path = System.IO.Path;
 
 namespace Dose3dLauncher.WSLChecker
@@ -24,7 +25,7 @@ namespace Dose3dLauncher.WSLChecker
     /// </summary>
     public partial class InstallWindow : Window
     {
-        private bool Closing = false;
+        private bool DoClosing = false;
 
         private readonly Task<bool> BackgroundCheckerTask;
         private string VmNameTextBoxValue = "";
@@ -39,7 +40,7 @@ namespace Dose3dLauncher.WSLChecker
             BackgroundCheckerTask = Task.Run(() =>
             {
                 var oldWslName = "";
-                while (!Closing)
+                while (!DoClosing)
                 {
                     Thread.Sleep(500);
                     var newWslName = VmNameTextBoxValue;
@@ -54,17 +55,17 @@ namespace Dose3dLauncher.WSLChecker
                             if (installed)
                             {
                                 InstallButton.IsEnabled = false;
-                                BackupButton.IsEnabled = true;
+                                BackupButton.IsEnabled = true && LongTask == null;
                                 RestoreButton.IsEnabled = false;
-                                UninstallButton.IsEnabled = true;
+                                UninstallButton.IsEnabled = true && LongTask == null;
                                 InstalledTextBlock.Visibility = Visibility.Visible;
                                 NotInstalledTextBlock.Visibility = Visibility.Collapsed;
                             }
                             else
                             {
-                                InstallButton.IsEnabled = true;
+                                InstallButton.IsEnabled = true && LongTask == null;
                                 BackupButton.IsEnabled = false;
-                                RestoreButton.IsEnabled = true;
+                                RestoreButton.IsEnabled = true && LongTask == null;
                                 UninstallButton.IsEnabled = false;
                                 InstalledTextBlock.Visibility = Visibility.Collapsed;
                                 NotInstalledTextBlock.Visibility = Visibility.Visible;
@@ -90,11 +91,11 @@ namespace Dose3dLauncher.WSLChecker
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            Closing = true;
+            DoClosing = true;
             BackgroundCheckerTask.Wait();
         }
 
-        private string MakeBackup()
+        private string GetFileForSaveBackup()
         {
             // Configure open file dialog box
             var dialog = new Microsoft.Win32.SaveFileDialog();
@@ -105,42 +106,64 @@ namespace Dose3dLauncher.WSLChecker
             // Show open file dialog box
             bool? result = dialog.ShowDialog();
 
-            // Process open file dialog box results
-            if (result == true)
+            return result == true ? dialog.FileName : null;
+        }
+
+        private void MakeBackup()
+        {
+            string filename = GetFileForSaveBackup();
+            if (filename != null)
             {
-                string filename = dialog.FileName;
-                var p = new Process
+                DisableForLongTask();
+                LongTask = Task.Run((() =>
                 {
-                    StartInfo =
-                    {
-                        FileName = "wsl.exe",
-                        Arguments = "--export " + Checkers.Wsl + " " + filename
-                    }
-                };
-                p.Start();
-                p.WaitForExit();
-                if (p.ExitCode == 0)
+                    SaveBackup(filename, true);
+                    FinishTask();
+                }));
+            }
+        }
+
+        private bool SaveBackup(string filename, bool openExplorer)
+        {
+            string args = "--export " + Checkers.Wsl + " " + filename;
+            AppendLog("Save backup of VM to: " + filename);
+            AppendLog("\ncommand:");
+            AppendLog("wsl.exe" + args);
+
+            var process = Checkers.RunConsoleProcessInHiddenWindow("wsl.exe", args);
+            RunningProcess = process;
+            if (process != null)
+            {
+                string line;
+                while ((line = process.StandardOutput.ReadLine()) != null)
                 {
-                    return filename;
+                    AppendLog(line);
                 }
             }
 
-            return null;
+            process.WaitForExit();
+            AppendLog("Finish, exit code: " + process.ExitCode + "\n");
+
+            if (process.ExitCode == 0 && openExplorer)
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    Arguments = (new DirectoryInfo(filename)).Parent.FullName,
+                    FileName = "explorer.exe"
+                };
+
+                Process.Start(startInfo);
+            }
+
+            return process.ExitCode == 0;
         }
 
         private void BackupButton_Click(object sender, RoutedEventArgs e)
         {
-            var filename = MakeBackup();
-            ProcessStartInfo startInfo = new ProcessStartInfo
-            {
-                Arguments = (new DirectoryInfo(filename)).Parent.FullName,
-                FileName = "explorer.exe"
-            };
-
-            Process.Start(startInfo);
+            MakeBackup();
         }
 
-        private string RestoreFromBackup()
+        private void RestoreFromBackup()
         {
             // Configure open file dialog box
             var dialog = new Microsoft.Win32.OpenFileDialog();
@@ -153,15 +176,10 @@ namespace Dose3dLauncher.WSLChecker
             string filename = dialog.FileName;
 
             // Process open file dialog box results
-            if (result == true)
-            {
-                return RestoreFromFile(filename);
-            }
-
-            return null;
+            RestoreFromFile(filename);
         }
 
-        private string RestoreFromFile(string filename)
+        private void RestoreFromFile(string filename)
         {
             var doseDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Dose3D");
 
@@ -170,7 +188,7 @@ namespace Dose3dLauncher.WSLChecker
                 Directory.CreateDirectory(doseDir);
             }
 
-            var p = new Process
+            /*var p = new Process
             {
                 StartInfo =
                 {
@@ -179,14 +197,54 @@ namespace Dose3dLauncher.WSLChecker
                 }
             };
             p.Start();
-            p.WaitForExit();
-            if (p.ExitCode == 0)
+            p.WaitForExit();*/
+
+            var dest = Path.Combine(doseDir, Checkers.Wsl + ".img");
+            var args = "--import " + Checkers.Wsl + " " + dest + " " + filename;
+
+            DisableForLongTask();
+            AppendLog("Start installation virtual machine:");
+            AppendLog("VM name: " + Checkers.Wsl);
+            AppendLog("VM source file: " + filename);
+            AppendLog("VM location: " + Path.Combine(doseDir, Checkers.Wsl + ".img"));
+            AppendLog("\ncommand:");
+            AppendLog("wsl.exe " + args + "\n");
+
+            LongTask = Task.Run(() =>
             {
-                return filename;
-            }
-            return null;
+                var process = Checkers.RunConsoleProcessInHiddenWindow("wsl.exe", args);
+                RunningProcess = process;
+                if (process != null)
+                {
+                    string line;
+                    while ((line = process.StandardOutput.ReadLine()) != null)
+                    {
+                        AppendLog(line);
+                    }
+                }
+
+                process.WaitForExit();
+                AppendLog("Finish, exit code: " + process.ExitCode + "\n");
+                FinishTask();
+            });
         }
 
+        private void UninstallVM()
+        {
+            string args = "--unregister " + Checkers.Wsl;
+            AppendLog("Uninstall VM: " + Checkers.Wsl);
+            AppendLog("\ncommand:\nwsl.exe " + args);
+            var process = Checkers.RunConsoleProcessInHiddenWindow("wsl.exe", args);
+            if (process != null)
+            {
+                string line;
+                while ((line = process.StandardOutput.ReadLine()) != null)
+                {
+                    AppendLog(line);
+                }
+            }
+            AppendLog("\n");
+        }
 
         private void UninstallButton_Click(object sender, RoutedEventArgs e)
         {
@@ -199,26 +257,39 @@ namespace Dose3dLauncher.WSLChecker
             }
             else if (ret == MessageBoxResult.Yes)
             {
-                if (MakeBackup() != null)
+                string filename = GetFileForSaveBackup();
+                if (filename != null)
                 {
-                    Checkers.RunConsoleProcessInHiddenWindow("wsl", "--unregister " + Checkers.Wsl);
+                    DisableForLongTask();
+                    LongTask = Task.Run(() =>
+                    {
+                        if (SaveBackup(filename, false) && !BrokeTask)
+                        {
+                            UninstallVM();
+                        }
+                        FinishTask();
+                    });
                 }
-
-                ForceCheck = true;
             }
-            else
+            else if (ret == MessageBoxResult.No)
             {
-                Checkers.RunConsoleProcessInHiddenWindow("wsl", "--unregister " + Checkers.Wsl);
-                ForceCheck = true;
+                DisableForLongTask();
+                LongTask = Task.Run(() =>
+                {
+                    UninstallVM();
+                    FinishTask();
+                });
             }
+        }
+
+        private void BreakButton_Click(object sender, RoutedEventArgs e)
+        {
+            BreakTask();
         }
 
         private void RestoreButton_Click(object sender, RoutedEventArgs e)
         {
-            if (RestoreFromBackup() != null)
-            {
-                ForceCheck = true;
-            }
+            RestoreFromBackup();
         }
 
         private void InstallButton_Click(object sender, RoutedEventArgs e)
@@ -229,7 +300,6 @@ namespace Dose3dLauncher.WSLChecker
             if (File.Exists(img))
             {
                 RestoreFromFile(img);
-                ForceCheck = true;
             }
             else
             {
@@ -237,6 +307,61 @@ namespace Dose3dLauncher.WSLChecker
                     "File " + img +
                     " not exists. If you remove factory VM image you must reinstall Dose3D again or restore VM from backup.",
                     "Install factory reset of VM", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private void AppendLog(string message)
+        {
+            Dispatcher.BeginInvoke(new Action(() => { LogTextBox.Text += message + "\n"; }));
+        }
+
+        #region LongTask
+
+        private Task LongTask;
+        private bool BrokeTask;
+        private Process RunningProcess;
+
+        private void BreakTask()
+        {
+            AppendLog("\nBroken by user\n");
+            BrokeTask = true;
+            RunningProcess?.Kill();
+
+            LongTask?.Wait();
+            //FinishTask();
+        }
+
+        private void FinishTask()
+        {
+            Dispatcher.BeginInvoke( new Action(() =>
+            {
+                LongTask = null;
+                BrokeTask = false;
+                RunningProcess = null;
+                BreakButton.IsEnabled = false;
+                CloseButton.IsEnabled = true;
+                ForceCheck = true;
+                VmNameTextBox.IsEnabled = true;
+            }));
+        }
+
+        private void DisableForLongTask()
+        {
+            BreakButton.IsEnabled = true;
+            CloseButton.IsEnabled = false;
+            InstallButton.IsEnabled = false;
+            BackupButton.IsEnabled = false;
+            RestoreButton.IsEnabled = false;
+            UninstallButton.IsEnabled = false;
+            VmNameTextBox.IsEnabled = false;
+        }
+
+        #endregion
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (LongTask != null)
+            {
+                e.Cancel = true;
             }
         }
     }

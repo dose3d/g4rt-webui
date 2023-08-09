@@ -5,33 +5,47 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Dose3dLauncher.WSLChecker"
         mc:Ignorable="d"
-        Title="Configure Dose3D virtual machine" Height="198" Width="495" Closed="Window_Closed" WindowStartupLocation="CenterOwner">
-    <StackPanel>
-        <Grid Margin="4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+        Title="Configure Dose3D virtual machine" Height="334" Width="623" Closed="Window_Closed" WindowStartupLocation="CenterOwner" Closing="Window_Closing">
+    <Grid Margin="4">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <Grid Margin="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">VM name:</TextBlock>
-            <TextBox Grid.Column="1" Grid.Row="0" Margin="4 4 0 4" x:Name="VmNameTextBox" TextChanged="VmNameTextBox_TextChanged"></TextBox>
+                <TextBlock Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">VM name:</TextBlock>
+                <TextBox Grid.Column="1" Grid.Row="0" Margin="4 4 0 4" x:Name="VmNameTextBox" TextChanged="VmNameTextBox_TextChanged"></TextBox>
 
-            <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center">VM status:</TextBlock>
-            <TextBlock Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="4" FontWeight="Bold" Foreground="DarkGreen" x:Name="InstalledTextBlock" Visibility="Hidden">installed</TextBlock>
-            <TextBlock Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="4" FontWeight="Bold" Foreground="DarkRed" x:Name="NotInstalledTextBlock" Visibility="Hidden">not installed</TextBlock>
-        </Grid>
+                <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center">VM status:</TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="4" FontWeight="Bold" Foreground="DarkGreen" x:Name="InstalledTextBlock" Visibility="Hidden">installed</TextBlock>
+                <TextBlock Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="4" FontWeight="Bold" Foreground="DarkRed" x:Name="NotInstalledTextBlock" Visibility="Hidden">not installed</TextBlock>
+            </Grid>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Width="100" Height="28" Margin="8" x:Name="InstallButton" Click="InstallButton_Click">Install VM</Button>
-            <Button Width="100" Height="28" Margin="8" x:Name="BackupButton" Click="BackupButton_Click">Backup VM</Button>
-            <Button Width="100" Height="28" Margin="8" x:Name="RestoreButton" Click="RestoreButton_Click">Restore VM</Button>
-            <Button Width="100" Height="28" Margin="8" x:Name="UninstallButton" Click="UninstallButton_Click">Remove VM</Button>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Width="100" Height="28" Margin="8" x:Name="InstallButton" Click="InstallButton_Click">Install VM</Button>
+                <Button Width="100" Height="28" Margin="8" x:Name="BackupButton" Click="BackupButton_Click">Backup VM</Button>
+                <Button Width="100" Height="28" Margin="8" x:Name="RestoreButton" Click="RestoreButton_Click">Restore VM</Button>
+                <Button Width="100" Height="28" Margin="8" x:Name="UninstallButton" Click="UninstallButton_Click">Remove VM</Button>
+                <Button Width="100" Height="28" Margin="32 8 8 8" x:Name="BreakButton" Click="BreakButton_Click" IsEnabled="False">Break</Button>
+            </StackPanel>
+
+            
         </StackPanel>
 
-        <Button Width="150" Height="28" Margin="8" x:Name="CloseButton" Click="CloseButton_Click">Return to main window</Button>
-    </StackPanel>
+        <TextBlock Grid.Row="1" Margin="4 8 4 4">Log:</TextBlock>
+        <TextBox Grid.Row="2" x:Name="LogTextBox" Margin="4 4 4 4" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" />
+
+        <Button Grid.Row="3" Width="150" Height="28" Margin="8" x:Name="CloseButton" Click="CloseButton_Click">Return to main window</Button>
+    </Grid>
 </Window>
