@@ -14,6 +14,8 @@ from pathlib import Path
 from datetime import timedelta
 import mimetypes
 
+from backend.settings_local import DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -130,11 +132,11 @@ CORS_ALLOW_ALL_ORIGINS = True
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dose3d_test',
-        'USER': 'dose3d',
-        'PASSWORD': 'dose3d',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
         'ATOMIC_REQUESTS': True
     }
 }

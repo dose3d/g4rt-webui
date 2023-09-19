@@ -1,0 +1,5 @@
+DB_NAME = 'dose3d'
+DB_USER = 'dose3d'
+DB_PASSWORD = 'dose3d'
+DB_HOST = '127.0.0.1'
+DB_PORT = '5432'
