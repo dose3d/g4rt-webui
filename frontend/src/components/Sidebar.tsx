@@ -12,7 +12,7 @@ interface NavLinkProps {
 
 function NavLink({ to, children, label }: NavLinkProps) {
   const resolved = useResolvedPath(to);
-  const match = useMatch({ path: resolved.pathname, end: true });
+  const match = useMatch({ path: resolved.pathname, end: false });
 
   return (
     <Link
