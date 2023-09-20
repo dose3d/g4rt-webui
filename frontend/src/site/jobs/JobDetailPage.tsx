@@ -11,7 +11,7 @@ import {
 } from '../../components/layout';
 import {
   JOB_STATUS_NAME,
-  JobStatus,
+  JobEntity,
   useJobDelete,
   useJobEntity,
   useJobKill,
@@ -20,13 +20,14 @@ import {
   useJobRun,
 } from '../../api/jobs';
 import { formatDate, formatFileSize } from '../../utils/formatValues';
-import { CloseIcon, DeleteIcon, DocumentIcon, EditIcon, PauseIcon, PlayIcon } from "../../components/icons";
+import { CloseIcon, DeleteIcon, DocumentIcon, EditIcon, PauseIcon, PlayIcon } from '../../components/icons';
 import ActionButton from '../../components/ActionButton';
 import { useJobRootFileRender } from '../../api/jobsRootFile';
 import { useQueryClient } from '@tanstack/react-query';
 import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
 import { JobsPageBreadcrumbs } from './JobsPage';
 import { getEntityQueryKey } from '../../drf-crud-client';
+import moment from "moment";
 
 function LabelValueHOutline({ children }: { children: React.ReactNode }) {
   return <section className="table w-auto">{children}</section>;
@@ -46,17 +47,25 @@ function LogsAutoRefresh({ id, interval }: { id: number; interval: number }) {
   return <>{data}</>;
 }
 
-function JobButtons({ jobId, status }: { jobId: number; status: JobStatus }) {
+function JobButtons({ job }: { job: JobEntity }) {
+  const { id: jobId, status, title, description, toml, args } = job;
+
   const killAction = useJobKill(jobId);
   const deleteAction = useJobDelete(jobId);
   const runAction = useJobRun(jobId);
   const rfkAction = useJobRemoveFromQueue(jobId);
   const navigate = useNavigate();
 
+  const editAsNewJob = () => {
+    const reg = / - run again: \d\d\d\d-\d\d-\d\d \d\d:\d\d/;
+    const newTitle = `${title.replace(reg, '')} - run again: ${moment().format('yyyy-MM-DD HH:mm')}`;
+    navigate('/jobs/create', { state: { title: newTitle, description, toml, args } });
+  };
+
   return (
     <div className="flex gap-4">
       <ActionButton
-        className="btn-success btn-sm btn"
+        className="btn btn-success btn-sm"
         drf={runAction}
         disabled={status != 'init'}
         icon={<PlayIcon className="h-5 w-5" />}
@@ -65,7 +74,7 @@ function JobButtons({ jobId, status }: { jobId: number; status: JobStatus }) {
         <span className="ml-2"> Run</span>
       </ActionButton>
       <ActionButton
-        className="btn-warning btn-sm btn"
+        className="btn btn-warning btn-sm"
         drf={rfkAction}
         disabled={status != 'queue'}
         icon={<PauseIcon className="h-5 w-5" />}
@@ -74,14 +83,14 @@ function JobButtons({ jobId, status }: { jobId: number; status: JobStatus }) {
         <span className="ml-2"> Dequeue</span>
       </ActionButton>
       <button
-        className="btn-warning btn-sm btn"
-        title="Create new job using settings from this job. Not implemented yet."
-        disabled
+        className="btn btn-warning btn-sm"
+        title="Create new job using settings from this job."
+        onClick={editAsNewJob}
       >
         <EditIcon className="mr-2 h-5 w-5" /> Edit as new job
       </button>
       <ActionButton
-        className="btn-error btn-sm btn"
+        className="btn btn-error btn-sm"
         drf={killAction}
         disabled={status != 'running'}
         icon={<CloseIcon className="h-5 w-5" />}
@@ -91,7 +100,7 @@ function JobButtons({ jobId, status }: { jobId: number; status: JobStatus }) {
         <span className="ml-2"> Kill</span>
       </ActionButton>
       <ActionButton
-        className="btn-error btn-sm btn"
+        className="btn btn-error btn-sm"
         drf={deleteAction}
         disabled={status == 'running'}
         title="Remove job from queue or dones, if running you must kill before delete"
@@ -114,7 +123,7 @@ function RenderButton({ fileId, jobId }: { fileId: number; jobId: number }) {
 
   return (
     <ActionButton
-      className="btn-secondary btn-xs btn"
+      className="btn btn-secondary btn-xs"
       drf={render}
       title="Generate .root file with visualization"
       mutateOptions={{
@@ -172,7 +181,7 @@ export default function JobDetailPage() {
               </div>
             </CardHeader>
 
-            {data && <JobButtons jobId={data.id} status={data.status} />}
+            {data && <JobButtons job={data} />}
 
             <h3 className="mb-2 mt-4 font-bold">Details:</h3>
             <div className="ml-4">
@@ -194,10 +203,10 @@ export default function JobDetailPage() {
                   {data?.root_files.map((o, i) => (
                     <li key={i} className="mb-2">
                       {o.file_name} ({formatFileSize(o.size)})
-                      <Link to={`/jobs/${data.id}/root/${o.id}`} className="btn-info btn-xs btn ml-2">
+                      <Link to={`/jobs/${data.id}/root/${o.id}`} className="btn btn-info btn-xs ml-2">
                         open
                       </Link>
-                      <a href={o.href} className="btn-warning btn-xs btn mx-2">
+                      <a href={o.href} className="btn btn-warning btn-xs mx-2">
                         download
                       </a>
                       <RenderButton jobId={data?.id} fileId={o.id} />
@@ -218,13 +227,13 @@ export default function JobDetailPage() {
                       {o.file_name} ({formatFileSize(o.size)})
                       <a
                         href={`${o.href}?plain=text`}
-                        className="btn-info btn-xs btn ml-2"
+                        className="btn btn-info btn-xs ml-2"
                         target="_blank"
                         rel="noreferrer"
                       >
                         open
                       </a>
-                      <a href={o.href} className="btn-warning btn-xs btn mx-2">
+                      <a href={o.href} className="btn btn-warning btn-xs mx-2">
                         download
                       </a>
                     </li>

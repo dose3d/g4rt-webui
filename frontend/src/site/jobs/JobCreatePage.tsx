@@ -13,7 +13,7 @@ import {
   Page,
 } from '../../components/layout';
 import { CTextArea, CTextInput } from '../../components/forms';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from "react-router-dom";
 import { useFormatErrorToString } from '../../drf-crud-client';
 import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
 import { JobsPageBreadcrumbs } from './JobsPage';
@@ -30,13 +30,14 @@ const JobCreatePageBreadcrumbs: Breadcrumb[] = [
 
 export default function JobCreatePage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const formatErrorToString = useFormatErrorToString();
   const {
     handleSubmitShort,
     form: { control },
     cud: { isLoading, failureReason },
   } = useJobForm({
-    formProps: { defaultValues: { title: '', description: '' }, reValidateMode: 'onSubmit' },
+    formProps: { defaultValues: { title: '', description: '', ...(location.state || {}) }, reValidateMode: 'onSubmit' },
     onSuccess: () => navigate('/jobs'),
   });
 
