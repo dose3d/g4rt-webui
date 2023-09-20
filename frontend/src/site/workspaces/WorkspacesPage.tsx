@@ -10,7 +10,7 @@ import {
   Page,
   Title,
 } from '../../components/layout';
-import { AddIcon, RocketLaunchIcon } from '../../components/icons';
+import { AddIcon, ServerStackIcon } from "../../components/icons";
 import WorkspacesTable from '../../components/WorkspacesTable';
 import Pagination from '../../components/Pagination';
 import { useWorkspaceList } from '../../api/workspaces';
@@ -18,7 +18,7 @@ import { useFormatErrorToString } from '../../drf-crud-client';
 import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
 
 export const WorkspacesPageBreadcrumbs: Breadcrumb[] = [
-  { icon: <RocketLaunchIcon className={BreadcrumbsIconClass} />, label: 'Workspaces', to: '/workspaces' },
+  { icon: <ServerStackIcon className={BreadcrumbsIconClass} />, label: 'Workspaces', to: '/workspaces' },
 ];
 
 export default function WorkspacesPage() {
