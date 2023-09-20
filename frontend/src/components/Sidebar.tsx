@@ -59,24 +59,6 @@ const Sidebar = ({ toggle, onToggle }: Props) => {
                     <ServerStackIcon />
                   </NavLink>
                 </li>
-
-                <li>
-                  <NavLink to="/load" label="Load data">
-                    <ServerStackIcon />
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink to="/draw/2d" label="Draw dose 2D">
-                    <PhotoIcon />
-                  </NavLink>
-                </li>
-
-                <li>
-                  <NavLink to="/draw/profiles" label="Draw dose profiles">
-                    <PresentationChartIcon />
-                  </NavLink>
-                </li>
               </ul>
             </div>
           </div>
