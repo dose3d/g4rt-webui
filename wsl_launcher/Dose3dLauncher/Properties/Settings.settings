@@ -8,5 +8,8 @@
     <Setting Name="host" Type="System.String" Scope="User">
       <Value Profile="(Default)">http://localhost:8080/</Value>
     </Setting>
+    <Setting Name="wsl_location" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>

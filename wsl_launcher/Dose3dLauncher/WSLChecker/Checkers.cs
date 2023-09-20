@@ -30,6 +30,16 @@ namespace Dose3dLauncher.WSLChecker
             }
         }
 
+        public static string WslLocation
+        {
+            get => Properties.Settings.Default.wsl_location;
+            set
+            {
+                Properties.Settings.Default.wsl_location = value;
+                Properties.Settings.Default.Save();
+            }
+        }
+
         public static Process RunConsoleProcessInHiddenWindow(string FileName, string Arguments)
         {
             var startInfo = new ProcessStartInfo

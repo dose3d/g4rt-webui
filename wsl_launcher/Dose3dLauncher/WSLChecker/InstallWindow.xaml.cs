@@ -29,6 +29,7 @@ namespace Dose3dLauncher.WSLChecker
 
         private readonly Task<bool> BackgroundCheckerTask;
         private string VmNameTextBoxValue = "";
+        private string VmLocationTextBoxValue = "";
         private bool ForceCheck = false;
 
         public InstallWindow()
@@ -36,6 +37,7 @@ namespace Dose3dLauncher.WSLChecker
             InitializeComponent();
 
             VmNameTextBox.Text = VmNameTextBoxValue = Checkers.Wsl;
+            VmLocationTextBox.Text = VmLocationTextBoxValue = Checkers.WslLocation;
 
             BackgroundCheckerTask = Task.Run(() =>
             {
@@ -54,21 +56,38 @@ namespace Dose3dLauncher.WSLChecker
                         {
                             if (installed)
                             {
-                                InstallButton.IsEnabled = false;
+                                ChangeVMName.IsEnabled = false;
                                 BackupButton.IsEnabled = true && LongTask == null;
                                 RestoreButton.IsEnabled = false;
                                 UninstallButton.IsEnabled = true && LongTask == null;
-                                InstalledTextBlock.Visibility = Visibility.Visible;
-                                NotInstalledTextBlock.Visibility = Visibility.Collapsed;
                             }
                             else
                             {
-                                InstallButton.IsEnabled = true && LongTask == null;
+                                ChangeVMName.IsEnabled = true && LongTask == null;
                                 BackupButton.IsEnabled = false;
                                 RestoreButton.IsEnabled = true && LongTask == null;
                                 UninstallButton.IsEnabled = false;
+                            }
+
+                            if (LongTask != null)
+                            {
                                 InstalledTextBlock.Visibility = Visibility.Collapsed;
-                                NotInstalledTextBlock.Visibility = Visibility.Visible;
+                                NotInstalledTextBlock.Visibility = Visibility.Collapsed;
+                                PendingTextBlock.Visibility = Visibility.Visible;
+                            }
+                            else
+                            {
+                                PendingTextBlock.Visibility = Visibility.Collapsed;
+                                if (installed)
+                                {
+                                    InstalledTextBlock.Visibility = Visibility.Visible;
+                                    NotInstalledTextBlock.Visibility = Visibility.Collapsed;
+                                }
+                                else
+                                {
+                                    InstalledTextBlock.Visibility = Visibility.Collapsed;
+                                    NotInstalledTextBlock.Visibility = Visibility.Visible;
+                                }
                             }
                         }));
 
@@ -84,10 +103,34 @@ namespace Dose3dLauncher.WSLChecker
             Close();
         }
 
-        private void VmNameTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        private void ChangeVMName_Click(object sender, RoutedEventArgs e)
         {
-            VmNameTextBoxValue = VmNameTextBox.Text;
+            //System.Windows.Input.
+            //VmNameTextBoxValue = VmNameTextBox.Text;
+            var window = new VMNameWindow()
+            {
+                VMName = VmNameTextBox.Text,
+                Owner = this
+            };
+
+            if (window.ShowDialog() == true)
+            {
+                VmNameTextBox.Text = window.VMName;
+                VmNameTextBoxValue = VmNameTextBox.Text;
+            }
         }
+
+        private void ChangeVMLocation_Click(object sender, RoutedEventArgs e)
+        {
+            /*var dialog = new CommonOpenFileDialog();
+            dialog.IsFolderPicker = true;
+            CommonFileDialogResult result = dialog.ShowDialog();
+            if (result == CommonFileDialogResult.Ok)
+            {
+
+            }*/
+        }
+
 
         private void Window_Closed(object sender, EventArgs e)
         {
@@ -165,28 +208,62 @@ namespace Dose3dLauncher.WSLChecker
 
         private void RestoreFromBackup()
         {
+            string strExeFilePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            string strWorkPath = Path.GetDirectoryName(strExeFilePath);
+
             // Configure open file dialog box
-            var dialog = new Microsoft.Win32.OpenFileDialog();
-            dialog.FileName = "dose3d_vm_backup_" + DateTime.Now.ToString("yyyyMMdd_HHmm");
-            dialog.DefaultExt = ".dose3d";
-            dialog.Filter = "Dose3D VM image (*.dose3d)|*.dose3d|All files (*.*)|*.*"; // Filter files by extension
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                InitialDirectory = strWorkPath,
+                DefaultExt = ".dose3d",
+                Filter = "Dose3D VM image (*.dose3d)|*.dose3d|All files (*.*)|*.*" // Filter files by extension
+            };
+            //dialog.FileName = "dose3d_vm_backup_" + DateTime.Now.ToString("yyyyMMdd_HHmm");
 
             // Show open file dialog box
             bool? result = dialog.ShowDialog();
+            if (result != true)
+            {
+                return;
+            }
+
             string filename = dialog.FileName;
 
-            // Process open file dialog box results
-            RestoreFromFile(filename);
-        }
-
-        private void RestoreFromFile(string filename)
-        {
+            // Configure
             var doseDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Dose3D");
 
             if (!Directory.Exists(doseDir))
             {
                 Directory.CreateDirectory(doseDir);
             }
+
+            //var destDir = Path.Combine(doseDir, Checkers.Wsl + ".img");
+            
+            var folderDialog = new Microsoft.Win32.SaveFileDialog()
+            {
+                Title = "Please check destination of VM location",
+                InitialDirectory = doseDir,
+                Filter = "Virtual Disk (*.vhdx)|*.vhdx|All files (*.*)|*.*",
+                DefaultExt = ".vhdx",
+                CheckPathExists = true,
+                FileName = "g4rt_vm"
+            };
+
+            if (folderDialog.ShowDialog() != true) return;
+            VmLocationTextBoxValue = VmLocationTextBox.Text = folderDialog.FileName;
+            
+            // Process open file dialog box results
+            RestoreFromFile(filename);
+        }
+
+        private void RestoreFromFile(string filename)
+        {
+            /*var doseDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Dose3D");
+
+            if (!Directory.Exists(doseDir))
+            {
+                Directory.CreateDirectory(doseDir);
+            }*/
 
             /*var p = new Process
             {
@@ -199,19 +276,21 @@ namespace Dose3dLauncher.WSLChecker
             p.Start();
             p.WaitForExit();*/
 
-            var dest = Path.Combine(doseDir, Checkers.Wsl + ".img");
+            //var dest = Path.Combine(doseDir, Checkers.Wsl + ".img");
+            var dest = VmLocationTextBoxValue;
             var args = "--import " + Checkers.Wsl + " " + dest + " " + filename;
 
             DisableForLongTask();
             AppendLog("Start installation virtual machine:");
             AppendLog("VM name: " + Checkers.Wsl);
             AppendLog("VM source file: " + filename);
-            AppendLog("VM location: " + Path.Combine(doseDir, Checkers.Wsl + ".img"));
+            AppendLog("VM location: " + dest);
             AppendLog("\ncommand:");
             AppendLog("wsl.exe " + args + "\n");
 
             LongTask = Task.Run(() =>
             {
+                ForceCheck = true;
                 var process = Checkers.RunConsoleProcessInHiddenWindow("wsl.exe", args);
                 RunningProcess = process;
                 if (process != null)
@@ -225,6 +304,7 @@ namespace Dose3dLauncher.WSLChecker
 
                 process.WaitForExit();
                 AppendLog("Finish, exit code: " + process.ExitCode + "\n");
+                Checkers.WslLocation = VmLocationTextBoxValue;
                 FinishTask();
             });
         }
@@ -243,6 +323,18 @@ namespace Dose3dLauncher.WSLChecker
                     AppendLog(line);
                 }
             }
+
+            try
+            {
+                AppendLog("Delete directory: " + Checkers.WslLocation + "...");
+                Directory.Delete(Checkers.WslLocation);
+                AppendLog("done");
+            }
+            catch (Exception ex)
+            {
+                AppendLog("Warning, can't delete because: " + ex);
+            }
+
             AppendLog("\n");
         }
 
@@ -263,6 +355,7 @@ namespace Dose3dLauncher.WSLChecker
                     DisableForLongTask();
                     LongTask = Task.Run(() =>
                     {
+                        ForceCheck = true;
                         if (SaveBackup(filename, false) && !BrokeTask)
                         {
                             UninstallVM();
@@ -276,6 +369,7 @@ namespace Dose3dLauncher.WSLChecker
                 DisableForLongTask();
                 LongTask = Task.Run(() =>
                 {
+                    ForceCheck = true;
                     UninstallVM();
                     FinishTask();
                 });
@@ -348,7 +442,7 @@ namespace Dose3dLauncher.WSLChecker
         {
             BreakButton.IsEnabled = true;
             CloseButton.IsEnabled = false;
-            InstallButton.IsEnabled = false;
+            ChangeVMName.IsEnabled = false;
             BackupButton.IsEnabled = false;
             RestoreButton.IsEnabled = false;
             UninstallButton.IsEnabled = false;

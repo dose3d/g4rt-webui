@@ -46,5 +46,17 @@ namespace Dose3dLauncher.Properties {
                 this["host"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string wsl_location {
+            get {
+                return ((string)(this["wsl_location"]));
+            }
+            set {
+                this["wsl_location"] = value;
+            }
+        }
     }
 }
