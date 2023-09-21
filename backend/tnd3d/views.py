@@ -7,7 +7,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from commons.views import CustomPageNumberPagination, VariousSerializersViewSet
-from tnd3d.download import download_file
+from tnd3d.download import download_file, download_tail_of_text_file
 from tnd3d.models import Job, JobRootFile, INIT, Workspace, WorkspaceCell
 from tnd3d.serializer import JobSerializer, JobSerializerPending, JobRootFileSerializer, \
     JobListSerializer, JobRootFileDetailSerializer, WorkspaceSerializer, WorkspaceCellSerializer, \
@@ -87,7 +87,7 @@ class JobViewSet(VariousSerializersViewSet):
         obj = self.get_object()
         job = obj.get_runners_job()
         fn = job.get_log_file()
-        return download_file(fn, None, 'text/plain; charset=UTF-8', False)
+        return download_tail_of_text_file(fn)
 
 
 class JobRootFileViewSet(viewsets.ReadOnlyModelViewSet):

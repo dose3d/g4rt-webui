@@ -67,6 +67,24 @@ def download_file(file_path, file_name, content_type, plain, chunk_size=8192):
     return response
 
 
+def download_tail_of_text_file(file_path, file_name=None, max_size=8192):
+    file_stat = os.stat(file_path)
+
+    with open(file_path) as f:
+        lines = []
+        if file_stat.st_size > max_size:
+            f.seek(file_stat.st_size - max_size)
+            lines.append('!!! This is tail of output log file. Full log size: %d bytes, you see latest %d percent !!!\nIf you wand see whole log file please download in Log files section.\n\n\n' % (file_stat.st_size, max_size * 100 / file_stat.st_size))
+        lines.extend(f.readlines())
+        response = HttpResponse(
+            ''.join(lines),
+            content_type='text/plain; charset=UTF-8',
+        )
+        if file_name is not None:
+            response["Content-Disposition"] = f"attachment; filename={file_name}"
+        return response
+
+
 def make_hash(unix, module, identify):
     m = hashlib.sha256()
     m.update(bytes('%s_%s_%s_%s' % (str(unix), module, str(identify), settings.SECRET_KEY), 'utf-8'))
