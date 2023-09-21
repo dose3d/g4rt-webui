@@ -1,10 +1,12 @@
 import { useDrfCUD, useDrfDelete, useDrfEntity, useDrfEntityForm, useDrfList } from '../drf-crud-client';
 
+export type CellType = 'm' | 'r' | 'd';
+
 export interface WorkspaceCellEntity {
   id: number;
   workspace: number;
   pos: number;
-  type: 'm' | 'j';
+  type: CellType;
   content: string;
 }
 
@@ -13,7 +15,7 @@ const WORKSPACE_CELL_ENDPOINT = {
   resource: 'wsc',
 };
 
-export function useWorkspaceCellCAddNew(workspace: number, type: 'm' | 'j') {
+export function useWorkspaceCellCAddNew(workspace: number, type: CellType) {
   return useDrfCUD({
     ...WORKSPACE_CELL_ENDPOINT,
     config: {

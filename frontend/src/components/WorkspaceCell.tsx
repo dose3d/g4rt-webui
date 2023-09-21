@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect } from 'react';
-import { useWorkspaceCellForm, useWorkspaceRootCellUpdate, WorkspaceCellEntity } from '../api/workspaceCells';
+import { CellType, useWorkspaceCellForm, useWorkspaceRootCellUpdate, WorkspaceCellEntity } from "../api/workspaceCells";
 import cn from 'classnames';
 import { HierarchyPainter } from 'jsroot';
 import { useJobRootFileDownload, useJobRootFileList } from '../api/jobsRootFile';
@@ -148,7 +148,7 @@ function EditRootCell({ cell, onLeave }: EditCellProps) {
 }
 
 function EditCell({ cell, onLeave }: EditCellProps) {
-  if (cell.type === 'j') {
+  if (cell.type === 'r') {
     return <EditRootCell cell={cell} onLeave={onLeave} />;
   } else {
     return <EditMarkdownCell cell={cell} onLeave={onLeave} />;
@@ -197,11 +197,11 @@ function MarkdownCell({ content }: { content: string }) {
   return <ReactMarkdown className="prose w-full max-w-none">{content}</ReactMarkdown>;
 }
 
-function RenderCell({ content, type, pos }: { content: string; type: 'm' | 'j'; pos: number }) {
-  if (type === 'm') {
-    return <MarkdownCell content={content} />;
-  } else {
+function RenderCell({ content, type, pos }: { content: string; type: CellType; pos: number }) {
+  if (type === 'r') {
     return <RootCell content={content} pos={pos} />;
+  } else {
+    return <MarkdownCell content={content} />;
   }
 }
 
@@ -213,7 +213,7 @@ export function WorkspaceCell({ cell }: Props) {
   return (
     <div className="relative my-1 flex flex-row">
       <div className="basis-12 pt-1 text-center font-mono">[{cell.pos}]</div>
-      <div className={cn('grow p-1', { 'border border-gray-300': !edit, 'bg-gray-50': !edit && type === 'm' })}>
+      <div className={cn('grow p-1', { 'border border-gray-300': !edit, 'bg-gray-50': !edit && type !== 'r' })}>
         {edit ? <EditCell cell={cell} onLeave={stopEdit} /> : <RenderCell content={content} type={type} pos={pos} />}
       </div>
       <div className="absolute end-0 top-0 text-xs">

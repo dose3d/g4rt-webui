@@ -7,7 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from dose3d import JobsManager, INIT, QUEUE, RUNNING, DONE, Dose3DException
 
 MARKDOWN = 'markdown'
-JSON = 'json'
+ROOT = 'root'
+DOSE3D = 'dose3d'
 
 
 def get_max_or_one(qs, field):
@@ -194,7 +195,8 @@ class Workspace(models.Model):
 class WorkspaceCell(models.Model):
     TYPE = [
         ('m', MARKDOWN),
-        ('j', JSON),
+        ('r', ROOT),
+        ('d', DOSE3D),
     ]
 
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, verbose_name=_('Workspace'))
