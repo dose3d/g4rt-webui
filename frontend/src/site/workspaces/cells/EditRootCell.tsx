@@ -6,9 +6,9 @@ import { RerenderFixContext } from './WorkspaceCells';
 import { CSelect, CTextInput, SelectOptions } from '../../../components/forms';
 import { HierarchyPainter } from 'jsroot';
 import { EditCellProps } from './cellCommons';
-import { JsonCellContent, parseRootCell } from './rootCellCommons';
+import { RootCellContent, parseRootCell } from './rootCellCommons';
 
-interface RenderRootEditProps extends JsonCellContent {
+interface RenderRootEditProps extends RootCellContent {
   pos: number;
   onDisplay: (path: string) => void;
 }
@@ -47,12 +47,12 @@ function RenderRootEdit({ fileId, path, height, pos, onDisplay }: RenderRootEdit
 function EditRootCell({ cell, onLeave }: EditCellProps) {
   const { data } = useJobRootFileList();
   const parsedCell = parseRootCell(cell.content);
-  const { control, watch, handleSubmit, setValue } = useForm<JsonCellContent>({ defaultValues: parsedCell });
+  const { control, watch, handleSubmit, setValue } = useForm<RootCellContent>({ defaultValues: parsedCell });
   const { mutateAsync } = useWorkspaceRootCellUpdate(cell);
   const rerender = useContext(RerenderFixContext); // FIX: force to rerender cells component
 
   const onSubmit = useCallback(
-    (values: JsonCellContent) => {
+    (values: RootCellContent) => {
       const content = JSON.stringify(values);
       mutateAsync({ content }).then(() => {
         rerender(); // FIX: force to rerender cells component

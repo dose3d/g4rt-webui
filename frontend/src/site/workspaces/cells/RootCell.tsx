@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { useJobRootFileDownload } from '../../../api/jobsRootFile';
 import { HierarchyPainter } from 'jsroot';
-import { JsonCellContent, parseRootCell } from './rootCellCommons';
+import { RootCellContent, parseRootCell } from './rootCellCommons';
 
-function RenderRootCell({ fileId, path, height, pos }: JsonCellContent & { pos: number }) {
+function RenderRootCell({ fileId, path, height, pos }: RootCellContent & { pos: number }) {
   const id = `cell_${pos}`;
 
   const { data: rootFile, isSuccess } = useJobRootFileDownload(fileId);

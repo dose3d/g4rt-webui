@@ -1,12 +1,12 @@
-export interface JsonCellContent {
+export interface RootCellContent {
   fileId: number;
   path: string;
   height: number;
 }
 
-export function parseRootCell(content: string): JsonCellContent {
+export function parseRootCell(content: string): RootCellContent {
   try {
-    const { fileId, path, height } = JSON.parse(content) as Partial<JsonCellContent>;
+    const { fileId, path, height } = JSON.parse(content) as Partial<RootCellContent>;
     return {
       fileId: parseInt(`${fileId || 0}`),
       path: path || '',
