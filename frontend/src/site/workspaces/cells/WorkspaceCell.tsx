@@ -2,10 +2,10 @@ import React from 'react';
 import { CellType, WorkspaceCellEntity } from '../../../api/workspaceCells';
 import cn from 'classnames';
 import { useBoolean } from 'usehooks-ts';
-import RootCell from './RootCell';
-import MarkdownCell from './MarkdownCell';
-import EditRootCell from './EditRootCell';
-import EditMarkdownCell from './EditMarkdownCell';
+import RootCell from './root/RootCell';
+import MarkdownCell from './note/MarkdownCell';
+import EditRootCell from './root/EditRootCell';
+import EditMarkdownCell from './note/EditMarkdownCell';
 import { EditCellProps } from './cellCommons';
 
 function EditCell({ cell, onLeave }: EditCellProps) {

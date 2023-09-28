@@ -1,11 +1,11 @@
-import { useJobRootFileDownload, useJobRootFileList } from '../../../api/jobsRootFile';
+import { useJobRootFileDownload, useJobRootFileList } from '../../../../api/jobsRootFile';
 import { useForm } from 'react-hook-form';
-import { useWorkspaceRootCellUpdate } from '../../../api/workspaceCells';
+import { useWorkspaceRootCellUpdate } from '../../../../api/workspaceCells';
 import React, { useCallback, useContext, useEffect } from 'react';
-import { RerenderFixContext } from './WorkspaceCells';
-import { CSelect, CTextInput, SelectOptions } from '../../../components/forms';
+import { RerenderFixContext } from '../WorkspaceCells';
+import { CSelect, CTextInput, SelectOptions } from '../../../../components/forms';
 import { HierarchyPainter } from 'jsroot';
-import { EditCellProps } from './cellCommons';
+import { EditCellProps } from '../cellCommons';
 import { RootCellContent, parseRootCell } from './rootCellCommons';
 
 interface RenderRootEditProps extends RootCellContent {

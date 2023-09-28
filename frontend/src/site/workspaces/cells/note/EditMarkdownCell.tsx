@@ -1,6 +1,6 @@
-import { useWorkspaceCellForm } from '../../../api/workspaceCells';
+import { useWorkspaceCellForm } from '../../../../api/workspaceCells';
 import React, { useEffect } from 'react';
-import { EditCellProps } from './cellCommons';
+import { EditCellProps } from '../cellCommons';
 
 function EditMarkdownCell({ cell, onLeave }: EditCellProps) {
   const {

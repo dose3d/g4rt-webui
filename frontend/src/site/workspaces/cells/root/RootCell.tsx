@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useJobRootFileDownload } from '../../../api/jobsRootFile';
+import { useJobRootFileDownload } from '../../../../api/jobsRootFile';
 import { HierarchyPainter } from 'jsroot';
 import { RootCellContent, parseRootCell } from './rootCellCommons';
 
