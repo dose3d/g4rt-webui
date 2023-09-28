@@ -14,7 +14,7 @@ import { formatDate } from '../../utils/formatValues';
 import { DocumentIcon } from '../../components/icons';
 import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
 import { WorkspacesPageBreadcrumbs } from './WorkspacesPage';
-import { WorkspaceCells } from '../../components/WorkspaceCells';
+import { WorkspaceCells } from './cells/WorkspaceCells';
 
 export const WorkspaceDetailPageBreadcrumbs = (id: number | undefined) =>
   [

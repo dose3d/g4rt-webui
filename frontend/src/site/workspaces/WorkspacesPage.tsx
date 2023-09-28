@@ -10,12 +10,12 @@ import {
   Page,
   Title,
 } from '../../components/layout';
-import { AddIcon, ServerStackIcon } from "../../components/icons";
-import WorkspacesTable from '../../components/WorkspacesTable';
+import { AddIcon, ServerStackIcon } from '../../components/icons';
 import Pagination from '../../components/Pagination';
 import { useWorkspaceList } from '../../api/workspaces';
 import { useFormatErrorToString } from '../../drf-crud-client';
 import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
+import WorkspacesTable from './cells/WorkspacesTable';
 
 export const WorkspacesPageBreadcrumbs: Breadcrumb[] = [
   { icon: <ServerStackIcon className={BreadcrumbsIconClass} />, label: 'Workspaces', to: '/workspaces' },
@@ -58,7 +58,7 @@ export default function WorkspacesPage() {
                     </div>
                   </form>
                   <div className="flex w-full items-center sm:justify-end">
-                    <Link to="/workspaces/create" className="btn-primary btn">
+                    <Link to="/workspaces/create" className="btn btn-primary">
                       <AddIcon />
                       New workspace
                     </Link>
