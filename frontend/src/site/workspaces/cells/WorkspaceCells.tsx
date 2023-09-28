@@ -5,6 +5,7 @@ import { WorkspaceCell } from './WorkspaceCell';
 import ActionButton from '../../../components/ActionButton';
 import { AddIcon } from '../../../components/icons';
 import { useCounter } from 'usehooks-ts';
+import { PlusIcon } from '@heroicons/react/24/solid';
 
 interface Props {
   workspace: WorkspaceEntity;
@@ -27,23 +28,39 @@ export function WorkspaceCells({ workspace }: Props) {
 
   return (
     <div>
+      <div className="mb-8">
+        <ActionButton className="btn btn-success" drf={addMarkdownCell} icon={<AddIcon className="h-6 w-6" />}>
+          note cell
+        </ActionButton>
+
+        <ActionButton className="btn btn-info ml-2" drf={addROOTCell} icon={<AddIcon className="h-6 w-6" />}>
+          ROOT cell
+        </ActionButton>
+
+        <ActionButton className="btn btn-warning ml-2" drf={addDose3DCell} icon={<AddIcon className="h-6 w-6" />}>
+          Dose3D cell
+        </ActionButton>
+      </div>
+
       {data.map((o, i) => (
         <RerenderFixContext.Provider key={i} value={increment}>
           <WorkspaceCell cell={o} />
         </RerenderFixContext.Provider>
       ))}
 
-      <ActionButton className="btn-info btn" drf={addROOTCell} icon={<AddIcon className="h-6 w-6" />}>
-        Add ROOT cell
-      </ActionButton>
+      <div className="mt-8">
+        <ActionButton className="btn btn-success" drf={addMarkdownCell} icon={<AddIcon className="h-6 w-6" />}>
+          note cell
+        </ActionButton>
 
-      <ActionButton className="btn-error btn ml-2" drf={addDose3DCell} icon={<AddIcon className="h-6 w-6" />}>
-        Add Dose3D cell
-      </ActionButton>
+        <ActionButton className="btn btn-info ml-2" drf={addROOTCell} icon={<AddIcon className="h-6 w-6" />}>
+          ROOT cell
+        </ActionButton>
 
-      <ActionButton className="btn-warning btn ml-2" drf={addMarkdownCell} icon={<AddIcon className="h-6 w-6" />}>
-        Add description cell
-      </ActionButton>
+        <ActionButton className="btn btn-warning ml-2" drf={addDose3DCell} icon={<AddIcon className="h-6 w-6" />}>
+          Dose3D cell
+        </ActionButton>
+      </div>
     </div>
   );
 }
