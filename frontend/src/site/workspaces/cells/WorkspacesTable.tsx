@@ -1,9 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { WorkspaceEntity } from '../api/workspaces';
-import { ArrowTopRightOnSquareIcon } from './icons';
-import { Content } from './layout';
-import { formatDate } from '../utils/formatValues';
+import { WorkspaceEntity } from '../../../api/workspaces';
+import { ArrowTopRightOnSquareIcon } from '../../../components/icons';
+import { Content } from '../../../components/layout';
+import { formatDate } from '../../../utils/formatValues';
 
 function TableHeader() {
   return (

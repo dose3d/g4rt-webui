@@ -1,12 +1,12 @@
 import React, { useCallback, useContext, useEffect } from 'react';
-import { CellType, useWorkspaceCellForm, useWorkspaceRootCellUpdate, WorkspaceCellEntity } from "../api/workspaceCells";
+import { CellType, useWorkspaceCellForm, useWorkspaceRootCellUpdate, WorkspaceCellEntity } from "../../../api/workspaceCells";
 import cn from 'classnames';
 import { HierarchyPainter } from 'jsroot';
-import { useJobRootFileDownload, useJobRootFileList } from '../api/jobsRootFile';
+import { useJobRootFileDownload, useJobRootFileList } from '../../../api/jobsRootFile';
 import ReactMarkdown from 'react-markdown';
 import { useBoolean } from 'usehooks-ts';
 import { useForm } from 'react-hook-form';
-import { CSelect, CTextInput, SelectOptions } from './forms';
+import { CSelect, CTextInput, SelectOptions } from '../../../components/forms';
 import { RerenderFixContext } from './WorkspaceCells';
 
 interface EditCellProps {

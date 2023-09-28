@@ -1,9 +1,9 @@
 import React from 'react';
-import { useWorkspaceCellCAddNew, useWorkspaceCellList } from '../api/workspaceCells';
-import { WorkspaceEntity } from '../api/workspaces';
+import { useWorkspaceCellCAddNew, useWorkspaceCellList } from '../../../api/workspaceCells';
+import { WorkspaceEntity } from '../../../api/workspaces';
 import { WorkspaceCell } from './WorkspaceCell';
-import ActionButton from './ActionButton';
-import { AddIcon } from './icons';
+import ActionButton from '../../../components/ActionButton';
+import { AddIcon } from '../../../components/icons';
 import { useCounter } from 'usehooks-ts';
 
 interface Props {
