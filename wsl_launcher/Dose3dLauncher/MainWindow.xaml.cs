@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Management;
 using Dose3dLauncher.WSLChecker;
@@ -223,7 +224,23 @@ namespace Dose3dLauncher
 
         private void OpenBrowser()
         {
-            Process.Start(Checkers.Host);
+            try
+            {
+                // try to find msedge.exe in: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+                string programFilesPath = Environment.ExpandEnvironmentVariables("%ProgramFiles(x86)%");
+                string msedge = programFilesPath + "\\Microsoft\\Edge\\Application\\msedge.exe";
+                if (!File.Exists(msedge))
+                {
+                    programFilesPath = Environment.ExpandEnvironmentVariables("%ProgramFiles%");
+                    msedge = programFilesPath + "\\Microsoft\\Edge\\Application\\msedge.exe";
+                }
+                Process.Start(msedge, "--app=" + Checkers.Host);
+            }
+            catch (Exception e) 
+            {
+                // old working version
+                Process.Start(Checkers.Host);
+            }
         }
 
         private Task WaitingForBackendReady()
