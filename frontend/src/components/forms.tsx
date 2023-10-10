@@ -1,10 +1,12 @@
-import { Control, FieldPath, FieldValues, UseFormStateReturn } from 'react-hook-form/dist/types';
+import { Control, FieldPath, FieldPathValue, FieldValues, UseFormStateReturn } from "react-hook-form/dist/types";
 import { Controller, ControllerRenderProps } from 'react-hook-form';
 import { ControllerFieldState } from 'react-hook-form/dist/types/controller';
 import React from 'react';
 import cn from 'classnames';
+import ReactSelect from 'react-select';
+import { Props } from 'react-select/dist/declarations/src/Select';
 
-interface CommonAdds {
+export interface CommonAdds {
   title?: string;
   subtitle?: string;
   bottomRight?: string;
@@ -18,7 +20,7 @@ interface RFHAdds<TFieldValues extends FieldValues, TName extends FieldPath<TFie
   formState: UseFormStateReturn<TFieldValues>;
 }
 
-interface ControlAdds<TFieldValues extends FieldValues = FieldValues> {
+export interface ControlAdds<TFieldValues extends FieldValues = FieldValues> {
   control: Control<TFieldValues>;
   name: FieldPath<TFieldValues>;
 }
@@ -143,6 +145,10 @@ interface SelectAdds extends CommonAdds {
   children: React.ReactNode;
 }
 
+/*interface ReactSelectAdds extends CommonAdds {
+  
+}*/
+
 interface SelectProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
   extends SelectAdds,
     RFHAdds<TFieldValues, TName> {}
@@ -195,6 +201,7 @@ export function CSelect<TFieldValues extends FieldValues = FieldValues>({
     />
   );
 }
+
 
 export function SelectOptions<T>({
   options,

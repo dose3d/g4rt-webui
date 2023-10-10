@@ -5,7 +5,7 @@ import { WorkspaceCell } from './WorkspaceCell';
 import ActionButton from '../../../components/ActionButton';
 import { AddIcon } from '../../../components/icons';
 import { useCounter } from 'usehooks-ts';
-import { PlusIcon } from '@heroicons/react/24/solid';
+import { PlusIcon } from '@heroicons/react/24/outline';
 
 interface Props {
   workspace: WorkspaceEntity;
@@ -45,6 +45,20 @@ export function WorkspaceCells({ workspace }: Props) {
       {data.map((o, i) => (
         <RerenderFixContext.Provider key={i} value={increment}>
           <WorkspaceCell cell={o} />
+          <div className="group flex h-8 justify-center">
+            <button className="btn btn-xs m-1 hidden group-hover:inline-flex">
+              <PlusIcon className="h-4 w-4" />
+              note cell
+            </button>
+            <button className="btn btn-xs m-1 hidden group-hover:inline-flex">
+              <PlusIcon className="h-4 w-4" />
+              root cell
+            </button>
+            <button className="btn btn-xs m-1 hidden group-hover:inline-flex">
+              <PlusIcon className="h-4 w-4" />
+              dose3d cell
+            </button>
+          </div>
         </RerenderFixContext.Provider>
       ))}
 

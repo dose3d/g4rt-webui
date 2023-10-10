@@ -32,6 +32,7 @@
     "react-plotly.js": "^2.6.0",
     "react-router-dom": "^6.16.0",
     "react-scripts": "^5.0.1",
+    "react-select": "^5.7.5",
     "source-map-explorer": "^2.5.3",
     "typescript": "^5.2.2",
     "use-debounce": "^9.0.4",
@@ -69,6 +70,8 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@tailwindcss/typography": "^0.5.10",
+    "@types/plotly.js": "^2.12.27",
+    "@types/react-plotly.js": "^2.6.1",
     "autoprefixer": "^10.4.15",
     "eslint": "^8.49.0",
     "eslint-config-prettier": "^9.0.0",
