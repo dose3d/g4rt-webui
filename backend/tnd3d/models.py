@@ -192,6 +192,17 @@ class Workspace(models.Model):
         verbose_name_plural = _('Workspaces')
 
 
+class WorkspaceJob(models.Model):
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, verbose_name=_('Workspace'))
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, verbose_name=_('Job'))
+
+    class Meta:
+        unique_together = (('workspace', 'job'),)
+        ordering = ('job',)
+        verbose_name = _('Job to workspace assign')
+        verbose_name_plural = _('Job to workspace assigns')
+
+
 class WorkspaceCell(models.Model):
     TYPE = [
         ('m', MARKDOWN),
