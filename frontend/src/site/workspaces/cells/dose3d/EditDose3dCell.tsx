@@ -8,7 +8,6 @@ import { HierarchyPainter } from 'jsroot';
 import { EditCellProps } from '../cellCommons';
 import { Dose3dCellContent, parseDose3dCell } from './dose3dCellCommons';
 import Plot from 'react-plotly.js';
-import { CReactSelect } from "../../../../components/reactSelect";
 
 export interface ColourOption {
   readonly value: string;
@@ -83,7 +82,6 @@ function RenderDose3dEdit({ fileId, path, height, width, pos, onDisplay }: Rende
 }
 
 function EditDose3dCell({ cell, onLeave }: EditCellProps) {
-  const { data } = useJobRootFileList();
   const parsedCell = parseDose3dCell(cell.content);
   const { control, watch, handleSubmit, setValue } = useForm<Dose3dCellContent>({ defaultValues: parsedCell });
   const { mutateAsync } = useWorkspaceRootCellUpdate(cell);
@@ -109,13 +107,6 @@ function EditDose3dCell({ cell, onLeave }: EditCellProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid grid-cols-6 gap-4">
-        <div>
-          {data && <CReactSelect control={control} name="fileId" title="Load result from job:"
-
-                        options={data.map((o) => ({label: `#${o.job.id}: ${o.job.title}`, value: `${o.id}`}))}
-
-          /> }
-        </div>
 
         <div className="col-span-2">
           <CTextInput control={control} name="path" title="Data path to render:" />

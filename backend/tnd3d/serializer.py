@@ -77,7 +77,34 @@ class WorkspaceJobSerializer(serializers.ModelSerializer):
 
 class WorkspaceSerializer(serializers.ModelSerializer):
 
-    jobs = WorkspaceJobSerializer(many=True, source='workspacejob_set')
+    jobs = serializers.ListField(child=serializers.IntegerField())
+
+    def create(self, validated_data):
+        jobs = validated_data.pop('jobs')
+        instance = Workspace.objects.create(**validated_data)
+
+        for job in jobs:
+            wj = WorkspaceJob.objects.create(workspace_id=instance.id, job_id=job)
+            instance.workspacejob_set.add(wj)
+
+        return instance
+
+    def update(self, instance, validated_data):
+        jobs = validated_data.pop('jobs')
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        to_delete = set(instance.jobs)
+
+        for job in jobs:
+            if job in to_delete:
+                to_delete.remove(job)
+            else:
+                WorkspaceJob.objects.create(workspace_id=instance, job_id=job)
+
+        instance.workspacejob_set.filter(job_id__in=to_delete).delete()
+        return instance
 
     class Meta:
         model = Workspace

@@ -38,7 +38,7 @@ interface LabelOutlineProps extends CommonAdds {
   children: React.ReactNode;
 }
 
-function LabelOutline({ children, title, subtitle, bottomRight, error }: LabelOutlineProps) {
+export function LabelOutline({ children, title, subtitle, bottomRight, error }: LabelOutlineProps) {
   const hasError = !!error;
 
   return (

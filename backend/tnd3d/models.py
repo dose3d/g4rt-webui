@@ -186,6 +186,13 @@ class Workspace(models.Model):
             o.save(update_fields=['pos'])
             pos += 1
 
+    @property
+    def jobs(self):
+        jobs = []
+        for j in self.workspacejob_set.all():
+            jobs.append(j.job_id)
+        return jobs
+
     class Meta:
         ordering = ('created_at',)
         verbose_name = _('Workspace')

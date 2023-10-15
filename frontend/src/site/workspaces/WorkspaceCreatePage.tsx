@@ -18,6 +18,8 @@ import { useFormatErrorToString } from '../../drf-crud-client';
 import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
 import { WorkspacesPageBreadcrumbs } from './WorkspacesPage';
 import { DocumentPlusIcon } from '../../components/icons';
+import { useJobRootFileList } from '../../api/jobsRootFile';
+import { CReactSelectMultiInput } from '../../components/reactSelect';
 
 const WorkspaceCreatePageBreadcrumbs: Breadcrumb[] = [
   ...WorkspacesPageBreadcrumbs,
@@ -31,6 +33,7 @@ const WorkspaceCreatePageBreadcrumbs: Breadcrumb[] = [
 export default function WorkspaceCreatePage() {
   const navigate = useNavigate();
   const formatErrorToString = useFormatErrorToString();
+  const { data } = useJobRootFileList();
   const {
     handleSubmitShort,
     form: { control },
@@ -57,6 +60,17 @@ export default function WorkspaceCreatePage() {
             <form onSubmit={handleSubmitShort}>
               <CTextInput name="title" control={control} title="Workspace title" />
               <CTextArea name="description" control={control} title="Description of the workspace" />
+
+              <div>
+                {data && (
+                  <CReactSelectMultiInput
+                    control={control}
+                    name="jobs"
+                    title="Load result from jobs:"
+                    options={data.map((o) => ({ label: `#${o.job.id}: ${o.job.title}`, value: o.job.id }))}
+                  />
+                )}
+              </div>
 
               <button type="submit" className={cn('btn-primary btn', { loading: isLoading })} disabled={isLoading}>
                 Send
