@@ -1,56 +1,80 @@
 import React, { useEffect } from 'react';
-import { useJobRootFileDownload } from '../../../../api/jobsRootFile';
 import { HierarchyPainter } from 'jsroot';
 import { Dose3dCellContent, parseDose3dCell } from './dose3dCellCommons';
-import Plot from "react-plotly.js";
+import {
+  useWorkspaceCellEntity,
+  useWorkspaceCellRootFileDownload,
+  WorkspaceCellEntity,
+} from '../../../../api/workspaceCells';
 
+interface RenderDose3dPlotProps {
+  rootFile?: ArrayBuffer;
+  cellId: string;
+  path: string;
+  isSuccess: boolean;
+}
 
-function RenderDose3dCell({ fileId, path, height, pos }: Dose3dCellContent & { pos: number }) {
-  /*const id = `cell_${pos}`;
-
-  const { data: rootFile, isSuccess } = useJobRootFileDownload(fileId);
-
+function RenderDose3dPlot({ rootFile, cellId, path, isSuccess }: RenderDose3dPlotProps) {
   useEffect(() => {
     let h: any = null;
+
     if (isSuccess && rootFile) {
       h = new HierarchyPainter();
-      h.setDisplay('simple', id);
+      h.setDisplay('simple', cellId);
       h.openRootFile(rootFile).then(() => h.display(path, '', true));
     }
 
     return () => {
       h?.cleanup();
     };
-  }, [id, isSuccess, path, rootFile]);
+  }, [isSuccess, cellId, path, rootFile]);
+
+  return <></>;
+}
+
+function RenderDose3dCell({
+  height,
+  width,
+  CLayer,
+  MLayer,
+  cellData,
+}: Dose3dCellContent & { cellData: WorkspaceCellEntity }) {
+  const { pos, id: wcId } = cellData;
+  const id = `cell_${pos}`;
+
+  const { data: rootFile, isSuccess } = useWorkspaceCellRootFileDownload(wcId, CLayer, MLayer);
+
+  const plots: string[] = [];
+  for (const key in cellData!.json_info) {
+    const v = cellData.json_info[key].detector_layout;
+    if (v.CLayer.includes(CLayer) && v.MLayer.includes(MLayer)) {
+      plots.push(`File_${key}_Dose3D_MLayer_${MLayer}_CLayer_${CLayer}`);
+    }
+  }
 
   return (
-    <div className="mt-4">
-      <div id={id} className="w-full" style={{ height }} />
+    <div className="mt-4 flex flex-row">
+      {plots.map((o, i) => (
+        <div key={i} id={`${id}_${i}`} className="p-2" style={{ height, width }}>
+          <RenderDose3dPlot rootFile={rootFile} cellId={`${id}_${i}`} path={o} isSuccess={isSuccess} />
+        </div>
+      ))}
     </div>
-  );*/
-  return (
-    <Plot
-      data={[
-        {
-          x: [1, 2, 3],
-          y: [2, 6, 3],
-          type: 'scatter',
-          mode: 'lines+markers',
-          marker: {color: 'red'},
-        },
-        {type: 'bar', x: [1, 2, 3], y: [2, 5, 3]},
-      ]}
-      layout={ {width: 320, height, title: 'A Fancy Plot'} }
-    />
   );
 }
 
-function Dose3dCell({ content, pos }: { content: string; pos: number }) {
-  try {
-    const { fileId, path, height, width } = parseDose3dCell(content);
-    return <RenderDose3dCell fileId={fileId} path={path} height={height} pos={pos} width={width} />;
-  } catch (e) {
-    return <div className="w-full">{`Error: ${e}`}</div>;
+function Dose3dCell({ cell: { id, content } }: { cell: WorkspaceCellEntity }) {
+  const { data, isSuccess } = useWorkspaceCellEntity(id);
+
+  if (data && isSuccess) {
+    try {
+      const { MLayer, CLayer, height, width } = parseDose3dCell(content);
+      return <RenderDose3dCell height={height} width={width} CLayer={CLayer} MLayer={MLayer} cellData={data} />;
+    } catch (e) {
+      return <div className="w-full">{`Error: ${e}`}</div>;
+    }
+  } else {
+    return <div className="w-full">Loading...</div>;
   }
 }
 

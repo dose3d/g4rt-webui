@@ -1,6 +1,7 @@
 import os
 import pathlib
 import psutil
+from pathlib import Path
 
 from dose3d.dose3d_error import Dose3DException
 from dose3d.job_manager import JobManager, INIT, QUEUE, RUNNING, DONE
@@ -17,6 +18,7 @@ class JobsManager:
     DONE_DIR = None
     DOSE3D_EXEC = None
     SLEEP = None
+    CACHE_DIR = None
 
     main_dir = None
 
@@ -57,6 +59,10 @@ class JobsManager:
         self.RUNNING_DIR = self.config["RUNNING_DIR"]
         self.DONE_DIR = self.config["DONE_DIR"]
         self.DOSE3D_EXEC = self.config["DOSE3D_EXEC"]
+        self.CACHE_DIR = self.config.get("CACHE_DIR", '/tmp/dose3d_cache')
+
+        cache_dir = Path(self.CACHE_DIR)
+        cache_dir.mkdir(parents=True, exist_ok=True)
 
         # validate SLEEP number value
         try:

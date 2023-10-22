@@ -1,5 +1,5 @@
 import React from 'react';
-import { CellType, WorkspaceCellEntity } from '../../../api/workspaceCells';
+import { WorkspaceCellEntity } from '../../../api/workspaceCells';
 import cn from 'classnames';
 import { useBoolean } from 'usehooks-ts';
 import RootCell from './root/RootCell';
@@ -31,28 +31,36 @@ interface Props {
   cell: WorkspaceCellEntity;
 }
 
-function RenderCell({ content, type, pos }: { content: string; type: CellType; pos: number }) {
+function RenderCell({ cell }: Props) {
+  const { type } = cell;
   if (type === 'r') {
-    return <RootCell content={content} pos={pos} />;
+    return <RootCell cell={cell} />;
   } else if (type === 'd') {
-    return <Dose3dCell content={content} pos={pos} />;
+    return <Dose3dCell cell={cell} />;
   } else {
-    return <MarkdownCell content={content} />;
+    return <MarkdownCell cell={cell} />;
   }
 }
 
-const iconClass = "h-6 w-6 p-1 hover:text-black hover:bg-gray-100";
+const iconClass = 'h-6 w-6 p-1 hover:text-black hover:bg-gray-100';
 
 export function WorkspaceCell({ cell }: Props) {
   const { value: edit, setTrue: setEdit, setFalse: stopEdit } = useBoolean(false);
 
-  const { content, type, pos } = cell;
+  const { type } = cell;
 
   return (
     <div className="relative my-1 flex flex-row">
       <div className="basis-12 pt-1 text-center font-mono">[{cell.pos}]</div>
-      <div className={cn('grow p-1', { 'border border-gray-300': !edit, 'bg-gray-50': !edit && type !== 'r' })}>
-        {edit ? <EditCell cell={cell} onLeave={stopEdit} /> : <RenderCell content={content} type={type} pos={pos} />}
+      <div
+        className={cn('grow p-1', {
+          'border border-gray-300': !edit,
+          'bg-green-50': !edit && type === 'm',
+          'bg-orange-50': !edit && type === 'd',
+          'bg-blue-50': !edit && type === 'r',
+        })}
+      >
+        {edit ? <EditCell cell={cell} onLeave={stopEdit} /> : <RenderCell cell={cell} />}
       </div>
       <div className="absolute end-0 top-0 text-xs">
         <div className="grid grid-cols-5 p-0.5">

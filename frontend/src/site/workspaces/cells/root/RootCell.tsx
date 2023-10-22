@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useJobRootFileDownload } from '../../../../api/jobsRootFile';
 import { HierarchyPainter } from 'jsroot';
 import { RootCellContent, parseRootCell } from './rootCellCommons';
+import { WorkspaceCellEntity } from '../../../../api/workspaceCells';
 
 function RenderRootCell({ fileId, path, height, pos }: RootCellContent & { pos: number }) {
   const id = `cell_${pos}`;
@@ -28,7 +29,7 @@ function RenderRootCell({ fileId, path, height, pos }: RootCellContent & { pos: 
   );
 }
 
-function RootCell({ content, pos }: { content: string; pos: number }) {
+function RootCell({ cell: { content, pos } }: { cell: WorkspaceCellEntity }) {
   try {
     const { fileId, path, height } = parseRootCell(content);
     return <RenderRootCell fileId={fileId} path={path} height={height} pos={pos} />;

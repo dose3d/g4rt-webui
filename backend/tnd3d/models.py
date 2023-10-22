@@ -1,4 +1,5 @@
 import os
+import json
 
 from django.conf import settings
 from django.db import models
@@ -193,6 +194,16 @@ class Workspace(models.Model):
             jobs.append(j.job_id)
         return jobs
 
+    @property
+    def jobs_files_absolute(self):
+        files = []
+        for j in self.workspacejob_set.all():
+            job = j.job.get_runners_job()
+            for r in j.job.jobrootfile_set.all():
+                fn = os.path.join(job.get_job_path(), r.file_name)
+                files.append(fn)
+        return files
+
     class Meta:
         ordering = ('created_at',)
         verbose_name = _('Workspace')
@@ -227,6 +238,69 @@ class WorkspaceCell(models.Model):
             qs = WorkspaceCell.objects.filter(workspace=self.workspace)
             self.pos = get_max_or_one(qs, 'pos')
         super().save(force_insert, force_update, using, update_fields)
+
+    def get_store_file_name(self):
+        jm = JobsManager(settings.CONFIG_FILE)
+        return os.path.join(jm.CACHE_DIR, 'ws_cell_%d' % self.id)
+
+    def get_dose3d_cache_file_path(self, m_layer, c_layer):
+        return "%s_m%d_c%d" % (self.get_store_file_name(), m_layer, c_layer)
+
+    def render_dose3d_if_need(self, CLayer=None, MLayer=None, force=False):
+        """
+        Render Dose3D cell files to cache dir if not exists (or force=True)
+        """
+
+        if self.type != 'd':
+            raise Exception(_('The cell must be Dose3D cell type'))
+
+        params = json.loads(self.content)
+        m_layer = int(params.get('MLayer', '0') if MLayer is None else MLayer)
+        c_layer = int(params.get('CLayer', '0') if CLayer is None else CLayer)
+
+        fn = self.get_dose3d_cache_file_path(m_layer, c_layer)
+        fn_store = self.get_store_file_name()
+        fn_root = "%s.root" % fn
+        fn_json_info = "%s_info.json" % fn_store
+        fn_json_plots = "%s_plots.json" % fn_store
+
+        if not force and (
+                not os.path.isfile(fn_root) or
+                not os.path.isfile(fn_json_info) or
+                not os.path.isfile(fn_json_plots)
+        ):
+            ntuple_data = self.workspace.jobs_files_absolute
+
+            if settings.DEBUG:
+                print(json.dumps({
+                    'MLayer': m_layer,
+                    'CLayer': c_layer,
+                    'ntuple_data': ntuple_data,
+                    'fn_root': fn_root,
+                    'fn_json_info': fn_json_info,
+                    'fn_json_plots': fn_json_plots
+                }, indent=4))
+
+            import pydose3d
+            from pydose3d.svc.dose3d import Dose3DSvc
+            pydose3d.set_log_level("INFO")
+
+            svc = Dose3DSvc()
+            svc.set_data(files=ntuple_data)
+
+            info = svc.get_mcrun_info()
+            with open(fn_json_info, 'w') as file:
+                file.write(json.dumps(info, indent=4))
+
+            # List of 2D plots
+            plots2d = svc.get_list_of_2dmaps()
+            with open(fn_json_plots, 'w') as file:
+                file.write(json.dumps(plots2d, indent=4))
+
+            # Write hists from all loaded files to output file
+            svc.write_module_dose_map(file=fn_root, MLayer=m_layer, CLayer=c_layer)
+
+        return {'fn_root': fn_root, 'fn_json_info': fn_json_info, 'fn_json_plots': fn_json_plots}
 
     class Meta:
         unique_together = (('workspace', 'pos'),)

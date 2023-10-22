@@ -1,4 +1,33 @@
-import { useDrfCUD, useDrfDelete, useDrfEntity, useDrfEntityForm, useDrfList } from '../drf-crud-client';
+import {
+  useDrfCUD,
+  useDrfDelete,
+  useDrfEntity,
+  useDrfEntityForm,
+  useDrfList,
+  useQueryWrapper,
+} from '../drf-crud-client';
+
+export interface Dose3DCellInfo {
+  [key: string]: {
+    file: string;
+    control_point_ids: number[];
+    control_point_angles: number[];
+    detector_layout: {
+      DLayer: number[];
+      DRow: number[];
+      DCol: number[];
+      MLayer: number[];
+      CLayer: number[];
+    };
+  };
+}
+
+export interface Dose3DCellPLots {
+  [index: string]: {
+    file: string;
+    plots: string[];
+  };
+}
 
 export type CellType = 'm' | 'r' | 'd';
 
@@ -8,6 +37,9 @@ export interface WorkspaceCellEntity {
   pos: number;
   type: CellType;
   content: string;
+
+  json_info?: Dose3DCellInfo;
+  json_plots?: Dose3DCellPLots;
 }
 
 const WORKSPACE_CELL_ENDPOINT = {
@@ -58,4 +90,14 @@ export function useWorkspaceCellEntity(primaryKey: number) {
 
 export function useWorkspaceCellDelete(primaryKey: number) {
   return useDrfDelete({ ...WORKSPACE_CELL_ENDPOINT, primaryKey });
+}
+
+export function useWorkspaceCellRootFileDownload(primaryKey: number, CLayer: number, MLayer: number) {
+  return useQueryWrapper<ArrayBuffer>({
+    endpoint: `/api/wsc/${primaryKey}/download/`,
+    queryKey: ['wsc', primaryKey, 'download', CLayer, MLayer],
+    config: { responseType: 'arraybuffer', params: { CLayer, MLayer } },
+    cacheTime: 24 * 3600000,
+    staleTime: 24 * 3600000,
+  });
 }

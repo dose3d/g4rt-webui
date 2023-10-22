@@ -1,4 +1,5 @@
 import os.path
+import json
 
 from dose3d import QUEUE, RUNNING
 from rest_framework import viewsets
@@ -124,32 +125,6 @@ class JobRootFileDetailViewSet(viewsets.ReadOnlyModelViewSet):
         fn = os.path.join(job.get_job_path(), f.file_name)
         return download_file(fn, f.file_name, 'application/octet-stream', False)
 
-    @action(detail=True, methods=['post'])
-    def render(self, request, pk=None):
-        f = self.get_object()
-        job = f.job.get_runners_job()
-        fn = os.path.join(job.get_job_path(), f.file_name)
-
-        json_output_file = os.path.join(job.get_job_path(), f.file_name.replace('.root', '_visualize.json'))
-        root_output_file = os.path.join(job.get_job_path(), f.file_name.replace('.root', '_visualize.root'))
-
-        try:
-            from pydose3d.svc.dose3d import Dose3DSvc
-            from pydose3d.svc.ntuple_data import NTupleDataSvc
-
-            NTupleDataSvc.ImplicitMT = True
-            d3dsvc = Dose3DSvc()
-            d3dsvc.set_data(fn, "Dose3DVoxelisedTTree")
-
-            d3dsvc.write_dose_z_profile_to_json(json_output_file, MLayer=0, MColumn=0, CLayer=2, CColumn=2, normalized=True)
-            d3dsvc.write_module_dose_map(root_output_file, MLayer=0, CLayer=2)
-        except:
-            pass
-
-        f.job.sync_status(force=True)
-
-        return Response({})
-
 
 class WorkspaceViewSet(VariousSerializersViewSet):
     queryset = Workspace.objects.all()
@@ -163,3 +138,75 @@ class WorkspaceCellViewSet(VariousSerializersViewSet):
     serializer_class = WorkspaceCellSerializer
     create_serializer_class = WorkspaceCellCreateSerializer
     filterset_fields = ['workspace']
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        data = {**serializer.data}
+
+        # load JSON's for Dose3D cell
+        if instance.type == 'd':
+            ret = instance.render_dose3d_if_need()
+
+            with open(ret['fn_json_info'], "r") as file:
+                data['json_info'] = json.load(file)
+
+            with open(ret['fn_json_plots'], "r") as file:
+                data['json_plots'] = json.load(file)
+
+        return Response(data)
+
+    @action(detail=True, methods=['get'])
+    def download(self, request, pk=None):
+        cell = self.get_object()  # type: WorkspaceCell
+
+        ret = cell.render_dose3d_if_need(
+            request.query_params.get('CLayer'),
+            request.query_params.get('MLayer')
+        )
+        fn = ret['fn_root']
+        file_name = os.path.basename(fn)
+
+        return download_file(fn, file_name, 'application/octet-stream', False)
+
+    @action(detail=True, methods=['post'])
+    def render_dose3d(self, request, pk=None):
+        cell = self.get_object()  # type: WorkspaceCell
+        ws = cell.workspace
+
+        ntuple_data = ws.jobs_files_absolute
+        params = json.loads(cell.content)
+        m_layer = params.get('MLayer')
+        c_layer = params.get('CLayer')
+        force = params.get('force', False)
+        fn = cell.get_dose3d_cache_file_path(m_layer, c_layer)
+        fn_root = "%s.root" % fn
+        fn_json_info = "%s_info.json" % fn
+        fn_json_plots = "%s_plots.json" % fn
+
+        if not force and (not os.path.isfile(fn_root) or not os.path.isfile(fn_json_info) or not os.path.isfile(fn_json_plots)):
+            try:
+                import pydose3d
+                from pydose3d.svc.dose3d import Dose3DSvc
+                from pydose3d.svc.root import RootPlotSvc as rpsvc
+                import json
+                pydose3d.set_log_level("INFO")
+
+                svc = Dose3DSvc()
+                svc.set_data(files=ntuple_data)
+
+                info = svc.get_mcrun_info()
+                with open(fn_json_info, 'w') as file:
+                    file.write(json.dumps(info, indent=4))
+
+                # List of 2D plots
+                plots2d = svc.get_list_of_2dmaps()
+                with open(fn_json_plots, 'w') as file:
+                    file.write(json.dumps(plots2d, indent=4))
+
+                # Write hists from all loaded files to output file
+                svc.write_module_dose_map(file=fn_root, MLayer=1, CLayer=4)
+            except Exception as err:
+                return Response(code=500, data={'message': str(err)})
+
+        return Response({})
