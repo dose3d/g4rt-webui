@@ -24,6 +24,7 @@ export interface JobEntityListItem {
 export interface JobLogFileEntity {
   id: number;
   file_name: string;
+  display: string;
   size: number;
   href: string;
   is_output: boolean;
@@ -32,6 +33,7 @@ export interface JobLogFileEntity {
 export interface JobRootFileEntity {
   id: number;
   file_name: string;
+  display: string;
   size: number;
   href: string;
 }

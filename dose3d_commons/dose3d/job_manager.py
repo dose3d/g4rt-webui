@@ -193,7 +193,7 @@ class JobManager:
     def get_log_files(self):
         """Load list of log files from ROOT"""
         ret = []
-        logs_path = os.path.join(self.get_job_path(), 'log')
+        logs_path = self.get_job_path()  # os.path.join(self.get_job_path(), 'log')
         if os.path.exists(logs_path):
             fns = get_files_by_date(logs_path)
             for fn in fns:

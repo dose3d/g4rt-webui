@@ -19,10 +19,12 @@ def write_all_to_file(fn, content):
 
 
 def get_files_by_date(path):
-    """Get list of files from path sorted by created date"""
-    a = [s for s in os.listdir(path)
-         if os.path.isfile(os.path.join(path, s))]
-    a.sort(key=lambda s: os.path.getctime(os.path.join(path, s)))
+    """Get list of files from path sorted by created date including subdirectories"""
+    a = []
+    for directory, _, filenames in os.walk(path):
+        for filename in filenames:
+            a.append(os.path.join(directory, filename))
+    a.sort(key=lambda s: os.path.getctime(s))
     return a
 
 
