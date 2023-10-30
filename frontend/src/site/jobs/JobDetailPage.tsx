@@ -202,7 +202,7 @@ export default function JobDetailPage() {
                 <ol className="list-inside list-decimal">
                   {data?.root_files.map((o, i) => (
                     <li key={i} className="mb-2">
-                      {o.file_name} ({formatFileSize(o.size)})
+                      {o.display} ({formatFileSize(o.size)})
                       <Link to={`/jobs/${data.id}/root/${o.id}`} className="btn btn-info btn-xs ml-2">
                         open
                       </Link>
@@ -224,7 +224,7 @@ export default function JobDetailPage() {
                 <ol className="list-inside list-decimal">
                   {data?.logs_files.map((o, i) => (
                     <li key={i}>
-                      {o.file_name} ({formatFileSize(o.size)})
+                      {o.display} ({formatFileSize(o.size)})
                       <a
                         href={`${o.href}?plain=text`}
                         className="btn btn-info btn-xs ml-2"
