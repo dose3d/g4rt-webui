@@ -156,6 +156,10 @@ class WorkspaceCellViewSet(VariousSerializersViewSet):
 
         return Response(data)
 
+    def update(self, request, *args, **kwargs):
+        super().update(request, *args, **kwargs)
+        return self.retrieve(request, *args, **kwargs)
+
     @action(detail=True, methods=['get'])
     def download(self, request, pk=None):
         cell = self.get_object()  # type: WorkspaceCell
