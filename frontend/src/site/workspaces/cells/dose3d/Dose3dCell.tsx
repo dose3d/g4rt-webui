@@ -53,8 +53,6 @@ function RenderDose3dCell({
     }
   }
 
-  console.log(cellData);
-
   return (
     <div className="mt-4 flex flex-row">
       {plots.map((o, i) => (

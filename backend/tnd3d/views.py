@@ -146,13 +146,16 @@ class WorkspaceCellViewSet(VariousSerializersViewSet):
 
         # load JSON's for Dose3D cell
         if instance.type == 'd':
-            ret = instance.render_dose3d_if_need()
+            try:
+                ret = instance.render_dose3d_if_need()
 
-            with open(ret['fn_json_info'], "r") as file:
-                data['json_info'] = json.load(file)
+                with open(ret['fn_json_info'], "r") as file:
+                    data['json_info'] = json.load(file)
 
-            with open(ret['fn_json_plots'], "r") as file:
-                data['json_plots'] = json.load(file)
+                with open(ret['fn_json_plots'], "r") as file:
+                    data['json_plots'] = json.load(file)
+            except Exception as err:
+                return Response(code=500, data={'message': str(err)})
 
         return Response(data)
 
@@ -164,14 +167,17 @@ class WorkspaceCellViewSet(VariousSerializersViewSet):
     def download(self, request, pk=None):
         cell = self.get_object()  # type: WorkspaceCell
 
-        ret = cell.render_dose3d_if_need(
-            request.query_params.get('CLayer'),
-            request.query_params.get('MLayer')
-        )
-        fn = ret['fn_root']
-        file_name = os.path.basename(fn)
+        try:
+            ret = cell.render_dose3d_if_need(
+                request.query_params.get('CLayer'),
+                request.query_params.get('MLayer')
+            )
+            fn = ret['fn_root']
+            file_name = os.path.basename(fn)
 
-        return download_file(fn, file_name, 'application/octet-stream', False)
+            return download_file(fn, file_name, 'application/octet-stream', False)
+        except Exception as err:
+            return Response(code=500, data={'message': str(err)})
 
     @action(detail=True, methods=['post'])
     def render_dose3d(self, request, pk=None):
