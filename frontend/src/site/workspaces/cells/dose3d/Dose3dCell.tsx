@@ -21,11 +21,12 @@ function RenderDose3dPlot({ rootFile, cellId, path, isSuccess }: RenderDose3dPlo
     if (isSuccess && rootFile) {
       h = new HierarchyPainter();
       h.setDisplay('simple', cellId);
-      h.openRootFile(rootFile).then(() => h.display(path, '', true));
+      h.openRootFile(rootFile).then(() => h?.display(path, '', true));
     }
 
     return () => {
       h?.cleanup();
+      h = null;
     };
   }, [isSuccess, cellId, path, rootFile]);
 
@@ -51,6 +52,8 @@ function RenderDose3dCell({
       plots.push(`File_${key}_Dose3D_MLayer_${MLayer}_CLayer_${CLayer}`);
     }
   }
+
+  console.log(cellData);
 
   return (
     <div className="mt-4 flex flex-row">
