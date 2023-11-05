@@ -1,5 +1,5 @@
 import React from 'react';
-import { useWorkspaceCellCAddNew, useWorkspaceCellList } from '../../../api/workspaceCells';
+import { useWorkspaceCellCreate, useWorkspaceCellList } from '../../../api/workspaceCells';
 import { WorkspaceEntity } from '../../../api/workspaces';
 import { WorkspaceCell } from './WorkspaceCell';
 import ActionButton from '../../../components/ActionButton';
@@ -7,15 +7,18 @@ import { AddIcon } from '../../../components/icons';
 import { useCounter } from 'usehooks-ts';
 import { PlusIcon } from '@heroicons/react/24/outline';
 
+const DEFAULT_ROOT_CONTENT = JSON.stringify({ fileId: 0, path: '', height: 400 });
+const DEFAULT_DOSE3D_CONTENT = JSON.stringify({ height: 400, width: 400 });
+
 interface MiddleInsertCellProps {
   workspaceId: number;
   pos: number;
 }
 
 function MiddleInsertCell({ workspaceId, pos }: MiddleInsertCellProps) {
-  const addMarkdownCell = useWorkspaceCellCAddNew(workspaceId, 'm', pos);
-  const addDose3DCell = useWorkspaceCellCAddNew(workspaceId, 'd', pos);
-  const addROOTCell = useWorkspaceCellCAddNew(workspaceId, 'r', pos);
+  const addMarkdownCell = useWorkspaceCellCreate(workspaceId, 'm', pos);
+  const addDose3DCell = useWorkspaceCellCreate(workspaceId, 'd', pos, DEFAULT_ROOT_CONTENT);
+  const addROOTCell = useWorkspaceCellCreate(workspaceId, 'r', pos, DEFAULT_DOSE3D_CONTENT);
 
   return (
     <div className="group flex h-8 justify-center">
@@ -53,9 +56,9 @@ export const RerenderFixContext = React.createContext(() => {});
 
 export function WorkspaceCells({ workspace }: Props) {
   const { data } = useWorkspaceCellList(workspace.id);
-  const addMarkdownCell = useWorkspaceCellCAddNew(workspace.id, 'm');
-  const addDose3DCell = useWorkspaceCellCAddNew(workspace.id, 'd');
-  const addROOTCell = useWorkspaceCellCAddNew(workspace.id, 'r');
+  const addMarkdownCell = useWorkspaceCellCreate(workspace.id, 'm');
+  const addDose3DCell = useWorkspaceCellCreate(workspace.id, 'd', undefined, DEFAULT_DOSE3D_CONTENT);
+  const addROOTCell = useWorkspaceCellCreate(workspace.id, 'r', undefined, DEFAULT_ROOT_CONTENT);
 
   const { increment } = useCounter(1); // FIX: force to rerender cells component
 

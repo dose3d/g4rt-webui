@@ -47,11 +47,11 @@ const WORKSPACE_CELL_ENDPOINT = {
   resource: 'wsc',
 };
 
-export function useWorkspaceCellCAddNew(workspace: number, type: CellType, pos?: number) {
+export function useWorkspaceCellCreate(workspace: number, type: CellType, pos?: number, content = '') {
   return useDrfCUD({
     ...WORKSPACE_CELL_ENDPOINT,
     config: {
-      data: { workspace, type, pos, content: JSON.stringify({ fileId: 0, path: '', height: 400 }) },
+      data: { workspace, type, pos, content },
       method: 'POST',
     },
   });
