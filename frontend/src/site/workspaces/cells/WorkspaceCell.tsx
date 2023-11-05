@@ -1,7 +1,7 @@
 import React from 'react';
 import {
-  useWorkspaceCellCAddNew,
   useWorkspaceCellDelete,
+  useWorkspaceCellMovePos,
   useWorkspaceRootCellClone,
   WorkspaceCellEntity,
 } from '../../../api/workspaceCells';
@@ -21,7 +21,6 @@ import {
   PencilSquareIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
-import { AddIcon } from '../../../components/icons';
 import ActionButton from '../../../components/ActionButton';
 
 function EditCell({ cell, onLeave }: EditCellProps) {
@@ -58,6 +57,8 @@ export function WorkspaceCell({ cell, number }: Props & { number: number }) {
 
   const deleteCell = useWorkspaceCellDelete(cell.id);
   const cloneCell = useWorkspaceRootCellClone(cell);
+  const moveUp = useWorkspaceCellMovePos(cell.id, cell.pos - 3);
+  const moveDown = useWorkspaceCellMovePos(cell.id, cell.pos + 3);
 
   return (
     <div className="relative my-1 flex flex-row">
@@ -76,13 +77,11 @@ export function WorkspaceCell({ cell, number }: Props & { number: number }) {
         <div className="grid grid-cols-5 p-0.5">
           <PencilSquareIcon className={iconClass} onClick={setEdit} title="Edit" />
 
-          <ArrowUpIcon className={iconClass} title="Move cell up" />
-          <ArrowDownIcon className={iconClass} title="Move cell down" />
+          <ActionButton drf={moveUp} icon={<ArrowUpIcon className={iconClass} title="Move cell up" />} />
 
-          <ActionButton
-            drf={cloneCell}
-            icon={<DocumentDuplicateIcon className={iconClass} title="Duplicate cell" />}
-          />
+          <ActionButton drf={moveDown} icon={<ArrowDownIcon className={iconClass} title="Move cell down" />} />
+
+          <ActionButton drf={cloneCell} icon={<DocumentDuplicateIcon className={iconClass} title="Duplicate cell" />} />
 
           <ActionButton
             drf={deleteCell}

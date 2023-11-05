@@ -78,6 +78,17 @@ export function useWorkspaceRootCellUpdate(data: WorkspaceCellEntity) {
   });
 }
 
+export function useWorkspaceCellMovePos(primaryKey: number, pos: number) {
+  return useDrfCUD<Partial<WorkspaceCellEntity>>({
+    ...WORKSPACE_CELL_ENDPOINT,
+    primaryKey: primaryKey,
+    config: {
+      method: 'PATCH',
+      data: { pos },
+    },
+  });
+}
+
 export function useWorkspaceCellForm(cell: WorkspaceCellEntity) {
   return useDrfEntityForm({
     ...WORKSPACE_CELL_ENDPOINT,
