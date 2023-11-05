@@ -7,6 +7,43 @@ import { AddIcon } from '../../../components/icons';
 import { useCounter } from 'usehooks-ts';
 import { PlusIcon } from '@heroicons/react/24/outline';
 
+interface MiddleInsertCellProps {
+  workspaceId: number;
+  pos: number;
+}
+
+function MiddleInsertCell({ workspaceId, pos }: MiddleInsertCellProps) {
+  const addMarkdownCell = useWorkspaceCellCAddNew(workspaceId, 'm', pos);
+  const addDose3DCell = useWorkspaceCellCAddNew(workspaceId, 'd', pos);
+  const addROOTCell = useWorkspaceCellCAddNew(workspaceId, 'r', pos);
+
+  return (
+    <div className="group flex h-8 justify-center">
+      <ActionButton
+        className="btn btn-xs m-1 hidden group-hover:inline-flex"
+        drf={addMarkdownCell}
+        icon={<PlusIcon className="h-4 w-4" />}
+      >
+        note cell
+      </ActionButton>
+      <ActionButton
+        className="btn btn-xs m-1 hidden group-hover:inline-flex"
+        drf={addROOTCell}
+        icon={<PlusIcon className="h-4 w-4" />}
+      >
+        root cell
+      </ActionButton>
+      <ActionButton
+        className="btn btn-xs m-1 hidden group-hover:inline-flex"
+        drf={addDose3DCell}
+        icon={<PlusIcon className="h-4 w-4" />}
+      >
+        dose3d cell
+      </ActionButton>
+    </div>
+  );
+}
+
 interface Props {
   workspace: WorkspaceEntity;
 }
@@ -45,20 +82,7 @@ export function WorkspaceCells({ workspace }: Props) {
       {data.map((o, i) => (
         <RerenderFixContext.Provider key={i} value={increment}>
           <WorkspaceCell cell={o} />
-          <div className="group flex h-8 justify-center">
-            <button className="btn btn-xs m-1 hidden group-hover:inline-flex">
-              <PlusIcon className="h-4 w-4" />
-              note cell
-            </button>
-            <button className="btn btn-xs m-1 hidden group-hover:inline-flex">
-              <PlusIcon className="h-4 w-4" />
-              root cell
-            </button>
-            <button className="btn btn-xs m-1 hidden group-hover:inline-flex">
-              <PlusIcon className="h-4 w-4" />
-              dose3d cell
-            </button>
-          </div>
+          <MiddleInsertCell workspaceId={workspace.id} pos={o.pos + 1} />
         </RerenderFixContext.Provider>
       ))}
 

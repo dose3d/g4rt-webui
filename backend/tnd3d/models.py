@@ -11,10 +11,12 @@ MARKDOWN = 'markdown'
 ROOT = 'root'
 DOSE3D = 'dose3d'
 
+WC_POS_STEP = 2
+
 
 def get_max_or_one(qs, field):
     v = qs.aggregate(v=Max(field))['v']
-    return v + 1 if v else 1
+    return v + WC_POS_STEP if v else WC_POS_STEP
 
 
 class Job(models.Model):
@@ -181,11 +183,11 @@ class Workspace(models.Model):
     description = models.TextField(blank=True, default='', verbose_name=_('Jobs description'))
 
     def update_pos(self):
-        pos = 1
+        pos = WC_POS_STEP
         for o in self.workspacecell_set.all():
             o.pos = pos
             o.save(update_fields=['pos'])
-            pos += 1
+            pos += WC_POS_STEP
 
     @property
     def jobs(self):
@@ -303,7 +305,6 @@ class WorkspaceCell(models.Model):
         return {'fn_root': fn_root, 'fn_json_info': fn_json_info, 'fn_json_plots': fn_json_plots}
 
     class Meta:
-        unique_together = (('workspace', 'pos'),)
         ordering = ('pos',)
         verbose_name = _('Workspace cell')
         verbose_name_plural = _('Workspace cells')

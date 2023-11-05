@@ -123,15 +123,21 @@ class WorkspaceSerializer(serializers.ModelSerializer):
 
 class WorkspaceCellSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = WorkspaceCell
-        fields = '__all__'
-        read_only_fields = ('id', 'workspace', 'pos')
-
-
-class WorkspaceCellCreateSerializer(serializers.ModelSerializer):
+    def save(self, **kwargs):
+        instance = super().save(**kwargs)
+        if instance.pos % 2 == 1:
+            instance.workspace.update_pos()
+            return WorkspaceCell.objects.get(pk=instance.pk)
 
     class Meta:
         model = WorkspaceCell
         fields = '__all__'
-        read_only_fields = ('id', 'pos')
+        read_only_fields = ('id', 'workspace')
+
+
+class WorkspaceCellCreateSerializer(WorkspaceCellSerializer):
+
+    class Meta:
+        model = WorkspaceCell
+        fields = '__all__'
+        read_only_fields = ('id',)

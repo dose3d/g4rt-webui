@@ -155,7 +155,7 @@ class WorkspaceCellViewSet(VariousSerializersViewSet):
                 with open(ret['fn_json_plots'], "r") as file:
                     data['json_plots'] = json.load(file)
             except Exception as err:
-                return Response(code=500, data={'message': str(err)})
+                return Response(status=500, data={'message': str(err)})
 
         return Response(data)
 
@@ -177,4 +177,4 @@ class WorkspaceCellViewSet(VariousSerializersViewSet):
 
             return download_file(fn, file_name, 'application/octet-stream', False)
         except Exception as err:
-            return Response(code=500, data={'message': str(err)})
+            return Response(status=500, data={'message': str(err)})
