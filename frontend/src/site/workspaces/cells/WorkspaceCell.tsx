@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  LatestWorkspaceCreated,
   useWorkspaceCellDelete,
   useWorkspaceCellMovePos,
   useWorkspaceRootCellClone,
@@ -51,7 +52,7 @@ function RenderCell({ cell }: Props) {
 const iconClass = 'h-6 w-6 p-1 hover:text-black hover:bg-gray-100';
 
 export function WorkspaceCell({ cell, number }: Props & { number: number }) {
-  const { value: edit, setTrue: setEdit, setFalse: stopEdit } = useBoolean(false);
+  const { value: edit, setTrue: setEdit, setFalse: stopEdit } = useBoolean(cell.id == LatestWorkspaceCreated);
 
   const { type } = cell;
 

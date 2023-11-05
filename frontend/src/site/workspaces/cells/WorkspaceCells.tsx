@@ -57,8 +57,8 @@ export const RerenderFixContext = React.createContext(() => {});
 export function WorkspaceCells({ workspace }: Props) {
   const { data } = useWorkspaceCellList(workspace.id);
   const addMarkdownCell = useWorkspaceCellCreate(workspace.id, 'm');
-  const addDose3DCell = useWorkspaceCellCreate(workspace.id, 'd', undefined, DEFAULT_DOSE3D_CONTENT);
-  const addROOTCell = useWorkspaceCellCreate(workspace.id, 'r', undefined, DEFAULT_ROOT_CONTENT);
+  const addDose3DCell = useWorkspaceCellCreate(workspace.id, 'd', 0, DEFAULT_DOSE3D_CONTENT);
+  const addROOTCell = useWorkspaceCellCreate(workspace.id, 'r', 0, DEFAULT_ROOT_CONTENT);
 
   const { increment } = useCounter(1); // FIX: force to rerender cells component
 
@@ -69,7 +69,7 @@ export function WorkspaceCells({ workspace }: Props) {
   return (
     <div>
       {data.map((o, i) => (
-        <RerenderFixContext.Provider key={i} value={increment}>
+        <RerenderFixContext.Provider key={o.id} value={increment}>
           <MiddleInsertCell workspaceId={workspace.id} pos={o.pos - 1} />
           <WorkspaceCell cell={o} number={i + 1} />
         </RerenderFixContext.Provider>

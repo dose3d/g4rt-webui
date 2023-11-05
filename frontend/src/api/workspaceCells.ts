@@ -47,12 +47,16 @@ const WORKSPACE_CELL_ENDPOINT = {
   resource: 'wsc',
 };
 
-export function useWorkspaceCellCreate(workspace: number, type: CellType, pos?: number, content = '') {
-  return useDrfCUD({
+export let LatestWorkspaceCreated: number | null = null;
+export function useWorkspaceCellCreate(workspace: number, type: CellType, pos = 0, content = '') {
+  return useDrfCUD<WorkspaceCellEntity>({
     ...WORKSPACE_CELL_ENDPOINT,
     config: {
       data: { workspace, type, pos, content },
       method: 'POST',
+    },
+    onSuccess: (ret) => {
+      LatestWorkspaceCreated = ret.id;
     },
   });
 }

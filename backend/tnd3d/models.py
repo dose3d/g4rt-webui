@@ -236,7 +236,7 @@ class WorkspaceCell(models.Model):
     content = models.TextField(blank=True, default='', verbose_name=_('Cell content'))
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if self.pos is None:
+        if not self.pos:
             qs = WorkspaceCell.objects.filter(workspace=self.workspace)
             self.pos = get_max_or_one(qs, 'pos')
         super().save(force_insert, force_update, using, update_fields)
