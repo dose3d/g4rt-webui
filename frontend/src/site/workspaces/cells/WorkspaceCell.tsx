@@ -1,5 +1,10 @@
 import React from 'react';
-import { WorkspaceCellEntity } from '../../../api/workspaceCells';
+import {
+  useWorkspaceCellCAddNew,
+  useWorkspaceCellDelete,
+  useWorkspaceRootCellClone,
+  WorkspaceCellEntity,
+} from '../../../api/workspaceCells';
 import cn from 'classnames';
 import { useBoolean } from 'usehooks-ts';
 import RootCell from './root/RootCell';
@@ -16,6 +21,8 @@ import {
   PencilSquareIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline';
+import { AddIcon } from '../../../components/icons';
+import ActionButton from '../../../components/ActionButton';
 
 function EditCell({ cell, onLeave }: EditCellProps) {
   if (cell.type === 'r') {
@@ -44,10 +51,13 @@ function RenderCell({ cell }: Props) {
 
 const iconClass = 'h-6 w-6 p-1 hover:text-black hover:bg-gray-100';
 
-export function WorkspaceCell({ cell, number }: Props & {number: number}) {
+export function WorkspaceCell({ cell, number }: Props & { number: number }) {
   const { value: edit, setTrue: setEdit, setFalse: stopEdit } = useBoolean(false);
 
   const { type } = cell;
+
+  const deleteCell = useWorkspaceCellDelete(cell.id);
+  const cloneCell = useWorkspaceRootCellClone(cell);
 
   return (
     <div className="relative my-1 flex flex-row">
@@ -65,10 +75,20 @@ export function WorkspaceCell({ cell, number }: Props & {number: number}) {
       <div className="absolute end-0 top-0 text-xs">
         <div className="grid grid-cols-5 p-0.5">
           <PencilSquareIcon className={iconClass} onClick={setEdit} title="Edit" />
+
           <ArrowUpIcon className={iconClass} title="Move cell up" />
           <ArrowDownIcon className={iconClass} title="Move cell down" />
-          <DocumentDuplicateIcon className={iconClass} title="Duplicate cell" />
-          <TrashIcon className={iconClass} title="Remove cell" />
+
+          <ActionButton
+            drf={cloneCell}
+            icon={<DocumentDuplicateIcon className={iconClass} title="Duplicate cell" />}
+          />
+
+          <ActionButton
+            drf={deleteCell}
+            icon={<TrashIcon className={iconClass} title="Remove cell" />}
+            confirm="Are your sure to remove these cell?"
+          />
         </div>
       </div>
     </div>
