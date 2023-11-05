@@ -90,7 +90,12 @@ export class SimpleJwtAuthManager extends AuthManager<JwtTokens> {
           refresh: authData.refresh,
         });
 
-        setAuthData(response.data, true);
+        if (response.data.refresh) {
+          setAuthData(response.data, true);
+        } else {
+          // when 'ROTATE_REFRESH_TOKENS': False then no refresh token in response
+          setAuthData({ ...response.data, refresh: authData.refresh }, true);
+        }
 
         req.headers.Authorization = `Bearer ${response.data.access}`;
       } catch (err) {
