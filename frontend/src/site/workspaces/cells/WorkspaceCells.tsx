@@ -65,24 +65,10 @@ export function WorkspaceCells({ workspace }: Props) {
 
   return (
     <div>
-      <div className="mb-8">
-        <ActionButton className="btn btn-success" drf={addMarkdownCell} icon={<AddIcon className="h-6 w-6" />}>
-          note cell
-        </ActionButton>
-
-        <ActionButton className="btn btn-info ml-2" drf={addROOTCell} icon={<AddIcon className="h-6 w-6" />}>
-          ROOT cell
-        </ActionButton>
-
-        <ActionButton className="btn btn-warning ml-2" drf={addDose3DCell} icon={<AddIcon className="h-6 w-6" />}>
-          Dose3D cell
-        </ActionButton>
-      </div>
-
       {data.map((o, i) => (
         <RerenderFixContext.Provider key={i} value={increment}>
-          <WorkspaceCell cell={o} />
-          <MiddleInsertCell workspaceId={workspace.id} pos={o.pos + 1} />
+          <MiddleInsertCell workspaceId={workspace.id} pos={o.pos - 1} />
+          <WorkspaceCell cell={o} number={i + 1} />
         </RerenderFixContext.Provider>
       ))}
 

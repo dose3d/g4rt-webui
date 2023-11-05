@@ -44,14 +44,14 @@ function RenderCell({ cell }: Props) {
 
 const iconClass = 'h-6 w-6 p-1 hover:text-black hover:bg-gray-100';
 
-export function WorkspaceCell({ cell }: Props) {
+export function WorkspaceCell({ cell, number }: Props & {number: number}) {
   const { value: edit, setTrue: setEdit, setFalse: stopEdit } = useBoolean(false);
 
   const { type } = cell;
 
   return (
     <div className="relative my-1 flex flex-row">
-      <div className="basis-12 pt-1 text-center font-mono">[{cell.pos}]</div>
+      <div className="basis-12 pt-1 text-center font-mono">[{number}]</div>
       <div
         className={cn('grow p-1', {
           'border border-gray-300': !edit,
