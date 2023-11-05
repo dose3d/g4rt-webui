@@ -106,8 +106,8 @@ export const AuthProvider = (props: Props) => {
   }, [onStoreAuthData]);
 
   const buildAxiosInstance = useCallback(
-    () => onBuildAxiosInstance(authData, setAuthData),
-    [authData, onBuildAxiosInstance, setAuthData],
+    () => onBuildAxiosInstance(onLoadAuthData, setAuthData),
+    [onLoadAuthData, onBuildAxiosInstance, setAuthData],
   );
 
   const contextData: ContextData = {

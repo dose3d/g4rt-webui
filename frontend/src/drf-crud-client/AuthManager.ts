@@ -18,7 +18,7 @@ export abstract class AuthManager<TAuthData = any> {
    * @parem setAuthData use for update authData or clean if backend returns 401 Unauthorized.
    */
   abstract onBuildAxiosInstance: (
-    authData: TAuthData | null,
+    loadAuthData: () => TAuthData | null,
     setAuthData: (data: TAuthData | null, store: boolean) => void,
   ) => AxiosInstance;
 }

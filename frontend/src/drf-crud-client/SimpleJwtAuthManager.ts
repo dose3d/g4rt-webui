@@ -62,21 +62,27 @@ export class SimpleJwtAuthManager extends AuthManager<JwtTokens> {
    * - if got 401 error (invalid token and invalid refresh token)
    *   launch setAuthData(null) for invalidate client session.
    *
-   * @param authData auth tokens used for injection
+   * @param loadAuthData auth tokens used for injection
    * @param setAuthData callback for set null when gets 401 error
    */
   onBuildAxiosInstance = (
-    authData: JwtTokens | null,
+    loadAuthData: () => JwtTokens | null,
     setAuthData: (data: JwtTokens | null, store: boolean) => void,
   ): AxiosInstance => {
+    const authData = loadAuthData();
+
     const axiosInstance = axios.create({
       headers: { Authorization: `Bearer ${authData?.access}` },
     });
 
     axiosInstance.interceptors.request.use(async (req) => {
+      const authData = loadAuthData();
+
       if (!authData) {
         return req;
       }
+
+      req.headers.Authorization = `Bearer ${authData.access}`;
 
       const user = jwt_decode(authData.access) as { exp: number };
       const isExpired = moment.unix(user.exp).diff(moment()) < 1;
