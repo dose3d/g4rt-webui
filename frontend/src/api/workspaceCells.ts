@@ -57,7 +57,7 @@ export function useWorkspaceCellCAddNew(workspace: number, type: CellType, pos?:
   });
 }
 
-export function useWorkspaceRootCellClone({ id, pos, ...rest }: WorkspaceCellEntity) {
+export function useWorkspaceRootCellClone({ id: _id, pos, ...rest }: WorkspaceCellEntity) {
   return useDrfCUD<Partial<WorkspaceCellEntity>>({
     ...WORKSPACE_CELL_ENDPOINT,
     config: {
