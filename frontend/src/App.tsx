@@ -16,6 +16,8 @@ import JobRootDetailPage from './site/root/JobRootDetailPage';
 import WorkspacesPage from './site/workspaces/WorkspacesPage';
 import WorkspaceCreatePage from './site/workspaces/WorkspaceCreatePage';
 import WorkspaceDetailPage from './site/workspaces/WorkspaceDetailPage';
+import RootFilesPage from './site/root/RootFilesPage';
+import RootFileCreatePage from './site/root/RootFileCreatePage';
 
 function Authorized() {
   const [toggle, onToggle] = useToggle();
@@ -32,6 +34,10 @@ function Authorized() {
               <Route element={<JobCreatePage />} path="create" />
               <Route element={<JobDetailPage />} path=":jobId" />
               <Route element={<JobRootDetailPage />} path=":jobId/root/:fileId" />
+            </Route>
+            <Route path="/rf">
+              <Route element={<RootFilesPage />} path="" />
+              <Route element={<RootFileCreatePage />} path="create" />
             </Route>
             <Route path="/workspaces">
               <Route element={<WorkspacesPage />} path="" />

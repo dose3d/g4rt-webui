@@ -2,7 +2,14 @@
 import React from 'react';
 import { Link, useMatch, useResolvedPath } from 'react-router-dom';
 import cn from 'classnames';
-import { DocumentPlusIcon, PhotoIcon, PresentationChartIcon, RocketLaunchIcon, ServerStackIcon } from './icons';
+import {
+  DocumentIcon,
+  DocumentPlusIcon,
+  PhotoIcon,
+  PresentationChartIcon,
+  RocketLaunchIcon,
+  ServerStackIcon
+} from "./icons";
 
 interface NavLinkProps {
   to: string;
@@ -48,6 +55,11 @@ const Sidebar = ({ toggle, onToggle }: Props) => {
                 <li>
                   <NavLink to="/jobs/" label="Jobs">
                     <RocketLaunchIcon />
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/rf/" label="ROOT Files">
+                    <DocumentIcon />
                   </NavLink>
                 </li>
               </ul>

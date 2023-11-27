@@ -9,10 +9,10 @@ from rest_framework.response import Response
 
 from commons.views import CustomPageNumberPagination, VariousSerializersViewSet
 from tnd3d.download import download_file, download_tail_of_text_file
-from tnd3d.models import Job, JobRootFile, INIT, Workspace, WorkspaceCell
+from tnd3d.models import Job, JobRootFile, INIT, Workspace, WorkspaceCell, RootFile
 from tnd3d.serializer import JobSerializer, JobSerializerPending, JobRootFileSerializer, \
     JobListSerializer, JobRootFileDetailSerializer, WorkspaceSerializer, WorkspaceCellSerializer, \
-    WorkspaceCellCreateSerializer
+    WorkspaceCellCreateSerializer, RootFileSerializer
 from django.utils.translation import gettext_lazy as _
 
 
@@ -124,6 +124,13 @@ class JobRootFileDetailViewSet(viewsets.ReadOnlyModelViewSet):
         job = f.job.get_runners_job()
         fn = os.path.join(job.get_job_path(), f.file_name)
         return download_file(fn, f.file_name, 'application/octet-stream', False)
+
+
+class RootFileViewSet(VariousSerializersViewSet):
+    queryset = RootFile.objects.filter(jrf_id__isnull=True)
+    serializer_class = RootFileSerializer
+    # list_serializer_class = JobListSerializer
+    pagination_class = CustomPageNumberPagination
 
 
 class WorkspaceViewSet(VariousSerializersViewSet):
