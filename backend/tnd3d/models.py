@@ -244,7 +244,7 @@ class Workspace(models.Model):
     def roots_files_absolute(self):
         files = []
         for r in self.workspaceroot_set.all():
-            files.append(r.uploaded_file.file.path)
+            files.append(r.root.uploaded_file.file.path)
         return files
 
     class Meta:
