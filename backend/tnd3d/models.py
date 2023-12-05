@@ -1,5 +1,6 @@
 import os
 import json
+from datetime import timedelta, datetime
 
 from django.conf import settings
 from django.db import models
@@ -167,15 +168,21 @@ class UploadedFile(models.Model):
     file = models.FileField(upload_to='uploads/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    @staticmethod
+    def remove_orphans():
+        one_day_ago = datetime.now() - timedelta(days=1)
+        deleted = []
+        for orphan in UploadedFile.objects.filter(uploaded_at__lt=one_day_ago, rootfile__isnull=True):
+            orphan.file.delete(save=False)
+            deleted.append(orphan.id)
+        UploadedFile.objects.filter(id__in=deleted).delete()
+
 
 class RootFile(models.Model):
     title = models.CharField(max_length=255, verbose_name=_("Display file name"), unique=True)
     description = models.TextField(blank=True, default='', verbose_name=_('File description'))
     file_path = models.CharField(max_length=255, verbose_name=_("Logs file from ROOT"))
-
-    # optionals
-    uploaded_file = models.OneToOneField(UploadedFile, null=True, verbose_name=_('Uploaded file'), on_delete=models.CASCADE)
-    jrf = models.OneToOneField(JobRootFile, null=True, blank=True, on_delete=models.CASCADE)
+    uploaded_file = models.OneToOneField(UploadedFile, verbose_name=_('Uploaded file'), on_delete=models.CASCADE)
 
     class Meta:
         ordering = ('title',)
@@ -226,6 +233,20 @@ class Workspace(models.Model):
                 files.append(fn)
         return files
 
+    @property
+    def roots(self):
+        roots = []
+        for r in self.workspaceroot_set.all():
+            roots.append(r.root_id)
+        return roots
+
+    @property
+    def roots_files_absolute(self):
+        files = []
+        for r in self.workspaceroot_set.all():
+            files.append(r.uploaded_file.file.path)
+        return files
+
     class Meta:
         ordering = ('created_at',)
         verbose_name = _('Workspace')
@@ -241,6 +262,17 @@ class WorkspaceJob(models.Model):
         ordering = ('job',)
         verbose_name = _('Job to workspace assign')
         verbose_name_plural = _('Job to workspace assigns')
+
+
+class WorkspaceRoot(models.Model):
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, verbose_name=_('Workspace'))
+    root = models.ForeignKey(RootFile, on_delete=models.CASCADE, verbose_name=_('Root file'))
+
+    class Meta:
+        unique_together = (('workspace', 'root'),)
+        ordering = ('root',)
+        verbose_name = _('ROOT file to workspace assign')
+        verbose_name_plural = _('ROOT file to workspace assigns')
 
 
 class WorkspaceCell(models.Model):
@@ -291,7 +323,7 @@ class WorkspaceCell(models.Model):
                 not os.path.isfile(fn_json_info) or
                 not os.path.isfile(fn_json_plots)
         ):
-            ntuple_data = self.workspace.jobs_files_absolute
+            ntuple_data = [*self.workspace.jobs_files_absolute, *self.workspace.roots_files_absolute]
 
             if settings.DEBUG:
                 print(json.dumps({

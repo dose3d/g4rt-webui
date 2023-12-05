@@ -2,8 +2,9 @@ import os
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 
-from tnd3d.download import generate_download_href, MODULE_ROOT, MODULE_LOGS
-from tnd3d.models import Job, JobRootFile, JobLogFile, Workspace, WorkspaceCell, WorkspaceJob, RootFile, UploadedFile
+from tnd3d.download import generate_download_href, MODULE_ROOT, MODULE_LOGS, MODULE_UPLOADS
+from tnd3d.models import Job, JobRootFile, JobLogFile, Workspace, WorkspaceCell, WorkspaceJob, RootFile, UploadedFile, \
+    WorkspaceRoot
 
 
 class JobListSerializer(serializers.ModelSerializer):
@@ -94,7 +95,7 @@ class RootFileSerializer(serializers.ModelSerializer):
     href = serializers.SerializerMethodField()
 
     def get_href(self, obj):
-        return "" #TODO generate_download_href(MODULE_ROOT, obj.id)
+        return generate_download_href(MODULE_UPLOADS, obj.id)
 
     def validate_uploaded_file(self, value):
         if not value:
@@ -104,7 +105,7 @@ class RootFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = RootFile
         fields = '__all__'
-        read_only_fields = ('id', 'file_path', 'jrf')
+        read_only_fields = ('id', 'file_path')
 
 
 class WorkspaceJobSerializer(serializers.ModelSerializer):
@@ -116,32 +117,48 @@ class WorkspaceJobSerializer(serializers.ModelSerializer):
 class WorkspaceSerializer(serializers.ModelSerializer):
 
     jobs = serializers.ListField(child=serializers.IntegerField())
+    roots = serializers.ListField(child=serializers.IntegerField())
 
     def create(self, validated_data):
         jobs = validated_data.pop('jobs')
+        roots = validated_data.pop('roots')
+
         instance = Workspace.objects.create(**validated_data)
 
         for job in jobs:
             wj = WorkspaceJob.objects.create(workspace_id=instance.id, job_id=job)
             instance.workspacejob_set.add(wj)
 
+        for root in roots:
+            wr = WorkspaceRoot.objects.create(workspace_id=instance.id, root_id=root)
+            instance.workspaceroot_set.add(wr)
+
         return instance
 
     def update(self, instance, validated_data):
         jobs = validated_data.pop('jobs')
+        roots = validated_data.pop('roots')
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
 
         to_delete = set(instance.jobs)
-
         for job in jobs:
             if job in to_delete:
                 to_delete.remove(job)
             else:
                 WorkspaceJob.objects.create(workspace_id=instance, job_id=job)
-
         instance.workspacejob_set.filter(job_id__in=to_delete).delete()
+
+        to_delete = set(instance.roots)
+        for root in roots:
+            if root in to_delete:
+                to_delete.remove(root)
+            else:
+                WorkspaceRoot.objects.create(workspace_id=instance, root_id=root)
+        instance.workspacejob_set.filter(root_id__in=to_delete).delete()
+
         return instance
 
     class Meta:

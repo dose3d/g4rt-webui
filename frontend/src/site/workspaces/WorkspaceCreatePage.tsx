@@ -20,6 +20,7 @@ import { WorkspacesPageBreadcrumbs } from './WorkspacesPage';
 import { DocumentPlusIcon } from '../../components/icons';
 import { useJobRootFileList } from '../../api/jobsRootFile';
 import { CReactSelectMultiInput } from '../../components/reactSelect';
+import { useRootFileListForSelect } from "../../api/rootFile";
 
 const WorkspaceCreatePageBreadcrumbs: Breadcrumb[] = [
   ...WorkspacesPageBreadcrumbs,
@@ -33,7 +34,10 @@ const WorkspaceCreatePageBreadcrumbs: Breadcrumb[] = [
 export default function WorkspaceCreatePage() {
   const navigate = useNavigate();
   const formatErrorToString = useFormatErrorToString();
+
   const { data } = useJobRootFileList();
+  const { data: rootFiles} = useRootFileListForSelect();
+
   const {
     handleSubmitShort,
     form: { control },
@@ -68,6 +72,17 @@ export default function WorkspaceCreatePage() {
                     name="jobs"
                     title="Load result from jobs:"
                     options={data.map((o) => ({ label: `#${o.job.id}: ${o.job.title}`, value: o.job.id }))}
+                  />
+                )}
+              </div>
+
+              <div>
+                {rootFiles && (
+                  <CReactSelectMultiInput
+                    control={control}
+                    name="roots"
+                    title="Load result from uploaded ROOT files:"
+                    options={rootFiles.map((o) => ({ label: `#${o.id}: ${o.title}`, value: o.id }))}
                   />
                 )}
               </div>

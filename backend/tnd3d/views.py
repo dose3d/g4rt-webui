@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 from commons.views import CustomPageNumberPagination, VariousSerializersViewSet
 from tnd3d.download import download_file, download_tail_of_text_file
-from tnd3d.models import Job, JobRootFile, INIT, Workspace, WorkspaceCell, RootFile
+from tnd3d.models import Job, JobRootFile, INIT, Workspace, WorkspaceCell, RootFile, UploadedFile
 from tnd3d.serializer import JobSerializer, JobSerializerPending, JobRootFileSerializer, \
     JobListSerializer, JobRootFileDetailSerializer, WorkspaceSerializer, WorkspaceCellSerializer, \
     WorkspaceCellCreateSerializer, RootFileSerializer, UploadedFileSerializer
@@ -141,10 +141,25 @@ class FileUploadView(APIView):
 
 
 class RootFileViewSet(VariousSerializersViewSet):
-    queryset = RootFile.objects.filter(jrf_id__isnull=True)
+    queryset = RootFile.objects.all()
     serializer_class = RootFileSerializer
-    # list_serializer_class = JobListSerializer
     pagination_class = CustomPageNumberPagination
+
+    @action(detail=False, methods=['get'], url_path='list')
+    def no_paginated_list(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+
+        # service method
+        UploadedFile.remove_orphans()
+
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def download(self, request, pk=None):
+        r = self.get_object()
+        fn = r.uploaded_file.file.path
+        return download_file(fn, r.title, 'application/octet-stream', False)
 
 
 class WorkspaceViewSet(VariousSerializersViewSet):

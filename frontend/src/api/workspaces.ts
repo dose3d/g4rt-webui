@@ -14,6 +14,7 @@ export interface WorkspaceEntity {
   updated_at: string;
 
   jobs: string[];
+  roots: string[];
 }
 
 const WORKSPACE_ENDPOINT = {

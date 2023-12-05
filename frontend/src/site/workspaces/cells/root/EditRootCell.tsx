@@ -1,4 +1,4 @@
-import { useJobRootFileDownload, useJobRootFileList } from '../../../../api/jobsRootFile';
+import { useJobRootFileList } from '../../../../api/jobsRootFile';
 import { useForm } from 'react-hook-form';
 import { useWorkspaceRootCellUpdate } from '../../../../api/workspaceCells';
 import React, { useCallback, useContext, useEffect } from 'react';
@@ -7,6 +7,7 @@ import { CSelect, CTextInput, SelectOptions } from '../../../../components/forms
 import { HierarchyPainter } from 'jsroot';
 import { EditCellProps } from '../cellCommons';
 import { RootCellContent, parseRootCell } from './rootCellCommons';
+import { useRootFileDownload, useRootFileListForSelect } from "../../../../api/rootFile";
 
 interface RenderRootEditProps extends RootCellContent {
   pos: number;
@@ -16,7 +17,7 @@ interface RenderRootEditProps extends RootCellContent {
 function RenderRootEdit({ fileId, path, height, pos, onDisplay }: RenderRootEditProps) {
   const id = `cell_${pos}`;
 
-  const { data: rootFile, isSuccess } = useJobRootFileDownload(fileId);
+  const { data: rootFile, isSuccess } = useRootFileDownload(fileId);
 
   useEffect(() => {
     let h: any = null;
@@ -45,7 +46,10 @@ function RenderRootEdit({ fileId, path, height, pos, onDisplay }: RenderRootEdit
 }
 
 function EditRootCell({ cell, onLeave }: EditCellProps) {
+
   const { data } = useJobRootFileList();
+  const { data: rootFiles} = useRootFileListForSelect();
+
   const parsedCell = parseRootCell(cell.content);
   const { control, watch, handleSubmit, setValue } = useForm<RootCellContent>({ defaultValues: parsedCell });
   const { mutateAsync } = useWorkspaceRootCellUpdate(cell);
@@ -69,14 +73,23 @@ function EditRootCell({ cell, onLeave }: EditCellProps) {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid grid-cols-5 gap-4">
-        <CSelect control={control} name="fileId" title="Load result from job:">
+        <CSelect control={control} name="fileId" title="Load result from ROOT:">
+          <>
           {data && (
-            <SelectOptions
-              options={data}
-              labelValue={(o) => ({ label: `#${o.job.id}: ${o.job.title}`, value: `${o.id}` })}
-              nullValue
-            />
+              <SelectOptions
+                options={data}
+                labelValue={(o) => ({ label: `Job #${o.job.id}: ${o.job.title}`, value: `${o.id}` })}
+                nullValue
+              />
           )}
+            {rootFiles && (
+              <SelectOptions
+                options={rootFiles}
+                labelValue={(o) => ({ label: `ROOT #${o.id}: ${o.title}`, value: `r${o.id}` })}
+                nullValue
+              />
+            )}
+        </>
         </CSelect>
         <div className="col-span-2">
           <CTextInput control={control} name="path" title="Data path to render:" />

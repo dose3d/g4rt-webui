@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
-import { useJobRootFileDownload } from '../../../../api/jobsRootFile';
 import { HierarchyPainter } from 'jsroot';
 import { RootCellContent, parseRootCell } from './rootCellCommons';
 import { WorkspaceCellEntity } from '../../../../api/workspaceCells';
+import { useRootFileDownload } from "../../../../api/rootFile";
 
 function RenderRootCell({ fileId, path, height, pos }: RootCellContent & { pos: number }) {
   const id = `cell_${pos}`;
 
-  const { data: rootFile, isSuccess } = useJobRootFileDownload(fileId);
+  const { data: rootFile, isSuccess } = useRootFileDownload(fileId);
 
   useEffect(() => {
     let h: any = null;

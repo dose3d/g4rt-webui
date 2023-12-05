@@ -14,6 +14,7 @@ from rest_framework.generics import get_object_or_404
 
 MODULE_ROOT = 'root'
 MODULE_LOGS = 'logs'
+MODULE_UPLOADS = 'uploads'
 
 
 @api_view(['GET', 'HEAD'])
@@ -29,6 +30,8 @@ def download_response(module, identify, plain):
         return download_root_file(identify)
     elif module == MODULE_LOGS:
         return download_logs_file(identify, plain)
+    elif module == MODULE_UPLOADS:
+        return download_upload_file(identify)
 
 
 def download_root_file(identify):
@@ -38,6 +41,16 @@ def download_root_file(identify):
     job = jrf.job
     fn = os.path.join(job.get_runners_job().get_job_path(), jrf.file_name)
     return download_file(fn, jrf.file_name, 'application/octet-stream', False)
+
+
+def download_upload_file(identify):
+    from tnd3d.models import RootFile
+
+    jrf = get_object_or_404(RootFile, pk=identify)
+    file = jrf.uploaded_file.file
+    #fn = os.path.join(job.get_runners_job().get_job_path(), jrf.file_name)
+    #return download_file(fn, jrf.file_name, 'application/octet-stream', False)
+    return ""
 
 
 def download_logs_file(identify, plain):
