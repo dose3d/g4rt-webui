@@ -163,12 +163,18 @@ class JobRootFile(models.Model):
         unique_together = (('job', 'file_name'),)
 
 
+class UploadedFile(models.Model):
+    file = models.FileField(upload_to='uploads/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+
 class RootFile(models.Model):
     title = models.CharField(max_length=255, verbose_name=_("Display file name"), unique=True)
     description = models.TextField(blank=True, default='', verbose_name=_('File description'))
     file_path = models.CharField(max_length=255, verbose_name=_("Logs file from ROOT"))
 
     # optionals
+    uploaded_file = models.OneToOneField(UploadedFile, null=True, verbose_name=_('Uploaded file'), on_delete=models.CASCADE)
     jrf = models.OneToOneField(JobRootFile, null=True, blank=True, on_delete=models.CASCADE)
 
     class Meta:

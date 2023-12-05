@@ -5,14 +5,16 @@ from dose3d import QUEUE, RUNNING
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from commons.views import CustomPageNumberPagination, VariousSerializersViewSet
 from tnd3d.download import download_file, download_tail_of_text_file
 from tnd3d.models import Job, JobRootFile, INIT, Workspace, WorkspaceCell, RootFile
 from tnd3d.serializer import JobSerializer, JobSerializerPending, JobRootFileSerializer, \
     JobListSerializer, JobRootFileDetailSerializer, WorkspaceSerializer, WorkspaceCellSerializer, \
-    WorkspaceCellCreateSerializer, RootFileSerializer
+    WorkspaceCellCreateSerializer, RootFileSerializer, UploadedFileSerializer
 from django.utils.translation import gettext_lazy as _
 
 
@@ -124,6 +126,18 @@ class JobRootFileDetailViewSet(viewsets.ReadOnlyModelViewSet):
         job = f.job.get_runners_job()
         fn = os.path.join(job.get_job_path(), f.file_name)
         return download_file(fn, f.file_name, 'application/octet-stream', False)
+
+
+class FileUploadView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        file_serializer = UploadedFileSerializer(data=request.data)
+        if file_serializer.is_valid():
+            file_serializer.save()
+            return Response(file_serializer.data, status=201)
+        else:
+            return Response(file_serializer.errors, status=400)
 
 
 class RootFileViewSet(VariousSerializersViewSet):

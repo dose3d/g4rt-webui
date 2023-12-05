@@ -9,10 +9,12 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 from datetime import timedelta
 import mimetypes
+
+from dose3d import JobsManager
 
 from backend.settings_local import DB_NAME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
 
@@ -190,3 +192,5 @@ EXPIRATION_LINK = 70  # seconds to expire download link
 
 mimetypes.add_type("text/css", ".css", True)
 mimetypes.add_type("text/javascript", ".js", True)
+
+MEDIA_ROOT = os.path.join(BASE_DIR, JobsManager(CONFIG_FILE).MEDIA_DIR)

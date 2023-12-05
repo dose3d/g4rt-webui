@@ -1,8 +1,9 @@
 import os
 from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
 
 from tnd3d.download import generate_download_href, MODULE_ROOT, MODULE_LOGS
-from tnd3d.models import Job, JobRootFile, JobLogFile, Workspace, WorkspaceCell, WorkspaceJob, RootFile
+from tnd3d.models import Job, JobRootFile, JobLogFile, Workspace, WorkspaceCell, WorkspaceJob, RootFile, UploadedFile
 
 
 class JobListSerializer(serializers.ModelSerializer):
@@ -78,12 +79,27 @@ class JobSerializerPending(JobSerializer):
         read_only_fields = (*JobSerializer.Meta.read_only_fields, 'args', 'toml')
 
 
+class UploadedFileSerializer(serializers.ModelSerializer):
+    def validate_file(self, value):
+        # raise serializers.ValidationError(_("It is not a valid ROOT file. Please upload another file."))
+        return value
+
+    class Meta:
+        model = UploadedFile
+        fields = '__all__'
+
+
 class RootFileSerializer(serializers.ModelSerializer):
 
     href = serializers.SerializerMethodField()
 
     def get_href(self, obj):
         return "" #TODO generate_download_href(MODULE_ROOT, obj.id)
+
+    def validate_uploaded_file(self, value):
+        if not value:
+            raise serializers.ValidationError(_("Please upload ROOT file"))
+        return value
 
     class Meta:
         model = RootFile

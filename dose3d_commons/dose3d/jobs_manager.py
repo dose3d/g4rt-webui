@@ -19,6 +19,7 @@ class JobsManager:
     DOSE3D_EXEC = None
     SLEEP = None
     CACHE_DIR = None
+    MEDIA_DIR = None
 
     main_dir = None
 
@@ -59,6 +60,8 @@ class JobsManager:
         self.RUNNING_DIR = self.config["RUNNING_DIR"]
         self.DONE_DIR = self.config["DONE_DIR"]
         self.DOSE3D_EXEC = self.config["DOSE3D_EXEC"]
+        self.MEDIA_DIR = self.config["MEDIA_DIR"]
+
         self.CACHE_DIR = self.config.get("CACHE_DIR", '/tmp/dose3d_cache')
 
         cache_dir = Path(self.CACHE_DIR)

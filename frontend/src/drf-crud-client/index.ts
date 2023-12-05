@@ -56,8 +56,24 @@ import { AuthContext, AuthProvider } from './AuthContext';
 import { useAuthContext } from './useAuthContext';
 import { AuthManager } from './AuthManager';
 import { decodeJwtOrNull, SimpleJwtAuthManager } from './SimpleJwtAuthManager';
+import useUploadRequest, {
+  UseUploadRequest,
+  GenericUploadedFileResponse,
+  UploadFileSuccessCallback,
+  UploadFileErrorCallback,
+} from './useUploadRequest';
 
-export type { DrfError, PaginationController, UseDrfCUD, UseDrfEntityForm };
+export type {
+  DrfError,
+  PaginationController,
+  UseDrfCUD,
+  UseDrfEntityForm,
+  UseUploadRequest,
+  GenericUploadedFileResponse,
+  UploadFileSuccessCallback,
+  UploadFileErrorCallback,
+};
+
 export {
   DrfI18nResourceEn,
   formatErrorToString,
@@ -82,4 +98,5 @@ export {
   AuthManager,
   SimpleJwtAuthManager,
   decodeJwtOrNull,
+  useUploadRequest,
 };

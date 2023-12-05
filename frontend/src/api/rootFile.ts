@@ -5,6 +5,7 @@ export interface RootFileEntity {
   title: string;
   description: string;
   href: string;
+  uploaded_file: number;
 }
 
 const ROOT_ENDPOINT = {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import cn from 'classnames';
 import {
   Card,
@@ -13,12 +13,14 @@ import {
 } from '../../components/layout';
 import { CTextArea, CTextInput } from '../../components/forms';
 import { useNavigate } from 'react-router-dom';
-import { useFormatErrorToString } from '../../drf-crud-client';
+import { UploadFileSuccessCallback, useFormatErrorToString } from '../../drf-crud-client';
 import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
 import { RootFilesPagePageBreadcrumbs } from './RootFilesPage';
 import { DocumentPlusIcon } from '../../components/icons';
 import { useJobRootFileList } from '../../api/jobsRootFile';
 import { useRootFileForm } from '../../api/rootFile';
+import UploadFile from '../../components/UploadFile';
+import { useWatch } from 'react-hook-form';
 
 const RootFileCreatePageBreadcrumbs: Breadcrumb[] = [
   ...RootFilesPagePageBreadcrumbs,
@@ -32,15 +34,24 @@ const RootFileCreatePageBreadcrumbs: Breadcrumb[] = [
 export default function RootFileCreatePage() {
   const navigate = useNavigate();
   const formatErrorToString = useFormatErrorToString();
-  const { data } = useJobRootFileList();
   const {
     handleSubmitShort,
-    form: { control },
+    form: { control, setValue, watch, register },
     cud: { isLoading, failureReason },
   } = useRootFileForm({
     formProps: { defaultValues: { title: '', description: '' }, reValidateMode: 'onSubmit' },
     onSuccess: () => navigate('/rf'),
   });
+
+  const onSuccess = useCallback<UploadFileSuccessCallback>(
+    (response) => {
+      if (!watch('title')) {
+        setValue('title', response.data.file.substring('/uploads/'.length));
+      }
+      setValue('uploaded_file', response.data.id);
+    },
+    [setValue, watch],
+  );
 
   return (
     <Page>
@@ -57,15 +68,23 @@ export default function RootFileCreatePage() {
               </CardHeaderMain>
             </CardHeader>
             <form onSubmit={handleSubmitShort}>
-              <CTextInput name="title" control={control} title="ROOT file name" />
-              <CTextArea name="description" control={control} title="Description of the ROOT file" />
-              <div>
-                <input type="file" />
-                TODO: upload currently not working, its only mock-up
-              </div>
-              <button type="submit" className={cn('btn-primary btn', { loading: isLoading })} disabled={isLoading}>
-                Send
-              </button>
+              <input type="hidden" {...register('uploaded_file')} />
+
+              {watch('uploaded_file') ? (
+                <>
+                  <CTextInput name="title" control={control} title="ROOT file name" />
+                  <CTextArea name="description" control={control} title="Description of the ROOT file" />
+                  <button type="submit" className={cn('btn-primary btn', { loading: isLoading })} disabled={isLoading}>
+                    Send
+                  </button>
+                </>
+              ) : (
+                <>
+                  <UploadFile endpoint="/api/upload/" onSuccess={onSuccess} />
+                  <input type="hidden" {...register('title')} />
+                </>
+              )}
+
               {!!failureReason && <ErrorAlert className="my-4">{formatErrorToString(failureReason)}</ErrorAlert>}
             </form>
           </Card>
