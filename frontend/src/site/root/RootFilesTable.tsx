@@ -13,7 +13,7 @@ function TableHeader() {
           ID
         </th>
         <th scope="col" className="w-64 p-4 text-center text-xs font-medium uppercase text-gray-500 md:w-full">
-          ROOT File
+          User file
         </th>
         <th scope="col" className="w-32 p-4 text-center text-xs font-medium uppercase text-gray-500">
           Details
@@ -41,8 +41,8 @@ function TableRow({ entity: { id, title, description } }: RootFilesTableRow) {
         <ActionButton
           className="btn btn-ghost btn-sm"
           drf={deleteAction}
-          title="Remove uploaded ROOT file"
-          confirm="Are you sure to remove this ROOT file?"
+          title="Remove uploaded user file"
+          confirm="Are you sure to remove this user file?"
           mutateOptions={{
             onSuccess: () => {
               //navigate('/jobs/');

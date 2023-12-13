@@ -34,7 +34,7 @@ export default function RootFilesPage() {
             <CardHeader>
               <CardHeaderMain>
                 <Breadcrumbs breadcrumbs={RootFilesPagePageBreadcrumbs} />
-                <Title>List of ROOT files</Title>
+                <Title>List of user files</Title>
               </CardHeaderMain>
               {!!failureReason && <ErrorAlert className="my-4">{formatErrorToString(failureReason)}</ErrorAlert>}
 
@@ -52,7 +52,7 @@ export default function RootFilesPage() {
                         name="email"
                         id="products-search"
                         className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-cyan-600 focus:ring-cyan-600 sm:text-sm"
-                        placeholder="Search for ROOT files"
+                        placeholder="Search for user files"
                         disabled
                       />
                     </div>

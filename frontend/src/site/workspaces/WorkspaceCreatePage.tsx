@@ -81,7 +81,7 @@ export default function WorkspaceCreatePage() {
                   <CReactSelectMultiInput
                     control={control}
                     name="roots"
-                    title="Load result from uploaded ROOT files:"
+                    title="Load result from uploaded user files:"
                     options={rootFiles.map((o) => ({ label: `#${o.id}: ${o.title}`, value: o.id }))}
                   />
                 )}

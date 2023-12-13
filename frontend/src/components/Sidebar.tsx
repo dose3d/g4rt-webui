@@ -58,7 +58,7 @@ const Sidebar = ({ toggle, onToggle }: Props) => {
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/rf/" label="ROOT Files">
+                  <NavLink to="/rf/" label="User files">
                     <DocumentIcon />
                   </NavLink>
                 </li>

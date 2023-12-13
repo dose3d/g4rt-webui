@@ -24,7 +24,7 @@ const RootFileCreatePageBreadcrumbs: Breadcrumb[] = [
   ...RootFilesPagePageBreadcrumbs,
   {
     icon: <DocumentPlusIcon className={BreadcrumbsIconClass} />,
-    label: 'Upload new ROOT file',
+    label: 'Upload new user file',
     to: '/rf/create',
   },
 ];
@@ -59,9 +59,9 @@ export default function RootFileCreatePage() {
             <CardHeader>
               <CardHeaderMain>
                 <Breadcrumbs breadcrumbs={RootFileCreatePageBreadcrumbs} />
-                <CardHeaderTitle>Upload a ROOT file</CardHeaderTitle>
+                <CardHeaderTitle>Upload a user file</CardHeaderTitle>
                 <CardHeaderSubTitle>
-                  After upload, the new ROOT file will be available for use in workspaces cells.
+                  After upload, the new user file will be available for use in workspaces cells.
                 </CardHeaderSubTitle>
               </CardHeaderMain>
             </CardHeader>
@@ -70,8 +70,8 @@ export default function RootFileCreatePage() {
 
               {watch('uploaded_file') ? (
                 <>
-                  <CTextInput name="title" control={control} title="ROOT file name" inputProps={{ readOnly: true }} />
-                  <CTextArea name="description" control={control} title="Description of the ROOT file" />
+                  <CTextInput name="title" control={control} title="User file name" inputProps={{ readOnly: true }} />
+                  <CTextArea name="description" control={control} title="Description of the user file" />
                   <button type="submit" className={cn('btn-primary btn', { loading: isLoading })} disabled={isLoading}>
                     Send
                   </button>
