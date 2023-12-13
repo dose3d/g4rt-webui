@@ -1,10 +1,8 @@
-import { Control, FieldPath, FieldPathValue, FieldValues, UseFormStateReturn } from "react-hook-form/dist/types";
+import { Control, FieldPath, FieldValues, UseFormStateReturn } from 'react-hook-form';
 import { Controller, ControllerRenderProps } from 'react-hook-form';
 import { ControllerFieldState } from 'react-hook-form/dist/types/controller';
 import React from 'react';
 import cn from 'classnames';
-import ReactSelect from 'react-select';
-import { Props } from 'react-select/dist/declarations/src/Select';
 
 export interface CommonAdds {
   title?: string;
@@ -31,7 +29,9 @@ interface TextInputAdds extends CommonAdds {
 
 interface TextInputProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
   extends TextInputAdds,
-    RFHAdds<TFieldValues, TName> {}
+    RFHAdds<TFieldValues, TName> {
+  inputProps?: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
+}
 
 interface LabelOutlineProps extends CommonAdds {
   error?: string;
@@ -68,6 +68,7 @@ export function TextInput<
   placeHolder,
   type = 'text',
   inputCN,
+  inputProps,
 }: TextInputProps<TFieldValues, TName>) {
   const hasError = !!fieldState.error?.message;
 
@@ -78,6 +79,7 @@ export function TextInput<
         placeholder={placeHolder}
         className={cn('input-bordered input w-full', inputCN, { 'input-error': hasError })}
         {...field}
+        {...(inputProps || {})}
       />
     </LabelOutline>
   );
@@ -85,7 +87,9 @@ export function TextInput<
 
 interface CTextInputProps<TFieldValues extends FieldValues = FieldValues>
   extends TextInputAdds,
-    ControlAdds<TFieldValues> {}
+    ControlAdds<TFieldValues> {
+  inputProps?: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
+}
 
 export function CTextInput<TFieldValues extends FieldValues = FieldValues>({
   control,
@@ -146,7 +150,7 @@ interface SelectAdds extends CommonAdds {
 }
 
 /*interface ReactSelectAdds extends CommonAdds {
-  
+
 }*/
 
 interface SelectProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
@@ -201,7 +205,6 @@ export function CSelect<TFieldValues extends FieldValues = FieldValues>({
     />
   );
 }
-
 
 export function SelectOptions<T>({
   options,

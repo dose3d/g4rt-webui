@@ -17,10 +17,8 @@ import { UploadFileSuccessCallback, useFormatErrorToString } from '../../drf-cru
 import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
 import { RootFilesPagePageBreadcrumbs } from './RootFilesPage';
 import { DocumentPlusIcon } from '../../components/icons';
-import { useJobRootFileList } from '../../api/jobsRootFile';
 import { useRootFileForm } from '../../api/rootFile';
 import UploadFile from '../../components/UploadFile';
-import { useWatch } from 'react-hook-form';
 
 const RootFileCreatePageBreadcrumbs: Breadcrumb[] = [
   ...RootFilesPagePageBreadcrumbs,
@@ -72,7 +70,7 @@ export default function RootFileCreatePage() {
 
               {watch('uploaded_file') ? (
                 <>
-                  <CTextInput name="title" control={control} title="ROOT file name" />
+                  <CTextInput name="title" control={control} title="ROOT file name" inputProps={{ readOnly: true }} />
                   <CTextArea name="description" control={control} title="Description of the ROOT file" />
                   <button type="submit" className={cn('btn-primary btn', { loading: isLoading })} disabled={isLoading}>
                     Send
