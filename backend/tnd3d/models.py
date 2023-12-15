@@ -14,6 +14,38 @@ DOSE3D = 'dose3d'
 
 WC_POS_STEP = 2
 
+PYDOSE3D_DUMP = """import json
+import pydose3d
+from pydose3d.svc.dose3d import Dose3DSvc
+
+jobs_files_absolute = [%s]
+roots_files_absolute = [%s]
+fn_root = r"%s" 
+m_layer = %d
+c_layer = %d
+fn_json_info = r"%s"
+fn_json_plots = r"%s"
+
+ntuple_data = [*jobs_files_absolute, *roots_files_absolute]
+pydose3d.set_log_level("INFO")
+
+svc = Dose3DSvc()
+svc.set_data(files=ntuple_data)
+
+info = svc.get_mcrun_info()
+with open(fn_json_info, 'w') as file:
+    file.write(json.dumps(info, indent=4))
+
+# List of 2D plots
+plots2d = svc.get_list_of_2dmaps()
+with open(fn_json_plots, 'w') as file:
+    file.write(json.dumps(plots2d, indent=4))
+
+# Write hists from all loaded files to output file
+svc.write_module_dose_map(file=fn_root, MLayer=m_layer, CLayer=c_layer)
+
+"""
+
 
 def get_max_or_one(qs, field):
     v = qs.aggregate(v=Max(field))['v']
@@ -355,6 +387,34 @@ class WorkspaceCell(models.Model):
             svc.write_module_dose_map(file=fn_root, MLayer=m_layer, CLayer=c_layer)
 
         return {'fn_root': fn_root, 'fn_json_info': fn_json_info, 'fn_json_plots': fn_json_plots}
+
+    def render_debug_of_dose3d(self, CLayer=None, MLayer=None):
+        """
+        Render Dose3D cell files to cache dir if not exists (or force=True)
+        """
+
+        if self.type != 'd':
+            raise Exception(_('The cell must be Dose3D cell type'))
+
+        params = json.loads(self.content)
+        m_layer = int(params.get('MLayer', '0') if MLayer is None else MLayer)
+        c_layer = int(params.get('CLayer', '0') if CLayer is None else CLayer)
+
+        fn = self.get_dose3d_cache_file_path(m_layer, c_layer)
+        fn_store = self.get_store_file_name()
+        fn_root = "%s.root" % fn
+        fn_json_info = "%s_info.json" % fn_store
+        fn_json_plots = "%s_plots.json" % fn_store
+
+        return PYDOSE3D_DUMP % (
+            ", ".join(f'r"{value}"' for value in self.workspace.jobs_files_absolute),
+            ", ".join(f'r"{value}"' for value in self.workspace.roots_files_absolute),
+            fn_root,
+            m_layer,
+            c_layer,
+            fn_json_info,
+            fn_json_plots
+        )
 
     class Meta:
         ordering = ('pos',)

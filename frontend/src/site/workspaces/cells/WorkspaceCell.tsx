@@ -21,8 +21,10 @@ import {
   DocumentDuplicateIcon,
   PencilSquareIcon,
   TrashIcon,
+  BugAntIcon
 } from '@heroicons/react/24/outline';
 import ActionButton from '../../../components/ActionButton';
+import { BugIcon } from "../../../components/icons";
 
 function EditCell({ cell, onLeave }: EditCellProps) {
   if (cell.type === 'r') {
@@ -75,7 +77,7 @@ export function WorkspaceCell({ cell, number }: Props & { number: number }) {
         {edit ? <EditCell cell={cell} onLeave={stopEdit} /> : <RenderCell cell={cell} />}
       </div>
       <div className="absolute end-0 top-0 text-xs">
-        <div className="grid grid-cols-5 p-0.5">
+        <div className="grid grid-cols-6 p-0.5">
           <PencilSquareIcon className={iconClass} onClick={setEdit} title="Edit" />
 
           <ActionButton drf={moveUp} icon={<ArrowUpIcon className={iconClass} title="Move cell up" />} />
@@ -89,6 +91,8 @@ export function WorkspaceCell({ cell, number }: Props & { number: number }) {
             icon={<TrashIcon className={iconClass} title="Remove cell" />}
             confirm="Are your sure to remove these cell?"
           />
+
+          <a href={`/api/debug/?cell=${cell.id}`} target="_blank" rel="noreferrer"><BugAntIcon className={iconClass} title="Debug" /></a>
         </div>
       </div>
     </div>

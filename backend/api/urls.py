@@ -21,6 +21,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('register/', views.RegisterView.as_view(), name='auth_register'),
     path('config/', views.get_config),
+    path('debug/', views.show_cell_debug),
     path('token/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('upload/', FileUploadView.as_view()),
 ] + router.urls
