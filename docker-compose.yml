@@ -1,0 +1,40 @@
+# docker-compose up --build
+# docker-compose down
+# docker system prune -a
+
+version: '3.8'
+services:
+  db:
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dose3d"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      - POSTGRES_DB=dose3d
+      - POSTGRES_USER=dose3d
+      - POSTGRES_PASSWORD=dose3d
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    command: bash -c "python manage.py migrate && python manage.py createsuperuser --noinput || true && daphne -b 0.0.0.0 -p 8000 backend.asgi:application"
+    volumes:
+      - media_volume:/app/var
+    ports:
+      - "8080:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_PASSWORD=admin
+      - DJANGO_SUPERUSER_EMAIL=admin@example.com
+
+volumes:
+  postgres_data:
+  media_volume:
+

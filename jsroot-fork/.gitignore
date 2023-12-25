@@ -21,5 +21,4 @@ openui5dist
 httpcontrol.C
 httpserver.C
 Go4ExampleSimple
-build/
 .idea/
