@@ -20,7 +20,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile.backend
+      dockerfile: webui.Dockerfile
     command: bash -c "python manage.py migrate && python manage.py createsuperuser --noinput || true && daphne -b 0.0.0.0 -p 8000 backend.asgi:application"
     volumes:
       - media_volume:/app/var
@@ -33,6 +33,13 @@ services:
       - DJANGO_SUPERUSER_USERNAME=admin
       - DJANGO_SUPERUSER_PASSWORD=admin
       - DJANGO_SUPERUSER_EMAIL=admin@example.com
+  g4rt:
+    build:
+      context: .
+      dockerfile: g4rt.Dockerfile
+    command: conda run --no-capture-output -n geant4 python main.py
+    volumes:
+      - media_volume:/app/var
 
 volumes:
   postgres_data:
