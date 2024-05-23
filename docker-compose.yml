@@ -23,7 +23,7 @@ services:
       dockerfile: webui.Dockerfile
     command: bash -c "python manage.py migrate && python manage.py createsuperuser --noinput || true && daphne -b 0.0.0.0 -p 8000 backend.asgi:application"
     volumes:
-      - media_volume:/app/var
+      - /e/dose3d/docker-run-data:/app/var
     ports:
       - "8080:8000"
     depends_on:
@@ -39,9 +39,7 @@ services:
       dockerfile: g4rt.Dockerfile
     command: conda run --no-capture-output -n geant4 python main.py
     volumes:
-      - media_volume:/app/var
+      - /e/dose3d/docker-run-data:/app/var
 
 volumes:
   postgres_data:
-  media_volume:
-
