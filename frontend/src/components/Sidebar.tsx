@@ -71,6 +71,11 @@ const Sidebar = ({ toggle, onToggle }: Props) => {
                     <ServerStackIcon />
                   </NavLink>
                 </li>
+                <li>
+                  <NavLink to="/wl-test" label="WL Test">
+                    <ServerStackIcon />
+                  </NavLink>
+                </li>
               </ul>
             </div>
           </div>
