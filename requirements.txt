@@ -31,4 +31,8 @@ txaio==23.1.1
 typing_extensions==4.8.0
 tzdata==2023.3
 zope.interface==6.0
+pylinac==3.23.2
+pydicom==2.4.4
+numpy==1.26.4
+opencv-python==4.10.0.84
 -e ./dose3d_commons

@@ -1,8 +1,16 @@
-import { Control, FieldPath, FieldValues, UseFormStateReturn } from 'react-hook-form';
-import { Controller, ControllerRenderProps } from 'react-hook-form';
-import { ControllerFieldState } from 'react-hook-form/dist/types/controller';
-import React from 'react';
 import cn from 'classnames';
+import React from 'react';
+import {
+  Control,
+  Controller,
+  ControllerRenderProps,
+  FieldPath,
+  FieldValues,
+  Path,
+  RegisterOptions,
+  UseFormStateReturn,
+} from 'react-hook-form';
+import { ControllerFieldState } from 'react-hook-form/dist/types/controller';
 
 export interface CommonAdds {
   title?: string;
@@ -21,6 +29,10 @@ interface RFHAdds<TFieldValues extends FieldValues, TName extends FieldPath<TFie
 export interface ControlAdds<TFieldValues extends FieldValues = FieldValues> {
   control: Control<TFieldValues>;
   name: FieldPath<TFieldValues>;
+  rules?: Omit<
+    RegisterOptions<TFieldValues, Path<TFieldValues>>,
+    'disabled' | 'valueAsNumber' | 'valueAsDate' | 'setValueAs'
+  >;
 }
 
 interface TextInputAdds extends CommonAdds {
@@ -29,7 +41,7 @@ interface TextInputAdds extends CommonAdds {
 
 interface TextInputProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
   extends TextInputAdds,
-    RFHAdds<TFieldValues, TName> {
+  RFHAdds<TFieldValues, TName> {
   inputProps?: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
 }
 
@@ -87,16 +99,17 @@ export function TextInput<
 
 interface CTextInputProps<TFieldValues extends FieldValues = FieldValues>
   extends TextInputAdds,
-    ControlAdds<TFieldValues> {
+  ControlAdds<TFieldValues> {
   inputProps?: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
 }
 
 export function CTextInput<TFieldValues extends FieldValues = FieldValues>({
   control,
   name,
+  rules,
   ...rest
 }: CTextInputProps<TFieldValues>) {
-  return <Controller name={name} control={control} render={(p) => <TextInput {...p} {...rest} />} />;
+  return <Controller name={name} control={control} rules={rules} render={(p) => <TextInput {...p} {...rest} />} />;
 }
 
 interface TextAreaAdds extends CommonAdds {
@@ -105,7 +118,7 @@ interface TextAreaAdds extends CommonAdds {
 
 interface TextAreaProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
   extends TextAreaAdds,
-    RFHAdds<TFieldValues, TName> {}
+  RFHAdds<TFieldValues, TName> { }
 
 export function TextArea<
   TFieldValues extends FieldValues = FieldValues,
@@ -135,7 +148,7 @@ export function TextArea<
 
 interface CTextAreaProps<TFieldValues extends FieldValues = FieldValues>
   extends TextAreaAdds,
-    ControlAdds<TFieldValues> {}
+  ControlAdds<TFieldValues> { }
 
 export function CTextArea<TFieldValues extends FieldValues = FieldValues>({
   control,
@@ -155,7 +168,7 @@ interface SelectAdds extends CommonAdds {
 
 interface SelectProps<TFieldValues extends FieldValues, TName extends FieldPath<TFieldValues>>
   extends SelectAdds,
-    RFHAdds<TFieldValues, TName> {}
+  RFHAdds<TFieldValues, TName> { }
 
 export function Select<
   TFieldValues extends FieldValues = FieldValues,
@@ -185,7 +198,7 @@ export function Select<
   );
 }
 
-interface CSelectProps<TFieldValues extends FieldValues = FieldValues> extends SelectAdds, ControlAdds<TFieldValues> {}
+interface CSelectProps<TFieldValues extends FieldValues = FieldValues> extends SelectAdds, ControlAdds<TFieldValues> { }
 
 export function CSelect<TFieldValues extends FieldValues = FieldValues>({
   control,

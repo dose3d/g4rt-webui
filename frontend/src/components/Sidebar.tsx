@@ -1,15 +1,10 @@
 /* eslint-disable tailwindcss/no-contradicting-classname */
+import { faMicroscope, faLeaf } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import cn from 'classnames';
 import React from 'react';
 import { Link, useMatch, useResolvedPath } from 'react-router-dom';
-import cn from 'classnames';
-import {
-  DocumentIcon,
-  DocumentPlusIcon,
-  PhotoIcon,
-  PresentationChartIcon,
-  RocketLaunchIcon,
-  ServerStackIcon
-} from "./icons";
+import { DocumentIcon, RocketLaunchIcon, ServerStackIcon } from './icons';
 
 interface NavLinkProps {
   to: string;
@@ -69,6 +64,20 @@ const Sidebar = ({ toggle, onToggle }: Props) => {
                 <li>
                   <NavLink to="/workspaces" label="Workspaces">
                     <ServerStackIcon />
+                  </NavLink>
+                </li>
+              </ul>
+
+              <h3 className="pb-2 pt-4 text-base font-bold text-gray-500">Modules</h3>
+              <ul className="space-y-2 pb-2">
+                <li>
+                  <NavLink to="/wl-test" label="WL Test">
+                    <FontAwesomeIcon icon={faMicroscope} />
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/leaves-analysis" label="Leaves Analysis">
+                    <FontAwesomeIcon icon={faLeaf} />
                   </NavLink>
                 </li>
               </ul>
