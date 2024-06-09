@@ -243,12 +243,6 @@
             overflow: hidden;
          }
 
-         #guidraw {
-            border: 0px;
-            width: 100%;
-            height: 100%;
-         }
-
          @media all and ( min-width: 1700px ) {
             :root {
                --panel-width: 280px;
@@ -273,10 +267,10 @@
             }
             #panel {
                position: absolute;
-               left: 0;
-               top: 0;
+               left: 0px;
+               top: 0px;
                width: 100%;
-               right: 0;
+               right: 0px;
                z-index: 1000;
                overflow-x: hidden;
                transition: 0s 0s height;
@@ -293,10 +287,7 @@
                pointer-events: none;
                background-color: rgba(0,0,0,0);
                position: absolute;
-               left: 0;
-               right: 0;
-               top: 0;
-               bottom: 0;
+               inset: 0px;
                z-index: 1000;
                pointer-events: none;
                transition: .2s background-color;
@@ -354,19 +345,16 @@
    </body>
 
    <script type="module">
-      import { settings, httpRequest, decodeUrl, version, version_id, source_dir } from './modules/core.mjs';
-
+      import { settings, constants, httpRequest, decodeUrl, version, version_id, source_dir, gStyle } from './modules/core.mjs';
       import { cleanup } from './modules/base/ObjectPainter.mjs';
-
       import { registerForResize } from './modules/gui/utils.mjs';
-
       import { createRootColors } from './modules/base/colors.mjs';
-
       import { draw, makeImage } from './modules/draw.mjs';
-
+      import { readStyleFromURL } from './modules/gui.mjs';
       import { openFile } from './modules/io.mjs';
-
-      import { HierarchyPainter, getHPainter } from './modules/gui/HierarchyPainter.mjs';
+      import { setHPainter, getHPainter } from './modules/gui/display.mjs';
+      import { HierarchyPainter } from './modules/gui/HierarchyPainter.mjs';
+      import { testInteractivity } from './modules/testing.mjs';
 
       document.getElementById('version').innerHTML = (version_id != 'dev') ? version_id : version;
       document.getElementById('version').title = `${version}, ${source_dir}`;
@@ -386,16 +374,39 @@
           filepath = '../files/',
           extra_opts = '', // extra options like webgl=no or interactive=0
           select_key = null, // select the only key like ?select=TH2
+          select_id = null,  // selected entry
           no_interactive = false, // disable interactivity
           use_zstd = true,
-          examples_main = [];
+          examples_main = [],
+          test_interactivity = false,
+          show_debug = false;
 
-      if (window.location.search.indexOf('nowebgl') > 0)
+      const d = decodeUrl();
+
+      if (d.has('nowebgl'))
          extra_opts = '&webgl=0';
 
-      if (window.location.search.indexOf('noint') > 0) {
+      if (d.has('noint')) {
          no_interactive = true;
          extra_opts += '&interactive=0';
+      }
+
+      if (d.has('interactivity'))
+         test_interactivity = true;
+
+      if (d.has('debug'))
+         show_debug = true;
+
+      select_key = d.get('select');
+      if (!select_key && d.has('geom')) select_key = 'TGeo';
+
+      if (select_key && d.has('id'))
+         select_id = parseInt(d.get('id'));
+
+      if (d.has('dark')) {
+         settings.DarkMode = true;
+         document.getElementById('panel').style.background = 'black';
+         document.getElementById('plaindraw').style.background = 'black';
       }
 
       let host = window.location.host;
@@ -414,26 +425,102 @@
          filepath = 'https://jsroot.gsi.de/files/';
       }
 
-      let keyid = null, optid, testfile, testobj, testinterval = 10, hpainter = null;
+      let keyid = null, optid, testfile, testobj, testinterval = 10, hpainter = null,
+          init_style, init_palette, init_curve, init_TimeZone;
 
-      function drawEntry(entry, object, option) {
-         if (!entry?.aspng)
-            return draw('plaindraw', object, option);
-         return makeImage({ format: 'png', object, option, width: 800, height: 600 })
-            .then(png => {
-               let img = new Image;
-               img.src = png;
-               document.getElementById('plaindraw').appendChild(img);
-               return true;
-            });
+      function produceGlobalStyleCopy() {
+         // copy style when painter is loaded
+         if (!init_style && gStyle) {
+            init_style = Object.assign({}, gStyle);
+            init_palette = settings.Palette;
+            init_curve = settings.FuncAsCurve;
+            init_TimeZone = settings.TimeZone;
+         }
+      }
+
+      function restoreGlobalStyle() {
+         if (init_style && gStyle)
+            Object.assign(gStyle, init_style);
+         settings.Palette = init_palette;
+         settings.FuncAsCurve = init_curve;
+         settings.TimeZone = init_TimeZone;
+      }
+
+      produceGlobalStyleCopy();
+
+      async function drawEntry(entry, object, option) {
+
+         restoreGlobalStyle();
+
+         settings.TimeZone = entry.TimeZone ?? init_TimeZone;
+
+         if (entry?.aspng)
+            return makeImage({ format: 'png', object, option, width: 800, height: 600 })
+               .then(png => {
+                  let img = new Image;
+                  img.src = png;
+                 document.getElementById('plaindraw').appendChild(img);
+                  return true;
+               });
+
+         return draw('plaindraw', object, option).then(res => {
+             if (!test_interactivity && (!keyid || (entry?.interactive !== true))) return res;
+
+             return testInteractivity({ dom: document.getElementById('plaindraw'), timeout: testinterval, debug: show_debug });
+         })
+      }
+
+      async function drawUrl(url) {
+         let d = decodeUrl(url),
+             layout = d.get('layout', 'simple'),
+             latex = d.get('latex', null),
+             prev_latex = settings.Latex,
+             nobrowser = d.has('nobrowser');
+
+         restoreGlobalStyle();
+
+         readStyleFromURL(url);
+
+         if (latex !== null)
+            settings.Latex = constants.Latex.fromString(latex);
+
+         if (nobrowser) {
+            document.getElementById('plaindraw').innerHTML = '';
+            hpainter = new HierarchyPainter('root', null);
+            hpainter.setDisplay(layout, 'plaindraw');
+         } else {
+            document.getElementById('plaindraw').innerHTML =
+                `<div id='left-div' style='float:left; width:25%; overflow:auto; height:100%;'>` +
+                `<div id='browser'></div></div>` +
+                `<div id='right-div' style='float:right; width:73%; height:100%;'></div>`;
+
+            hpainter = new HierarchyPainter('root', 'browser');
+            hpainter.setDisplay(layout, 'right-div');
+         }
+
+         setHPainter(hpainter);
+
+         return hpainter.startGUI(null, url).then(res => {
+            if (latex !== null)
+               settings.Latex = prev_latex;
+
+            if (!test_interactivity) return res;
+
+            const prs = [];
+
+            hpainter.getDisplay()?.forEachFrame(frame => {
+               prs.push(testInteractivity({ dom: frame, timeout: testinterval, debug: show_debug, no_enlarge: true }));
+            }, true);
+
+            return Promise.all(prs);
+         });
       }
 
       async function processClick(durl, filename, itemname, opt, jsonname, entry) {
 
          keyid = null; // stop execution of running test loop (if any)
 
-         if (getHPainter())
-            getHPainter().cleanup();
+         getHPainter()?.cleanup();
 
          cleanup('plaindraw');
 
@@ -445,37 +532,31 @@
             settings.DragAndDrop = false;
          }
 
+         hpainter?.cleanup();
+         hpainter = null;
+         setHPainter(null);
+         cleanup('plaindraw');
+         document.getElementById('plaindraw').innerHTML = '';
+         document.getElementById('plaindraw').style['background-color'] = '';
+
          if (durl.length > 0) {
-            let viewer = document.getElementById('guidraw');
-            if (!viewer) {
-               document.getElementById('plaindraw').innerHTML = '';
-               viewer = document.createElement('iframe');
-               viewer.id = 'guidraw';
-               document.getElementById('plaindraw').appendChild(viewer);
-            }
-            viewer.src = jsroot_path + durl + (opt ? `&opt=${opt}` : '') + extra_opts;
-            viewer.focus();
-          } else {
-
-             document.getElementById('plaindraw').innerHTML = '';
-             document.getElementById('plaindraw').style['background-color'] = '';
-
-             if (jsonname)
-                return httpRequest(jsonname, 'object')
-                         .then(obj => drawEntry(entry, obj, opt));
-             else
-                return openFile(filename)
-                         .then(file => file.readObject(itemname))
-                         .then(obj => drawEntry(entry, obj, opt));
+            return drawUrl(durl + (opt ? `&opt=${opt}` : '') + extra_opts);
+          } else if (jsonname) {
+             return httpRequest(jsonname, 'object')
+                      .then(obj => drawEntry(entry, obj, opt));
+           } else {
+              return openFile(filename)
+                       .then(file => file.readObject(itemname))
+                       .then(obj => drawEntry(entry, obj, opt));
           }
-      };
+      }
 
       function setPageTitle(title) {
          let arr = document.getElementsByTagName('meta');
-         for (let k=0;k<arr.length;++k) {
+         for (let k = 0; k < arr.length; ++k) {
             let elem = arr[k];
             if (elem.getAttribute('property') == 'og:title')
-              elem.setAttribute('content', title);
+               elem.setAttribute('content', title);
          }
       }
 
@@ -492,13 +573,25 @@
                 document.getElementById('panel').classList.toggle('open');
              })
          });
-      };
+      }
+
+      function tz(entry) {
+         if (!entry?.timezone)
+            return '';
+         if (entry.timezone === 'UTC')
+            return '&utc';
+         if (entry.timezone === 'Europe/Berlin')
+            return '&cet';
+         return `&timezone='${entry.timezone}'`;
+      }
 
       async function runBigTest(interval, doinit) {
          if (doinit) {
             let running = (keyid !== null); // indication that test running - no need to relaunch events
-            keyid = select_key || 'TH1'; optid = -1;
+            keyid = select_key || 'TH1';
+            optid = select_key && (select_id !== null) ? select_id - 1 : -1;
             testfile = testobj = null;
+            test_interactivity = (doinit === 'full');
             let ii = decodeUrl().get('interval');
             if (ii && Number.isInteger(parseInt(ii))) testinterval = parseInt(ii);
                                                  else testinterval = interval;
@@ -521,32 +614,44 @@
             if (!select_key)
                for (let key in examples_main) {
                   if (found) { next = key; break; }
-                  if (key == keyid) found = true;
+                  if (key === keyid) found = true;
                }
             keyid = next;
             if (!next) return; // stop condition
-            optid = -1; testfile = testobj = null;
-            // console.log(`Switch key ${keyid}`);
+            optid = select_key && (select_id !== null) ? select_id - 1 : -1;
+            testfile = testobj = null;
             return runBigTest(0);
+         } else if (select_key && select_id !== null && optid !== select_id) {
+            return; // do only this id
          }
 
          let entry = examples_main[keyid][optid];
 
+         if (show_debug)
+            console.log(`Testing ${keyid}  ${entry.name || entry.opt}`);
+
          // exclude some entries from the test
-         if (entry.notest) return runBigTest(0);
-         if (!use_zstd && entry.zstd) return runBigTest(0);
+         if (entry.notest)
+            return runBigTest(0);
+         if (!use_zstd && entry.zstd)
+            return runBigTest(0);
 
          let filename = '', itemname = '', jsonname = '', url = '', opt = '';
 
          if (entry.file) {
              filename = entry.file;
-             if ((filename.indexOf('http:') < 0) && (filename.indexOf('https:') < 0)) filename = filepath + filename;
+             if ((filename.indexOf('http:') < 0) && (filename.indexOf('https:') < 0))
+                filename = filepath + filename;
          }
          if (entry.item) itemname = entry.item;
-         if (entry.testopt !== undefined) opt = entry.testopt; else if (entry.opt) opt = entry.opt;
+         if (entry.testopt !== undefined)
+            opt = entry.testopt;
+         else if (entry.opt)
+            opt = entry.opt;
          if (entry.json) {
             jsonname = entry.json;
-            if ((jsonname.indexOf('http:') < 0) && (jsonname.indexOf('https:') < 0)) jsonname = filepath + jsonname;
+            if ((jsonname.indexOf('http:') < 0) && (jsonname.indexOf('https:') < 0))
+               jsonname = filepath + jsonname;
          }
 
          if (entry.url) {
@@ -559,6 +664,7 @@
             if (entry.mathjax) url += '&mathjax';
             if (entry.latex) url += `&latex=${entry.latex}`;
             if (entry.style) url += `&style=${entry.style}`;
+            url += tz(entry);
          } else if (entry.asurl) {
             url = (entry.asurl === 'browser') ? '?' : '?nobrowser&';
             url += jsonname ? `json=${jsonname}` : `file=${filename}&item=${itemname}`;
@@ -566,12 +672,14 @@
             if (entry.mathjax) url += '&mathjax';
             if (entry.latex) url += `&latex=${entry.latex}`;
             if (entry.style) url += `&style=${entry.style}`;
+            url += tz(entry);;
          }
 
          // console.log(`KEY ${keyid} opt ${opt}`);
          // if ((url.length == 0) || (keyid != 'Misc')) return runBigTest(0);
 
-         if (hpainter) { hpainter.cleanup(); hpainter = null; }
+         hpainter?.cleanup();
+         hpainter = null;
          cleanup('plaindraw');
 
          createRootColors(); // ensure default colors
@@ -582,25 +690,7 @@
             testfile = testobj = null;
             // if (keyid == 'TGeo') return runBigTest(0);  // ignore TGeo URLs - too complex
 
-            let d = decodeUrl(url),
-                layout = d.get('layout', 'simple'),
-                nobrowser = d.has('nobrowser');
-
-            if (nobrowser) {
-               document.getElementById('plaindraw').innerHTML = '';
-               hpainter = new HierarchyPainter('root', null);
-               hpainter.setDisplay(layout, 'plaindraw');
-            } else {
-               document.getElementById('plaindraw').innerHTML =
-                   `<div id='left-div' style='float:left; width:25%; overflow:auto; height:100%;'>` +
-                   `<div id='browser'></div></div>` +
-                   `<div id='right-div' style='float:right; width:73%; height:100%;'></div>`;
-
-               hpainter = new HierarchyPainter('root', 'browser');
-               hpainter.setDisplay(layout, 'right-div');
-            }
-
-            hpainter.startGUI(null, url).then(TestContinue, TestFailure);
+            drawUrl(url).then(TestContinue, TestFailure);
          } else if (jsonname.length > 0) {
             testfile = testobj = null;
             httpRequest(jsonname, 'object').then(obj => {
@@ -625,8 +715,8 @@
 
       examples_main = JSON.parse(txt);
       if (window.location.search.indexOf('?more') == 0) {
-         let txt_more = await httpRequest(demo_path + 'examples_more.json', 'text');
-         let examples_more = JSON.parse(txt_more);
+         const txt_more = await httpRequest(demo_path + 'examples_more.json', 'text'),
+                examples_more = JSON.parse(txt_more);
          for (let key in examples_more) {
             if (key in examples_main) {
                for (let n in examples_more[key])
@@ -641,17 +731,6 @@
 
       // all painter assigned to viewer element will be automatically informed about resize
       registerForResize('plaindraw');
-
-      let d = decodeUrl();
-
-      select_key = d.get('select');
-      if (!select_key && d.has('geom')) select_key = 'TGeo';
-
-      if (d.has('dark')) {
-         settings.DarkMode = true;
-         document.getElementById('panel').style.background = 'black';
-         document.getElementById('plaindraw').style.background = 'black';
-      }
 
       let content = document.getElementById( 'content' );
 
@@ -680,14 +759,18 @@
                url = entry.url.replace(/\$\$\$/g, filepath);
             } else if ('json' in entry) {
                jsonname = entry.json;
-               if ((jsonname.indexOf('http:') < 0) && (jsonname.indexOf('https:') < 0)) jsonname = filepath + jsonname;
+               if ((jsonname.indexOf('http:') < 0) && (jsonname.indexOf('https:') < 0))
+                  jsonname = filepath + jsonname;
             } else {
                if ('file' in entry) {
                   url = ''; filename = entry.file;
-                  if ((filename.indexOf('http:') < 0) && (filename.indexOf('https:') < 0)) filename = filepath + filename;
+                  if ((filename.indexOf('http:') < 0) && (filename.indexOf('https:') < 0))
+                     filename = filepath + filename;
                }
                if ('item' in entry) {
-                  url = ''; itemname = entry.item; style = entry.style;
+                  url = '';
+                  itemname = entry.item;
+                  style = entry.style;
                } else if ('items' in entry) {
                   url = `?nobrowser&file=${filename}`;
                   if (entry.layout) url += `&layout=${entry.layout}`;
@@ -737,6 +820,7 @@
                aaa.href += `&opt=${opt}`;
             if (style)
                aaa.href += `&style=${style}`;
+            aaa.href += tz(entry);
 
             if (settings.DarkMode) {
                aaa.href += '&dark';
@@ -779,12 +863,12 @@
           aaa.addEventListener('click', event => {
              event.preventDefault();
              window.location.hash = 'run';
-             runBigTest(10,true);
+             runBigTest(10, true);
           });
 
           content.appendChild(document.createTextNode(', '));
 
-          aaa = document.createElement( 'a' );
+          aaa = document.createElement('a');
           aaa.textContent = 'slow';
           aaa.title = 'Run all examples slowly after each other';
           content.appendChild( aaa );
@@ -807,6 +891,19 @@
           });
 
           content.appendChild(document.createTextNode(', '));
+
+          aaa = document.createElement('a');
+          aaa.textContent = 'interactivity';
+          aaa.title = 'Run all examples with interactivity tests';
+          content.appendChild( aaa );
+          aaa.addEventListener('click', event => {
+             event.preventDefault();
+             window.location.hash = 'interactivity';
+             runBigTest(100, 'full');
+          });
+
+          content.appendChild(document.createTextNode(', '));
+
           aaa = document.createElement('a');
           aaa.textContent = 'stop';
           aaa.title = 'Stop running example';
@@ -818,9 +915,11 @@
       }
 
       if (window.location.hash == '#run')
-         runBigTest(100,true);
+         runBigTest(100, true);
       else if (window.location.hash == '#fast')
          runBigTest(1, true);
+      else if (window.location.hash == '#interactivity')
+         runBigTest(100, 'full');
       else if (window.location.hash == '#slow')
          runBigTest(5000, true);
 

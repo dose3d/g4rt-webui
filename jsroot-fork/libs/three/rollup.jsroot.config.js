@@ -78,6 +78,17 @@ ${ code }`;
 
 }
 
+function import_three() {
+	return {
+		renderChunk( code ) {
+			return code.replace("from 'three'", "from './three.mjs'");
+		}
+
+	};
+}
+
+
+
 let builds = [
 	{
 		input: '../../../threejs/src/Three_jsroot.js',
@@ -112,7 +123,45 @@ let builds = [
 				file: '../three.mjs'
 			}
 		]
-	}
+	},
+	{
+		input: '../../../threejs/src/Three_addons.js',
+		external: ['three'],
+		plugins: [
+			json({ compact: true, indent: "" }),
+			import_three(),
+			header()
+		],
+		output: [
+			{
+				format: 'es',
+				name: 'THREE',
+				file: '../../modules/three_addons.mjs',
+				inlineDynamicImports: true,
+				indent: '\t'
+			}
+		]
+	},
+	{
+		input: '../../../threejs/src/Three_addons.js',
+		external: ['three'],
+		plugins: [
+			json({ compact: true, indent: "" }),
+			import_three(),
+			terser(),
+			header()
+		],
+		output: [
+			{
+				format: 'es',
+				name: 'THREE',
+				inlineDynamicImports: true,
+				file: '../three_addons.mjs'
+			}
+		]
+	},
+
+
 ];
 
 

@@ -59,12 +59,12 @@ export { SpotLight } from './lights/SpotLight.js';
 export { PointLight } from './lights/PointLight.js';
 export { RectAreaLight } from './lights/RectAreaLight.js';
 export { HemisphereLight } from './lights/HemisphereLight.js';
-export { HemisphereLightProbe } from './lights/HemisphereLightProbe.js';
+// export { HemisphereLightProbe } from './lights/HemisphereLightProbe.js';
 export { DirectionalLight } from './lights/DirectionalLight.js';
 export { AmbientLight } from './lights/AmbientLight.js';
-export { AmbientLightProbe } from './lights/AmbientLightProbe.js';
+// export { AmbientLightProbe } from './lights/AmbientLightProbe.js';
 export { Light } from './lights/Light.js';
-export { LightProbe } from './lights/LightProbe.js';
+// export { LightProbe } from './lights/LightProbe.js';
 export { StereoCamera } from './cameras/StereoCamera.js';
 export { PerspectiveCamera } from './cameras/PerspectiveCamera.js';
 export { OrthographicCamera } from './cameras/OrthographicCamera.js';
@@ -154,40 +154,6 @@ export { ShapeUtils } from './extras/ShapeUtils.js';
 // export { WebGLUtils } from './renderers/webgl/WebGLUtils.js';
 export * from './constants.js';
 // export * from './Three.Legacy.js';
-
-// jsroot part
-export { TextGeometry } from '../examples/jsm/geometries/TextGeometry.js';
-
-import * as json1 from "../examples/fonts/helvetiker_regular.typeface.json";
-
-let HelveticerRegularJson = json1;
-
-export { HelveticerRegularJson };
-
-export { Font } from "../examples/jsm/loaders/FontLoader.js";
-
-export { OrbitControls} from "../examples/jsm/controls/OrbitControls.js";
-// export { TransformControls } from "../examples/jsm/controls/TransformControls.js";
-export { CopyShader } from "../examples/jsm/shaders/CopyShader.js";
-export { EffectComposer } from "../examples/jsm/postprocessing/EffectComposer.js";
-// will be required by eve7, but need to be synchronized there
-export { Pass } from "../examples/jsm/postprocessing/Pass.js";
-// export { OutlinePass } from "../examples/jsm/postprocessing/OutlinePass.js";
-export { MaskPass } from "../examples/jsm/postprocessing/MaskPass.js";
-export { RenderPass } from "../examples/jsm/postprocessing/RenderPass.js";
-export { ShaderPass } from "../examples/jsm/postprocessing/ShaderPass.js";
-// export { SSAOShader } from "../examples/jsm/shaders/SSAOShader.js";
-// export { SSAOPass } from "../examples/jsm/postprocessing/SSAOPass.js";
-export { SimplexNoise } from "../examples/jsm/math/SimplexNoise.js";
-export { LuminosityHighPassShader } from "../examples/jsm/shaders/LuminosityHighPassShader.js";
-export { UnrealBloomPass } from "../examples/jsm/postprocessing/UnrealBloomPass.js";
-
-// export { Projector } from "../examples/jsm/renderers/Projector.js";
-
-export { SVGRenderer } from "../examples/jsm/renderers/SVGRenderer.js"
-
-// end of jsroot part
-
 
 if ( typeof __THREE_DEVTOOLS__ !== 'undefined' ) {
 

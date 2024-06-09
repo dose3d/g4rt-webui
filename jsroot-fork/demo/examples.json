@@ -1,6 +1,6 @@
 {
    "TH1" : [
-     { "opt": "", "file": "hsimple.root", "item": "hpx;1" },
+     { "opt": "", "file": "hsimple.root", "item": "hpx;1", "interactive": true, "pdf": true },
      { "name": "star", "opt":"*", "title": "draw stars on histogram bins" },
      { "name": "*H", "opt":"*H", "title": "draw stars and histogram itself" },
      { "opt": "L", "title": "draw histogram as line" },
@@ -12,6 +12,8 @@
      { "opt": "E0", "title": "draw errors, also for empty bins" },
      { "opt": "E1" },
      { "opt": "E1X0", "title": "draw error markers, without horizontal part" },
+     { "name": "E1B", "opt":"E1B,fill_19", "title": "draw histogram as bar chart and e1 errors" },
+     { "name": "E1HIST", "opt":"E1,HIST,fill_green", "title": "draw histogram with E1 and HIST draw options" },
      { "opt": "P", "title": "draw as markers" },
      { "opt": "P0", "title": "draw as markers, suppress empty bins" },
      { "name": "pE2", "opt": "pE2_fill_11", "title": "draw as marker, fill error area with grey color" },
@@ -28,27 +30,31 @@
      { "opt": "ticky", "title": "draw Y ticks also on opposite frame side" },
      { "opt": "tickxy", "title": "draw X and Y ticks also on opposite frame sides" },
      { "name": "axis", "opt": "axis;nostat;maximum:1000", "title": "draw only axes, configure maximum value, disable stats" },
+     { "name": "axig", "opt": "axig;gridx;gridy", "title": "Draw only axes grids no axes, no content, no title, but stats box" },
      { "name": "autozoom", "opt": "hist;autozoom", "title": "Automatically zoom into non-empty content" },
+     { "name": "optstat", "opt": "optstat111111111", "title": "Configure stats option for histogram drawing" },
      { "opt": "inspect", "asurl": true, "file": "hsimple.root", "item": "hpx;1", "title": "universal object inspector, can be used for any class" },
      { "name": "docu", "file": "histpainter6.root", "layout": "vert32", "items": ["two_axis","draw_e1","draw_bar","draw_e34","draw_text"], "title":"several TH1 examples from THistPainter documentation" },
      { "name": "twoscales", "url": "?nobrowser&file=$$$tutorials_hist.root&item=[twoscales/[1],twoscales/[3]]&opt=[hist,yaxis_red;line_red;y+]", "title": "interactive second Y scale to draw axis for second histogram" },
      { "name": "twoscales2", "url": "?nobrowser&file=$$$tutorials_hist.root&item=[transpad/pad1/[1],transpad/pad2/[0]]&opt=[hist,Y+;yaxis_red]", "title": "interactive second Y scale to draw axis for second histogram" },
-     { "name": "optdate", "url": "?nobrowser&file=$$$hsimple.root&item=hpx;1&optdate=1652700372&optfile", "title": "Draw on canvas date and item title using optdate and optfile URL parameters" },
+     { "name": "optdate", "url": "?nobrowser&file=$$$hsimple.root&item=hpx;1&optdate=2&optfile&utc", "title": "Draw on canvas file date and file name using optdate=2&optfile&utc URL parameters" },
      { "name": "opttitle", "url": "?nobrowser&file=$$$hsimple.root&item=hpx;1&opttitle=0", "title": "Disable title drawing for histogram using opttitle=0 URL parameter" },
      { "name": "histmargin", "url": "?nobrowser&file=$$$hsimple.root&item=hpx;1&histmargin=0.5", "title": "Setting gStyle.fHistTopMargin = 0.5 to demonstrate it usage, &histmargin=0.5 in URL" }
    ],
    "TH2" : [
-     { "opt": "", "file": "hsimple.root", "item": "hpxpy;1", "title": "default draw mode for TH2" },
+     { "opt": "", "file": "hsimple.root", "item": "hpxpy;1", "title": "default draw mode for TH2", "pdf": true },
      { "opt": "col", "title": "color draw" },
      { "opt": "colpal77", "title": "example how color palette 77 can be used for drawing" },
-     { "opt": "colz", "title": "color draw with palette" },
+     { "opt": "colz", "title": "color draw with palette", "interactive": true },
      { "opt": "colhz", "title": "color draw with horizontal palette", "reset_funcs": true },
+     { "name": "tickz", "opt": "colz,tickz,logz", "title": "palette ticks on both sides, log on Z (color) axis" },
      { "opt": "acol", "title": "disable axes drawing with col option" },
      { "opt": "col_rx_ry", "title": "reverse x and y axis with col drawing" },
      { "name": "projx1", "opt": "projx1,colz", "title": "Draw X projection together with 2D plot", "notest": true },
      { "name": "projy3", "opt": "projy3,colz", "title": "Draw Y projection over 3 bins together with 2D plot", "notest": true },
      { "name": "projxy", "opt": "projxy,colz", "title": "Draw X and Y projection together with 2D plot", "notest": true },
      { "opt": "arr", "title": "ARR draw option" },
+     { "opt": "grayscale", "title": "Draw histogram on canvas with grayscale" },
      { "opt": "cont", "title": "Contour plot" },
      { "opt": "cont1", "title": "Contour plot with different line colors" },
      { "opt": "cont2", "title": "Contour plot with different line styles" },
@@ -65,7 +71,7 @@
      { "opt": "lego", "title": "3D lego plot" },
      { "opt": "lego0", "title": "3D lego plot (without zeros)" },
      { "opt": "lego1", "title": "3D lego plot with red colors on x-sides", "r3d": "svg" },
-     { "opt": "lego2", "title": "3D lego plot with color levels" },
+     { "opt": "lego2", "title": "3D lego plot with color levels", "interactive": true },
      { "opt": "lego2z", "title": "3D lego plot with color levels and palette", "reset_funcs": true },
      { "opt": "alego2", "title": "3D lego plot without axis drawings - option A" },
      { "opt": "lego3", "title": "lego3 plot - lego1 without border lines" },
@@ -83,7 +89,9 @@
      { "name": "cyl", "opt": "lego2;cyl", "title": "Cylindrical coordinates for lego plots" },
      { "name": "sph", "opt": "lego2;sph", "title": "Sphere coordinates for lego plots" },
      { "name": "psr", "opt": "lego2;psr", "title": "Rapidity coordinates for lego plots" },
+     { "name": "ortho", "opt": "lego2;ortho", "title": "Orthographic camera for 3D plots - lego and surface" },
      { "name": "autozoom", "opt": "col;autozoom", "title": "Automatically zoom into non-empty content" },
+     { "name": "optstat", "opt": "optstat111111111", "title": "Configure stats option for histogram drawing" },
      { "name": "box", "json": "hbox.json.gz", "opt": "box", "title": "boxes, area proportional to bin content" },
      { "name": "box1", "json": "hbox.json.gz", "opt": "box1", "title": "boxes, area proportional to bin content" },
      { "name": "ctx_cty", "opt": "col_ctx_cty", "file": "QAresults.root", "item": "PIDqa/PIDqa1/ITS/hNsigmaP_ITS_helium-3;1", "title": "center title x (ctx) and center title y (cty)" },
@@ -94,19 +102,20 @@
      { "name": "image", "file": "hsimple.root", "item": "hpxpy;1", "opt": "colz", "title": "Create PNG image with makeImage() function", "aspng": "true" }
    ],
    "Candle" : [
-     { "name": "plot", "file": "candleplot.root", "item": "candleplot;1", "title": "output from candleplot.C macro" },
+     { "name": "plot", "file": "candleplot.root", "item": "candleplot;1", "title": "output from candleplot.C macro, use European time zone", "timezone" : "Europe/Berlin" },
      { "name": "decay", "file": "candleplot.root", "item": "candledecay;1", "title": "output from candledecay.C macro" },
      { "name": "histo", "file": "candleplot.root", "layout": "vert21", "items": ["candlehisto_c1", "candlehisto_c2", "candlehisto_c3"], "title": "outputs from candlehisto.C macro" },
      { "name": "option", "file": "candleplot.root", "layout": "vert2", "items": ["candleplotoption_c1", "candleplotoption_c2"], "title": "outputs from candleplotoption.C macro" },
-     { "name": "stack", "file": "candleplot.root", "item": "candleplotstack;1", "title": "output from candleplotstack.C macro" },
+     { "name": "stack", "file": "candleplot.root", "item": "candleplotstack;1", "title": "output from candleplotstack.C macro, use European time zone", "timezone" : "Europe/Berlin" },
      { "name": "whiskers", "file": "candleplot.root", "item": "candleplotwhiskers;1", "title": "output from candleplotwiskers.C macro" },
      { "name": "scaled", "file": "candleplot.root", "item": "candlescaled;1", "title": "output from candleplotwiskers.C macro" }
    ],
    "TH2Poly" : [
-      { "name": "honeycomb", "file": "th2poly.root", "item": "honeycomb;1", "opt": "l,col" },
-      { "opt": "lego", "file": "th2poly.root", "item": "boxes;1" },
+      { "name": "honeycomb", "file": "th2poly.root", "item": "honeycomb;1", "opt": "l,col", "interactive": true },
+      { "opt": "lego", "file": "th2poly.root", "item": "boxes;1", "interactive": true },
       { "opt": "col0z", "title": "suppress empty bins with 0 option" },
-      { "name": "europe", "item": "europe;1", "opt": "", "title": "Europe map (relatively old)" },
+      { "opt": "col0zl", "title": "draw lines and suppress empty bins with 0 option" },
+      { "name": "europe", "item": "europe;1", "opt": "", "title": "Europe map (relatively old)", "pdf": true },
       { "name": "usa", "item": "usa;1", "opt": "l,col,pal50", "title": "USA map" },
       { "name": "fibonacci", "file": "tutorials_hist.root", "item": "Fibonacci",  "title": "Macro outputs from $ROOTSYS/tutorials/hist/Fibonacci.C" },
       { "name": "tprofile2poly", "file": "tprofile2poly.root", "item": "c2", "title": "Example of TProfile2Poly class, see $ROOTSYS/tutorials/hist/tprofile2polyRealistic.C output" }
@@ -114,12 +123,17 @@
    "TH3" : [
      { "opt": "", "file": "histpainter6.root", "item": "draw_th3_scat;1", "title": "Default TH3 draw option" },
      { "name": "scat", "asurl": true, "file": "histpainter6.root", "item": "draw_th3_scat;1/h3scat", "opt": "scat", "title": "Scatter plot" },
-     { "opt": "box", "file": "histpainter6.root", "item": "draw_th3_box;1/h3box" },
-     { "name": "box2", "file": "hsimple.root", "item": "ntuple", "opt": "px:py:pz;hbins:15;drawopt:box2", "title": "use colors" },
-     { "name": "box3", "file": "hsimple.root", "item": "ntuple", "opt": "px:py:pz;hbins:15;drawopt:box3", "title": "use colors" },
+     { "opt": "box", "file": "histpainter6.root", "item": "draw_th3_box;1/h3box", "interactive": true },
+     { "name": "box2", "file": "hsimple.root", "item": "ntuple", "opt": "px:py:pz;hbins:15;drawopt:box2", "title": "Draw boxes with colors and lines" },
+     { "name": "box2z", "file": "hsimple.root", "item": "ntuple", "opt": "px:py:pz;hbins:15;drawopt:box2z", "title": "Draw boxes with colors and lines, add color palette " },
+     { "name": "box3", "file": "hsimple.root", "item": "ntuple", "opt": "px:py:pz;hbins:15;drawopt:box3", "title": "Draw boxes only with fill colors - no lines" },
+     { "name": "logv", "file": "hsimple.root", "item": "ntuple", "opt": "px:py:pz;hbins:15;drawopt:box2,logv", "title": "use log scale for box volume" },
      { "opt": "glbox1", "file": "glbox.root", "item": "h31;1", "title": "draw spheres" },
      { "opt": "glbox2", "title": "draw spheres with color derived from bin content" },
-     { "opt": "glcol", "file": "histpainter6.root", "item": "glvoxel",  "title": "draw semi-transparent boxes with color derived from bin content" }
+     { "opt": "glcol", "file": "histpainter6.root", "item": "glvoxel",  "title": "draw semi-transparent boxes with color derived from bin content" },
+     { "name": "prof3d", "file": "profile3d.root", "item": "profile3d", "opt": "", "title": "Example of TProfile3D class" },
+     { "name": "optstat", "file": "histpainter6.root", "item": "draw_th3_box;1/h3box", "opt": "box,optstat111111111", "title": "Force stats box drawing with all possible entries", "asurl": true },
+     { "name": "glvox2", "file": "tutorials_gl.root", "item": "glvox2n", "opt": "", "title": "Example of TH3 drawing with opacity transfer function, from tutorials/gl/glvox2.C macro" }
    ],
    "TTree" : [
       { "name": "Draw", "asurl": true, "file": "hsimple.root", "item": "ntuple", "opt": "px", "title": "Histogram data of TBranch object" },
@@ -150,7 +164,8 @@
      { "name": "lego", "file": "tutorials_hist.root", "item": "multicolor", "title": "Several histograms with different colors, tutorials/hist/multicolor.C" }
    ],
    "TF1" : [
-     { "name": "func", "file": "fillrandom.root", "item": "sqroot;1", "title": "default drawing of TF1" },
+     { "name": "func", "file": "fillrandom.root", "item": "sqroot;1", "title": "default drawing of TF1", "interactive": true },
+     { "name": "LF", "file": "fillrandom.root", "item": "sqroot;1", "opt" : "lf,fill_red", "title": "Draw function with line and fill, provide extra fill_red option" },
      { "name": "X+Y+", "file": "fillrandom.root", "item": "sqroot;1", "opt": "X+Y+", "title": "draw axes on other sides" },
      { "name": "hist+func", "opt": "", "url": "?nobrowser&file=$$$fillrandom.root&item=h1f;1+sqroot;1" },
      { "name": "hist+func+Y+", "opt": "", "url": "?nobrowser&file=$$$fillrandom.root&item=[h1f;1,sqroot;1]&opt=[hist,y+]", "title": "demo for second fully interactive Y axis" },
@@ -167,22 +182,28 @@
      { "name": "pnt", "file": "tutorials_graphs.root", "item": "graph2derrorsfit", "title": "Combination of TF2 and TGraph2DErrors, output of tutorials/graphs/graph2derrorsfit.C" },
      { "name": "waves", "file": "tutorials_graphs.root", "item": "waves", "title": "Draw several TF2 with col options, output of tutorials/graphs/waves.C" }
    ],
+   "TF3" : [
+     { "name": "tf3", "file": "tf3.root", "item": "c1", "opt": "", "title": "Canvas with TF3, produced by tutorials/fit/exampleFit3D.C macro" }
+   ],
    "TCanvas" : [
-     { "name": "roofit", "file": "rf107.root", "item": "rf107_plotstyles;1" },
+     { "name": "roofit", "file": "rf107.root", "item": "rf107_plotstyles;1", "interactive": true },
      { "name": "subpad", "url": "?nobrowser&file=$$$rf107.root&item=rf107_plotstyles;1/[0]", "title": "Draw only selected sub-pad from list of TCanvas list of primitives"  },
-     { "name": "zdemo", "file": "zdemo.root", "item": "zdemo;1" },
+     { "name": "zdemo", "file": "zdemo.root", "item": "zdemo;1", "pdf": true },
      { "name": "legend", "asurl": true, "file": "legends.root", "item": "legends;1", "title": "TCanvas with TLegend, use normal latex parser" },
      { "name": "autoplace", "file": "tutorials_hist.root", "item": "legendautoplace;1", "title": "Autoplace of TLegend element, canvas from tutorials/hist/legendautoplace.C macro" },
-     { "name": "time", "file": "ct.root", "item": "ct;1" },
-     { "name": "2d+3d", "file": "mix2d3d.root", "item": "Canvas;1", "title": "Mixture of 2D and 3D drawings on the same canvas (work properly in Firefox and Chrome)" },
+     { "name": "time", "file": "ct.root", "item": "ct;1", "timezone" : "Europe/Berlin", "title" : "Time drawing from tutorials/graphs/timeonaxis.C, use European time zone for display" },
+     { "name": "2d+3d", "file": "mix2d3d.root", "item": "Canvas;1", "title": "Mixture of 2D and 3D drawings on the same canvas", "interactive": true },
      { "name": "big", "file": "bigcanvas.root", "item": "big", "title": "100 histograms in subpads, for performance testing" },
      { "name": "log2", "file": "tutorials_graphs.root", "item": "exclusiongraph2", "opt": "log2", "title": "log2 for both x and y axes" },
      { "name": "axes", "file": "tutorials_graphs.root", "item": "exclusiongraph2", "opt": "ctx_oty_log2x", "title": "Moving axes title ctx - center title x, oty - opposite title y, plus log2x option" },
      { "name": "df104", "file": "df104_HiggsToTwoPhotons.root", "item": "c", "opt": "", "title": "Output produced by tutorials/dataframe/df104_HiggsToTwoPhotons.py macro" },
-     { "name": "df105", "file": "df105_WBosonAnalysis.root", "item": "c", "opt": "", "title": "Output produced by tutorials/dataframe/df105_WBosonAnalysis.py macro" }
+     { "name": "df105", "file": "df105_WBosonAnalysis.root", "item": "c", "opt": "", "title": "Output produced by tutorials/dataframe/df105_WBosonAnalysis.py macro" },
+     { "name": "sames", "file": "sames.root", "item": "c1", "opt": "", "title": "Three histograms with sames options - example of several stats boxes" },
+     { "name": "grad", "file": "tutorials_gl.root", "item": "grad", "opt": "", "title": "Demo of TLinearGradient color handling, canvas produced by tutorials/gl/grad.C macro" },
+     { "name": "radial", "file": "tutorials_gl.root", "item": "radialgradients", "opt": "", "title": "Demo of TRadialGradient color handling, canvas produced by tutorials/gl/radialgradients.C macro" }
    ],
    "TRatioPlot" : [
-      { "name": "r1", "file": "ratioplot.root", "item": "ratioplot1;1", "title": "Output of tutorial hist/ratioplot1.C" },
+      { "name": "r1", "file": "ratioplotnew.root", "item": "ratioplot1;1", "title": "Output of tutorial hist/ratioplot1.C" },
       { "name": "r2", "item": "ratioplot2;1", "title": "Output of tutorial hist/ratioplot2.C" },
       { "name": "r3", "item": "ratioplot3;1", "title": "Output of tutorial hist/ratioplot3.C" },
       { "name": "r4", "item": "ratioplot4;1", "title": "Output of tutorial hist/ratioplot4.C" },
@@ -213,7 +234,7 @@
      { "name": "image", "aspng": true, "file": "geom/rootgeom.root", "item": "simple1;1", "title": "Using makeImage to produce PNG image for geometry" }
    ],
    "TGraph" : [
-     { "opt": "", "file": "graph.root", "item": "Graph;1" },
+     { "opt": "", "file": "graph.root", "item": "Graph;1", "interactive": true },
      { "opt": "L" },
      { "opt": "C" },
      { "opt": "P" },
@@ -232,7 +253,7 @@
      { "name": "excl", "file": "tutorials_graphs.root", "item": "exclusiongraph2", "title": "Exclusion draw example, output of tutorials/graphs/exclusiongraph2.C" },
      { "name": "plc", "file": "tutorials_graphs.root", "item": "graphpalettecolor", "title": "Automatic set of graph colors, output of tutorials/graphs/graphpalettecolor.C" },
      { "name": "shade", "file": "tutorials_graphs.root", "item": "graphShade", "title": "output of tutorials/graphs/graphShade.C" },
-     { "name": "second_axis", "url": "?nobrowser&file=$$$graph_twopad.root&item=[c1/pad1/[0],c1/pad2/[0]]&opt=[alp,ly+;yaxis_red]", "title": "two overlayed graphs with second Y axis" },
+     { "name": "second_axis", "url": "?nobrowser&file=$$$graph_twopad.root&item=[c1/pad1/[0],c1/pad2/[0]]&opt=[alp,ly+;yaxis_red]", "title": "two overlayed graphs with second Y axis", "interactive": true },
      { "name": "qq", "file": "tutorials_math.root", "item": "chi2test", "title": "Example of TGraphQQ, output of tutorials/math/chi2test.C" }
    ],
    "TGraphErrors" : [
@@ -270,7 +291,7 @@
       { "name": "tut3", "item": "graphpolar3", "title": "Polar coordinates, output of tutorials/graphs/graphpolar3.C" }
    ],
    "TMultiGraph" : [
-     { "name": "exclusion", "file": "graph.root", "item": "exclusion;1" },
+     { "name": "exclusion", "file": "graph.root", "item": "exclusion;1", "interactive": true },
      { "name": "c1", "file": "multigraph.root", "item": "c1;1", "title": "3d mode, see https://root.cern/doc/master/classTMultiGraph.html" },
      { "name": "c2", "item": "c2;1" },
      { "name": "c3", "item": "c3;1" },
@@ -279,11 +300,18 @@
      { "name": "3d", "file": "multigraph_3d.root", "item": "c2_514;1", "title": "3d mode with extra TPolyLine3D" }
    ],
    "TGraph2D" : [
-      { "opt": "", "file": "graph2d.root", "item": "Graph2D", "title": "example of TGraph2D" },
+      { "name": "p", "file": "graph2d.root", "item": "Graph2D", "opt": "p", "title": "example of TGraph2D", "interactive": true },
       { "name": "pcol", "item": "pcol", "title": "example of TGraph2D, color options" },
       { "opt": "err",  "item": "cerr", "title": "example of TGraph2DErrors, errors drawing" },
       { "opt": "asymm",  "item": "asymm", "title": "example of TGraph2DAsymmErrors" },
-      { "opt": "line",  "item": "line", "title": "line drawing with TGraph2D" }
+      { "opt": "line",  "item": "line", "title": "line drawing with TGraph2D" },
+      { "name": "tri", "asurl": true, "file": "graph2d.root", "item": "pcol/[0]", "opt": "tri,line_blue,fill_red", "title": "Drawing triangles with red color, using Delaunay algorithm" },
+      { "opt": "tri1", "asurl": true, "file": "graph2d.root", "item": "pcol/[0]", "title": "Drawing colored triangles and mesh using Delaunay algorithm", "interactive": true },
+      { "opt": "tri1z", "asurl": true, "file": "graph2d.root", "item": "pcol/[0]", "title": "Drawing color palette in addtion to triangles and mesh" },
+      { "opt": "tri2", "asurl": true, "file": "graph2d.root", "item": "pcol/[0]", "title": "Drawing colored triangles using Delaunay algorithm" },
+      { "opt": "triw", "asurl": true, "file": "graph2d.root", "item": "pcol/[0]", "title": "Drawing triangles mesh using Delaunay algorithm" },
+      { "opt": "p0", "asurl": true, "file": "graph2d.root", "item": "pcol/[0]", "title": "Drawing as circles" },
+      { "opt": "p0col", "asurl": true, "file": "graph2d.root", "item": "pcol/[0]", "title": "Drawing as colored circles" }
    ],
    "TEfficiency" : [
       { "name": "docu1", "file": "efficiency.root", "item": "eff1", "title": "TEfficiency example from documentation" },
@@ -294,7 +322,7 @@
    ],
    "TLatex" : [
      { "name": "latex", "file": "latex.root", "layout": "grid2x2", "items": ["lva","ex1","ex2","ex3"], "title": "Internal TLatex processor" },
-     { "name": "mathjax", "file": "latex.root", "layout": "grid2x2", "latex": "mathjax", "items": ["lva","ex1","ex2","ex3"], "title": "Render TLatex with MathJax.js" },
+     { "name": "mathjax", "file": "latex.root", "layout": "grid2x2", "reset_mathjax": true, "latex": "mathjax", "items": ["lva","ex1","ex2","ex3"], "title": "Render TLatex with MathJax.js" },
      { "name": "math", "file": "latex.root", "item": "math", "reset_mathjax": true, "title": "TMathText drawn always with MathJax.js rendering" },
      { "name": "fonts", "file": "fonts.root", "item": "Tf", "title": "Output of fonts.C docu macro" }
    ],
@@ -307,7 +335,7 @@
      { "name": "ellipse", "file": "ellipse.root", "item": "c1;1", "title": "TEllipse class" },
      { "name": "axis", "file": "gaxis.root", "item": "c1;1", "title": "TGaxis class" },
      { "name": "cut", "file": "cut.root", "item": "c1",  "title": "TCutG used for TH2 bins selection" },
-     { "name": "arrow", "file": "arrow.root", "item": "c1;1", "title": "TArrow class" },
+     { "name": "arrow", "file": "arrow.root", "item": "c1;1", "title": "TArrow class", "interactive": true },
      { "name": "sinfo", "url": "?nobrowser&file=$$$hsimple.root&item=StreamerInfo", "title": "List of streamer infos" },
      { "name": "3dmark", "url": "?nobrowser&file=$$$mix2d3d.root&item=Canvas;1/pad4&opt=white;nomargins", "title": "TPloyMarker3D class, reset pad margins" },
      { "name": "profile2d", "file": "profile2d.root", "item": "c1;1", "title": "TProfile2D class" },
@@ -319,9 +347,14 @@
      { "name": "feynman", "file": "tutorials_graphics.root", "item": "feynman",  "title": "Usage of TCulyLine/Arc, tutorials/graphics/feynman.C" },
      { "name": "pie", "file": "tutorials_graphics.root", "item": "piechart",  "title": "TPie, tutorials/graphics/piechart.C" },
      { "name": "fill", "file": "fillpatterns.root", "item": "patterns",  "title": "Different fill patterns" },
-     { "name": "mass_spectrum", "file": "mass_spectrum.root", "item": "C",  "title": "Output of graphics/mass_spectrum.C tutorial" },
+     { "name": "mass_spectrum", "file": "mass_spectrum.root", "item": "C",  "title": "Output of graphics/mass_spectrum.C tutorial", "interactive": true },
      { "name": "legend", "url": "?nobrowser&file=$$$graph_twopad.root&item=[c1/pad1/[0],c1/pad2/[0],$legend]&opt=[alp,ly+;yaxis_red]", "title": "Display legend for the drawn objects" },
      { "name": "scatter", "file": "scatter.root", "item": "c2",  "title": "Canvas with new TScatter class, tutorials/graphs/scatter.C" },
      { "name": "ann3d", "file": "tutorials_graphs.root", "item": "annotation3d_new",  "title": "Usage of new TAnnotation class, tutorials/graphs/annotation3d.C" }
+   ],
+   "User" : [
+      { "name": "div", "url": "?nobrowser&inject=demo/custom/divhist.js&file=demo/custom/divhist.root&item=DivHist", "title": "Draw division of two histograms from user class, see demo/custom/ dir for details" },
+      { "name": "sub", "url": "?nobrowser&inject=demo/custom/divhist.js&file=demo/custom/divhist.root&item=DivHist/Num", "title": "Draw subelement of user class, accessed via exapnd function implemented in demo/custom/divhist.js" },
+      { "name": "pads", "url": "?nobrowser&inject=demo/custom/divhist.js&file=demo/custom/divhist.root&item=DivHist&opt=pads", "title": "Create canvas and draw all elements in sub pads" }
    ]
 }

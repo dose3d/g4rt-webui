@@ -17,8 +17,6 @@ When required, there are following alternatives to install JSROOT on other web s
    - use [npm](https://npmjs.com/package/jsroot) package manager and invoke `npm install jsroot`
    - clone master branch from [repository](https://github.com/root-project/jsroot/)
 
-To use ROOT files with ZSTD compression, one have to copy https://root.cern/js/zstd/zstd-codec.min.js file to "zstd" subfolder in the same directory where jsroot itself is installed. If jsroot url is "https://server/sub/jsroot/", one should copy codec file into "https://server/sub/zstd/" subfolder. It is not required when JSROOT used with node.js
-
 
 ## Drawing objects in JSROOT
 
@@ -36,6 +34,7 @@ To automate files loading and objects drawing, one can provide number of URL par
 - expand - item name(s) to be expanded in the hierarchy browser
 - focus - item name to be focused on in the hierarchy browser
 - title - set browser title
+- dir - list files in directory on http server, see https://github.com/root-project/jsroot/issues/283
 - layout - can be 'simple', 'flex', 'tabs', 'gridNxM', 'horizNMK', 'vertNMK'
 - browser - layout of the browser 'fix' (default), 'float', 'no' (hidden), 'off' (fully disabled)
 - nobrowser - do not display file browser (same as browser=no)
@@ -43,7 +42,7 @@ To automate files loading and objects drawing, one can provide number of URL par
 - status - configure status line 'no' (default), 'off' (completely disable), 'size'
 - inject - name of extra JavaScript to load, see several examples in demo/ subdir
 - optimize - drawing optimization 0:off, 1:only large histograms (default), 2:always
-- paltte - id of default color palette, 51..121 - new ROOT6 palette  (default 57)
+- palette - id of default color palette, 51..121 - new ROOT6 palette  (default 57)
 - interactive - enable/disable interactive functions 0 - disable all, 1 - enable all
 - noselect - hide file-selection part in the browser (only when file name is specified)
 - mathjax - use MathJax for latex output
@@ -55,9 +54,15 @@ To automate files loading and objects drawing, one can provide number of URL par
 - optfit - fit parameters settings for stat box, default 0 (see TStyle::SetOptFit)
 - statfmt - formatting for float values in stat box, default 6.4g (see TStyle::SetStatFormat)
 - fitfmt - formatting for fit values in stat box, default 5.4g (see TStyle::SetFitFormat)
-- nomenu - disable content menu
+- optdate - plot specified date on the canvas, 1 - current time, 2 - file creation date, 3 - file modification date
+- utc - select timeZone to 'UTC'
+- datex     - X position of date
+- datey     - Y position of date
+- optfile - plot file name on the canvas, 1 - file name, 2 - full file URL, 3 - object item name
+- opttitle - disable/enable drawing of object title in the canvas
+- nomenu - disable context menu
 - notouch - disable touch events handling
-- noprogress - do not show progress messages like scripts loading
+- progress - switch progress display mode between 'off', 'on' and 'modal'
 
 
 For instance:
@@ -70,6 +75,7 @@ Following layouts are supported:
 
   - simple - available space used for single object (default)
   - [flex](https://root.cern/js/latest/api.htm#url_syntax_flexible_layout) - creates as many frames as necessary, each can be individually moved/enlarged
+  - [tabs](https://root.cern/js/latest/api.htm#url_syntax_tabs_layout) - tabs for each object drawing
   - [gridNxM](https://root.cern/js/latest/api.htm#url_syntax_grid_layout) - fixed-size grid with NxM frames
   - vertN - N frames sorted in vertical direction (like gridi1xN)
   - horizN - N frames sorted in horizontal direction (like gridiNx1)
@@ -861,6 +867,13 @@ produceRenderOrder(scene, camera.position, 'box');
 Following methods can be applied: "box", "pnt", "size", "ray" and "dflt". See more info in draw options description for TGeo classes.
 
 Here is [running example](https://root.cern/js/latest/api.htm#custom_html_geometry) and [source code](https://github.com/root-project/jsroot/blob/master/demo/tgeo_build.htm).
+
+
+### Custom user class
+
+There is [code example](https://github.com/root-project/jsroot/tree/master/demo/custom) how custom user class can be implemented.
+It shows usage of different draw options for the class and ability to access sub-elements of the object using specialized `expand` function.
+
 
 
 ### Use with Node.js

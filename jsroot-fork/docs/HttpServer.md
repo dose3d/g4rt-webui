@@ -382,6 +382,7 @@ The following requests can be performed:
 | :----------- | :---------------- |
 |  `root.bin`   | binary data produced by object streaming with `TBufferFile` |
 |  `root.json`  | ROOT JSON representation for object and objects members |
+|  `file.root`  | Creates TMemFile with the only object, from ROOT 6.32 |
 |  `root.xml`   | ROOT XML representation |
 |  `root.png`   | PNG image (if object drawing implemented) |
 |  `root.gif`   | GIF image |
@@ -625,7 +626,7 @@ public:
    TUserHandler(const char *name, const char *title) : THttpWSHandler(name, title) {}
 
    // provide custom HTML page when open correspondent address
-   TString GetDefaultPageContent() override { return ''; }
+   TString GetDefaultPageContent() override { return "file:ws.htm"; }
 
    Bool_t ProcessWS(THttpCallArg *arg) override;
 };
@@ -676,5 +677,5 @@ serv->Register(handler);
 ```
 
 After that web socket connection can be established with the address `ws://host_name:8080/name1/root.websocket`
-Example client code can be found in `$ROOTSYS/tutorials/http/ws.htm` file. Actually, custom HTML page for
-websocket handler can be specified with `TUserHandler::GetDefaultPageContent()` method returning `"file:ws.htm"`.
+Example client code can be found in `$ROOTSYS/tutorials/http/ws.htm` file. Custom HTML page for
+websocket handler is specified with `TUserHandler::GetDefaultPageContent()` method returning `"file:ws.htm"`.

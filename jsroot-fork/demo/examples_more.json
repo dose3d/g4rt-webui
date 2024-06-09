@@ -6,17 +6,20 @@
      { "name": "negfill", "opt": "hist,fill_red", "file": "hitmap.root", "item": "EnergyMeanAsyLo;1", "title": "fill attributes for histogram with negative bins" },
      { "name": "labels2", "opt": "", "file": "text_labels.root", "item": "c1;1", "title": "small labels, should be rotated by 20 grad" },
      { "name": "hbar", "file": "hbars.root", "item": "c1;1", "title": "Horizontal bars" },
+     { "name": "optdate2", "url": "?nobrowser&file=$$$hsimple.root&item=hpx;1&optdate=2&optfile=2&utc", "title": "Draw on canvas file creation date and file URL using optdate=2&optfile=2&utc URL parameters" },
+     { "name": "optdate3", "url": "?nobrowser&file=$$$hsimple.root&item=hpx;1&optdate=3&optfile=3&utc&datex=0.03&datey=0.03", "title": "Draw on canvas file modification date and item name using optdate=3&optfile=3&utc URL parameter" },
      { "name": "tut1", "file": "tutorials_hist.root", "layout": "grid2x1", "items": ["h1draw","hksimple"], "title": "Macro outputs from $ROOTSYS/tutorials/hist" },
      { "name": "tut2", "file": "tutorials_hist.root", "layout": "grid2x1", "items": ["logscales", "rebin"], "title": "Macro outputs from $ROOTSYS/tutorials/hist" },
      { "name": "tut3", "file": "tutorials_hist.root", "layout": "grid2x2", "items": ["histpalettecolor", "hlabels1", "twoscales", "transpad"], "title": "Macro outputs from $ROOTSYS/tutorials/hist" },
-     { "name": "tut4", "file": "tutorials_hist.root", "layout": "grid2x2", "items": ["thstackpalettecolor", "statsEditing", "testSmooth",  "xyplot"], "opts": ["pfc nostack"], "title": "Macro outputs from $ROOTSYS/tutorials/hist" }
+     { "name": "tut4", "file": "tutorials_hist.root", "layout": "grid2x2", "items": ["thstackpalettecolor", "statsEditing", "testSmooth",  "xyplot"], "opts": ["pfc nostack"], "title": "Macro outputs from $ROOTSYS/tutorials/hist" },
+     { "name": "version", "file": "download_versions.root", "item": "c1", "opt": "logy", "title": "Many custom labels on x axis, tutorials/dataframe/df030_SQliteVersionsOfROOT.C" }
    ],
    "TH2": [
-     { "opt": "axis", "file": "hsimple.root", "item": "hpxpy;1", "title": "Draw only axis histogram" },
-     { "opt": "axis3d", "title": "Draw only axis histogram in 3D mode" },
+     { "opt": "axis", "file": "hsimple.root", "item": "hpxpy;1", "title": "Draw only histogram axes" },
      { "name": "hitmap", "file": "hitmap.root", "item": "HitMap;1" },
      { "name": "atlas", "opt": "col", "file": "atlas.root", "item": "LEDShapeHeightCorr_Gain0;1" },
-     { "name": "logx", "opt": "colz", "file": "QAresults.root", "item": "PIDqa/PIDqa1/ITS/hNsigmaP_ITS_electron;1" },
+     { "name": "logx", "opt": "colz", "file": "QAresults.root", "item": "PIDqa/PIDqa1/ITS/hNsigmaP_ITS_electron;1", "title": "histogram with custom x bins assigned in log steps" },
+     { "name": "lego_logx", "opt": "lego2,logx", "file": "QAresults.root", "item": "PIDqa/PIDqa1/ITS/hNsigmaP_ITS_electron;1", "title": "Use logx together with lego plot" },
      { "name": "logz", "url": "?nobrowser&file=$$$sparsehist.root&item=c;1&palette=7", "title": "LogZ plus text on several canvas" },
      { "name": "userz", "json": "th2ul.json.gz", "opt": "colz", "title": "TH2 with set user min/max, drawn with COLZ" },
      { "name": "userz2", "json": "th2ul.json.gz", "opt": "lego2", "title": "TH2 with set user min/max and custom labels, drawn with LEGO2" },
@@ -27,7 +30,7 @@
      { "name": "docu_cont", "file": "histpainter6.root", "layout": "vert33", "items": ["draw_contz","draw_cont1z", "draw_cont2", "draw_cont3", "draw_cont4z", "draw_contlst1"], "title":"several TH2 CONT examples from THistPainter documentation page" },
      { "name": "docu_lego", "file": "histpainter6.root", "layout": "grid2x2", "items": ["draw_lego", "draw_lego1", "draw_lego3", "draw_lego2"], "title": "several TH2 LEGO examples from THistPainter documentation page" },
      { "name": "docu_surf", "file": "histpainter6.root", "layout": "grid4x2", "items": ["draw_surf", "draw_surf1", "draw_surf2", "draw_surf3", "draw_surf4", "draw_surf5", "draw_surf7", "draw_surf2_cont1"], "title": "several TH2 SURF examples from THistPainter documentation page" },
-     { "name": "lego_tf2", "file": "https://root.cern/files/StressIOPluginsTestFiles/stress_5.root", "item":"h2form", "opt":"lego", "title": "Combination of th2 an tf2 in 3D" },
+     { "name": "lego_tf2", "file": "https://root.cern/files/StressIOPluginsTestFiles/stress_5.root", "item":"h2form", "opt":"allfunc,lego", "title": "Combination of th2 an tf2 in 3D" },
      { "name": "tut1", "file": "tutorials_hist.root", "layout": "grid2x2", "items": ["thstack2palettecolor", "reverseaxis", "hlabels2", "labels3"], "opts": ["0lego1_pfc"], "title": "Macro outputs from $ROOTSYS/tutorials/hist" },
      { "name": "earth", "file": "tutorials_graphics.root", "item": "earth",  "title": "Earth projections, tutorials/graphics/earth.C" },
      { "name": "hard_cont", "file": "hard_contour.root", "item": "hard_contour",  "title": "Complex contour plot without closed lines, trying to fix it", "opt":"cont" },
@@ -60,11 +63,20 @@
    "TH2Poly" : [
       { "name": "germany", "url": "?nobrowser&file=$$$th2poly.root&item=europe;1/[13]", "title": "Draw single TH2PolyBin from europe map" },
       { "name": "docu", "file": "histpainter6.root", "layout": "vert22", "items": ["draw_poly1", "draw_poly2", "draw_poly3"], "title": "several TH2Poly examples from THistPainter documentation page" },
-      { "name": "kdtree", "url": "?nobrowser&file=$$$tutorials_math.root&item=kdTreeBinning4;1/[0]", "title": "Draw only TH2Poly from tutorials/math/kdTreeBinning.C macro" }
+      { "name": "kdtree", "url": "?nobrowser&file=$$$tutorials_math.root&item=kdTreeBinning4;1/[0]", "title": "Draw only TH2Poly from tutorials/math/kdTreeBinning.C macro" },
+      { "name": "text", "file": "th2poly.root", "item": "honeycomb;1", "opt": "text", "title": "Only text from honeycomb" },
+      { "name": "l", "file": "th2poly.root", "item": "honeycomb;1", "opt": "l", "title": "Only lines for honeycomb" },
+      { "name": "p", "file": "th2poly.root", "item": "honeycomb;1", "opt": "p", "title": "Only markers for honeycomb" },
+      { "name": "star", "file": "th2poly.root", "item": "honeycomb;1", "opt": "*", "title": "Only * as markers for honeycomb" }
    ],
    "TH3" : [
       { "name": "subpads", "opt": "", "file": "glc.root", "item": "glc;1", "title": "canvas with two subpads, both with 3D plotls" },
-      { "name": "geo", "url": "?nobrowser&files=[$$$histpainter6.root,$$$/geom/tess.root]&item=[histpainter6.root/draw_th3_box;1/h3box,tess.root/tess]&opt=[box]", "title": "Superimpose TH3 with geometry" }
+      { "name": "geo", "url": "?nobrowser&files=[$$$histpainter6.root,$$$/geom/tess.root]&item=[histpainter6.root/draw_th3_box;1/h3box,tess.root/tess]&opt=[box]", "title": "Superimpose TH3 with geometry" },
+      { "name": "logx", "opt": "", "file": "th3_logx.root", "item": "c1", "title": "TH3 with custom X binning and logX scale, check for proper positioning" },
+      { "name": "logxyz", "file": "profile3d.root", "item": "profile3d", "opt": "logx,logy,logz,mlx,mly,mlz", "title": "Example of log x/y/z with TProfile3D class, set also more log labels" }
+   ],
+   "TRatioPlot" : [
+      { "name": "rold", "file": "ratioplot.root", "item": "ratioplot3;1", "title": "Old data from tutorial hist/ratioplot3.C" }
    ],
    "TWebCanvas": [
       { "name": "greyscale", "json": "web6canv/greyscale.json.gz", "title": "40K TBox objects with different fill attributes" },
@@ -72,10 +84,15 @@
       { "name": "pie", "json": "web6canv/piechart.json.gz", "title": "Testing native TPie painting" },
       { "name": "trans", "json": "web6canv/transparency.json.gz", "title": "Testing with TGraph without axes" },
       { "name": "ann3d", "json": "web6canv/annotation3d.json.gz", "title": "Output of tutorials/graphs/annotation3d.C with TF2 and custom histogram" },
-      { "name": "gaxis2", "json": "web6canv/gaxis2.json.gz", "title": "TGaxis with custom function, output of tutorials/graphics/gaxis2.C macro" }
+      { "name": "gaxis2", "json": "web6canv/gaxis2.json.gz", "title": "TGaxis with custom function, output of tutorials/graphics/gaxis2.C macro" },
+      { "name": "fit2a", "json": "web6canv/fit2a.json.gz", "title": "TF2 function drawn with [cutg] option to cut axis range, output of tutorials/fit/fit2a.C macro" },
+      { "name": "fit2dHist", "json": "web6canv/fit2dHist.json.gz", "title": "Drawing stats box with TF2 parameters, use gStyle, output of tutorials/fit/fit2dHist.C macro" },
+      { "name": "transp", "json": "web6canv/transparentpad.json.gz", "title": "Drawing several TPads with semi-transparent colors, output of tutorials/gl/transparentpad.C macro" },
+      { "name": "palette", "json": "web6canv/perceptualcolormap.json.gz", "title": "Usage of custom palette, output of tutorials/graphics/perceptualcolormap.C macro" },
+      { "name": "transpad", "json": "web6canv/transpad.json.gz", "title": "Overlay transparent pad with TGaxis, output of tutorials/hist/transpad.C macro" }
    ],
    "RCanvas" : [
-      { "name": "raxis", "json": "rcanvas/raxis.json.gz", "title": "RAxis drawings from raxis.cxx macro" },
+      { "name": "raxis", "json": "rcanvas/raxis.json.gz", "title": "RAxis drawings from raxis.cxx macro", "timezone" : "Europe/Berlin" },
       { "name": "rbox", "json": "rcanvas/rbox.json.gz", "title": "rbox.cxx macro output" },
       { "name": "rframe", "json": "rcanvas/rframe.json.gz", "title": "rframe.cxx macro output" },
       { "name": "rh1", "json": "rcanvas/rh1.json.gz", "title": "rh1.cxx macro output" },
@@ -105,7 +122,8 @@
    "THStack" : [
       { "opt": "orig", "file": "stacks.root", "item": "stacks;1", "title": "original example used for JSROOT testing since a while" },
       { "name": "json", "json": "thstack.json.gz", "title": "some special stack from JSON file" },
-      { "name": "pads", "file": "tutorials_hist.root", "item": "multicolor", "opt": "pads,col", "title": "Demonstrate pads option, using TH2 and col" }
+      { "name": "pads", "file": "tutorials_hist.root", "item": "multicolor", "opt": "pads,col", "title": "Demonstrate pads option, using TH2 and col" },
+      { "name": "pfc", "file": "histpainter6.root", "item": "draw_hstack;1/cst_1/hs", "opt": "pfc", "asurl": true, "title": "PFC draw options, automatic fill color for stacked histograms" }
    ],
    "TTree" : [
       { "name": "wjets", "asurl": true, "file": "WJets.root", "item": "t;1/met", "title": "Histogram data of branch with vectors" },
@@ -145,7 +163,8 @@
       { "name": "laplace", "file": "tutorials_math.root", "item": "mathLaplace;1", "title": "TMath::LaplaceDist and TMath::LaplaceDistI functions, output of tutorials/math/mathLaplace.C macro" },
       { "name": "student", "file": "tutorials_math.root", "item": "mathStudent;1", "title": "TMath::Student, TMath::FDist, TMath::FDistI functions, output of tutorials/math/mathStudent.C macro" },
       { "name": "normal_dist", "file": "tutorials_math.root", "item": "normalDist;1", "title": "output of tutorials/math/normalDist.C macro" },
-      { "name": "tstudent", "file": "tutorials_math.root", "item": "tStudent;1", "title": "output of tutorials/math/tStudent.C macro" }
+      { "name": "tstudent", "file": "tutorials_math.root", "item": "tStudent;1", "title": "output of tutorials/math/tStudent.C macro" },
+      { "name": "varbins", "file": "tf1_varbins.root", "item": "h_novosibirsk;1", "title": "variable bins positions in saved buffer" }
    ],
    "TF2" : [
      { "name": "xygaus", "file": "https://root.cern/files/StressIOPluginsTestFiles/stress_5.root", "item": "f2form", "title": "TF2 with xygaus" },
@@ -153,7 +172,8 @@
      { "name": "stat", "file": "tutorials_math.root", "item": "mathcoreStatFunc;1", "title": "output of tutorials/math/mathcoreStatFunc.C macro" }
    ],
    "TCanvas" : [
-     { "name": "jpsi", "file":"JPsi_evolution.root", "item": "CutTrees/cut1/C_cut1 < 2.85714;1" },
+     { "name": "jpsi", "url": "?nobrowser&tf1=curve&file=$$$JPsi_evolution.root&item=CutTrees/cut1/C_cut1 < 2.85714;1" },
+     { "name": "grayscale", "url": "?nobrowser&tf1=curve&file=$$$JPsi_evolution.root&item=CutTrees/cut1/C_cut1 < 2.85714;1&opt=grayscale", "title": "Testing canvas grayscale" },
      { "name": "noframe", "file": "can4.root", "item": "c1;1" },
      { "name": "higgs", "file": "higgs_c.root", "item": "c;1" },
      { "name": "amore", "file": "VertexXY.root", "item": "Amore Canvas;1" },
@@ -171,11 +191,13 @@
      { "name": "fit1", "url": "?nobrowser&file=$$$tutorials_fit.root&layout=grid3x3&items=[fit1,fitEllipseTGraphRMM,fit2a,fitConvolution,fitcont,fitExclude,fitCircle,qa2,combinedFit]", "title": "part1 macros from tutorials/fit directory" },
      { "name": "fit2", "url": "?nobrowser&file=$$$tutorials_fit.root&layout=grid2x2&items=[ConfidenceIntervals,fitEllipseTGraphDLSF,fit2d,fitcont2]", "title": "part2 macros from tutorials/fit directory" },
      { "name": "fit3", "url": "?nobrowser&file=$$$tutorials_fit.root&layout=grid3x3&items=[FitHistoInFile,fitLinear,fitLinearRobust,fitNormSum,FittingDemo,langaus,line3Dfit,multifit,myfit]", "title": "part3 macros from tutorials/fit directory" },
-     { "name": "fit4", "url": "?nobrowser&file=$$$tutorials_fit.root&layout=grid2x2&items=[graph2dflt,minuit2FitBench,minuit2GausFit1,TestBinomial]", "title": "part4 macros from tutorials/fit directory" },
-     { "name": "fit5", "url": "?nobrowser&file=$$$tutorials_fit.root&layout=grid2x2&items=[TwoHistoFit2D,vectorizedFit,minuit2FitBench2D,fitMultiGraph]", "title": "part5 macros from tutorials/fit directory" },
+     { "name": "fit4", "url": "?nobrowser&file=$$$tutorials_fit.root&layout=grid2x2&items=[minuit2FitBench,minuit2GausFit1,TestBinomial]", "title": "part4 macros from tutorials/fit directory" },
+     { "name": "fit5", "url": "?nobrowser&file=$$$tutorials_fit.root&layout=grid2x2&items=[TwoHistoFit2D,vectorizedFit,minuit2FitBench2D]", "title": "part5 macros from tutorials/fit directory" },
      { "name": "fit6", "url": "?nobrowser&file=$$$tutorials_fit.root&layout=grid1x2&items=[fit2,fit2dHist]", "title": "part6 macros from tutorials/fit directory" },
-     { "name": "optfile", "url": "?nobrowser&file=$$$tutorials_math.root&item=vavilov;1&optfile=1&optdate=1652700372", "title": "TCanvas drawing with optfile and optdate URL options" },
-     { "name": "canvas2", "file": "tutorials_graphics.root", "item": "canvas2_new;1", "title": "output of tutorials/graphics/canvas2.C macro", "large": true }
+     { "name": "optfile", "url": "?nobrowser&file=$$$tutorials_math.root&item=vavilov;1&optfile=3&optdate=1652700372&utc", "title": "TCanvas drawing with optfile=3&optdate=1652700372&utc URL options" },
+     { "name": "canvas2", "file": "tutorials_graphics.root", "item": "canvas2_new;1", "title": "output of tutorials/graphics/canvas2.C macro", "large": true },
+     { "name": "dupl", "file": "dupl.root", "item": "c1;1", "title": "Draw histogram twice, first with axis then with hist options" },
+     { "name": "cms_style", "url": "?nobrowser&file=$$$cms_style_canvases.root&layout=grid4x3&items=[[0],[1],[2],[3],[4],[5],[6],[7],[8],[9]]&one_by_one", "title": "canvases from https://github.com/cms-cat/cms-root-style" }
    ],
    "TGeo" : [
      { "name": "prim_can", "file": "geom/geodemo.root", "layout": "vert333", "items": ["box_can","para_can","arb8_can","trap_can","gtra_can","trd1_can","trd2_can","xtru_can"], "title": "Basic TGeo primitives in TCanvas from tutorials/geom/geodemo.C, group 1" },
@@ -210,6 +232,12 @@
      { "name": "split", "file": "gr2.root", "item": "c1equi;1", "title": "TGraph class with split line in legend" },
      { "name": "approx", "file": "tutorials_graphs.root", "item": "approx;1", "title": "Output of tutorials/graphs/approx.C" }
    ],
+   "TMultiGraph": [
+     { "name": "fit", "file": "tutorials_fit.root", "item": "fitMultiGraph;1", "title": "Fitting of TMultiGraph by pol2, output from tutorials/fit/fitMultiGraph.C, test for TMath::sq() function" }
+   ],
+   "TGraph2D": [
+     { "name": "fit", "file": "tutorials_fit.root", "item": "graph2dflt;1", "title": "Fitting with TGraph2D, output from tutorials/fit/graph2dfit" }
+   ],
    "TLatex" : [
       { "name": "symbols", "file": "latex.root", "layout": "grid2x2", "latex": "symbols", "items": ["lva","ex1","ex2","ex3"], "title": "Replace only known TLatex symbols" },
       { "name": "plain", "file": "latex.root", "layout": "grid2x2", "latex": "off", "items": ["lva","ex1","ex2","ex3"], "title": "Disable TLatex processor completely" },
@@ -232,7 +260,8 @@
      { "name": "aliQA", "asurl": "browser", "file": "QAresults_barrel.root", "item": "TPC_PerformanceQA/TPCQA;1/AliPerformanceTPC/fTPCClustHisto", "opt": "inspect", "title": "Objects from Alice QA file" },
      { "name": "roofit", "file": "https://root.cern/files/stressRooFit_v534_ref.root", "layout": "grid2x2", "items": ["rf101_plot2","rf201_plot1","rf310_plot2","rf708_plot6"], "title": "Several RooFit plots (still some classes not work)" },
      { "name": "ioperf", "asurl": true, "file": "https://root.cern/files/aod_orig.root", "item": "ioperf;1/fGraphIO", "opt": "", "title": "Reading TTreePerfStats object and draw graph, fails in normal ROOT I/O" },
-     { "name": "taxis", "file": "tutorials_graphs.root", "item": "timeonaxis3", "title": "Custom time format for TGaxis, output of tutorials/graphs/timeonaxis3.C" },
+     { "name": "taxis", "file": "tutorials_graphs.root", "item": "timeonaxis3", "timezone" : "Europe/Berlin", "title": "Custom time format for TGaxis, output of tutorials/graphs/timeonaxis3.C, use European time zone" },
+     { "name": "gaxis_func", "file": "gaxis_func.root", "item": "c;1", "title": "TGaxis with function read from the file", "asurl": true },
      { "name": "gtime", "file": "tutorials_graphs.root", "item": "gtime", "opt": "repeat", "title": "Example of TGraphTime, output of tutorials/graphs/gtime.C", "testopt": "first" },
      { "name": "diamond", "file": "tutorials_graphics.root", "item": "diamond",  "title": "TDiamond, tutorials/graphics/diamond.C" },
      { "name": "crown", "file": "tutorials_graphics.root", "item": "crown",  "title": "TCrown, tutorials/graphics/crown.C" },
@@ -241,6 +270,8 @@
      { "name": "pave", "file": "tpavetext.root", "item": "ccdb_object", "title": "Drawing of plain TPaveText with TLine and custom text lines alignment" },
      { "name": "tornado", "file": "tutorials_graphics.root", "item": "tornado",  "title": "TPolyMarker3D, output of graphics/tornado.C tutorial" },
      { "name": "dark", "url": "?nobrowser&file=$$$hsimple.root&item=hpx;1&dark", "title": "Invert colors of histogram drawing, providing &amp;dark in URL", "notest": true },
-     { "name": "scatter0", "file": "scatter.root", "item": "c1",  "title": "Canvas with new TScatter class, but no palette and histogram in the object, tutorials/graphs/scatter.C" }
+     { "name": "scatter0", "file": "scatter.root", "item": "c1",  "title": "Canvas with new TScatter class, but no palette and histogram in the object, tutorials/graphs/scatter.C" },
+     { "name": "map_io", "asurl": true, "file": "broken_qo.root", "item": "ccdb_object", "opt": "inspect3", "title": "Example of member-wise streamer for std::pair, showing result with inspect3" },
+     { "name": "lzma", "asurl": true, "file": "example_lzma.root", "item": "TupleLb2pKpipi/DecayTree/B_PX", "opt": "", "title": "Test for LZMA decompression" }
    ]
 }
