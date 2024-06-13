@@ -139,6 +139,9 @@ class FileUploadView(APIView):
         else:
             return Response(file_serializer.errors, status=400)
 
+class WLTestView(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response("Hello world", status=200)
 
 class RootFileViewSet(VariousSerializersViewSet):
     queryset = RootFile.objects.all()

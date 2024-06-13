@@ -58,9 +58,9 @@ export default function WLTestPage() {
             <CardHeader>
               <CardHeaderMain>
                 <Breadcrumbs breadcrumbs={WLTestPageBreadcrumbs} />
-                <CardHeaderTitle>WL test completed successfully</CardHeaderTitle>
+                <CardHeaderTitle>WL test Setup page</CardHeaderTitle>
                 <CardHeaderSubTitle>
-                  Click <Link to="/workspaces" style={{ color: 'blue' }}>here</Link> to download results.
+                  To perform WL test upload dcm files using field above.
                 </CardHeaderSubTitle>
               </CardHeaderMain>
             </CardHeader>
@@ -84,6 +84,7 @@ export default function WLTestPage() {
 
               {!!failureReason && <ErrorAlert className="my-4">{formatErrorToString(failureReason)}</ErrorAlert>}
             </form> */}
+            <Link to="results" style={{ color: 'blue' }}>Launch test</Link>
           </Card>
         </CardsContainer>
       </Margin>

@@ -15,6 +15,7 @@ import { AuthProvider, useAuthContext } from './drf-crud-client';
 import JobRootDetailPage from './site/root/JobRootDetailPage';
 import WorkspacesPage from './site/workspaces/WorkspacesPage';
 import WLTestPage from './site/wl-test/WLTestPage';
+import WLTestResultsPage from './site/wl-test/WLTestResultsPage';
 import WorkspaceCreatePage from './site/workspaces/WorkspaceCreatePage';
 import WorkspaceDetailPage from './site/workspaces/WorkspaceDetailPage';
 import RootFilesPage from './site/root/RootFilesPage';
@@ -47,6 +48,7 @@ function Authorized() {
             </Route>
             <Route path="/wl-test">
               <Route element={<WLTestPage />} path="" />
+              <Route element={<WLTestResultsPage />} path="results" />
             </Route>
             <Route element={<HomePage />} path="/" />
           </Routes>
