@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import cn from 'classnames';
 import {
@@ -24,10 +24,11 @@ import { CTextArea, CTextInput } from '../../components/forms';
 import UploadFile from '../../components/UploadFile';
 
 export const WLTestPageBreadcrumbs: Breadcrumb[] = [
-  { icon: <ServerStackIcon className={BreadcrumbsIconClass} />, label: 'Workspaces', to: '/workspaces' },
+  { icon: <ServerStackIcon className={BreadcrumbsIconClass} />, label: 'WL Test', to: '/workspaces' },
 ];
 
 export default function WLTestPage() {
+  const [numPages, setNumPages] = useState(0);
   const navigate = useNavigate();
   const formatErrorToString = useFormatErrorToString();
   const {
@@ -52,18 +53,18 @@ export default function WLTestPage() {
   return (
     <Page>
       <Margin>
-      <CardsContainer>
+        <CardsContainer>
           <Card>
             <CardHeader>
               <CardHeaderMain>
                 <Breadcrumbs breadcrumbs={WLTestPageBreadcrumbs} />
-                <CardHeaderTitle>Upload a user file</CardHeaderTitle>
+                <CardHeaderTitle>WL test completed successfully</CardHeaderTitle>
                 <CardHeaderSubTitle>
-                  After upload, the new user file will be available for use in workspaces cells.
+                  Click <Link to="/workspaces" style={{ color: 'blue' }}>here</Link> to download results.
                 </CardHeaderSubTitle>
               </CardHeaderMain>
             </CardHeader>
-            <form onSubmit={handleSubmitShort}>
+            {/* <form onSubmit={handleSubmitShort}>
               <input type="hidden" {...register('uploaded_file')} />
 
               {watch('uploaded_file') ? (
@@ -82,7 +83,7 @@ export default function WLTestPage() {
               )}
 
               {!!failureReason && <ErrorAlert className="my-4">{formatErrorToString(failureReason)}</ErrorAlert>}
-            </form>
+            </form> */}
           </Card>
         </CardsContainer>
       </Margin>
