@@ -27,9 +27,14 @@ export const WLTestPageBreadcrumbs: Breadcrumb[] = [
   { icon: <ServerStackIcon className={BreadcrumbsIconClass} />, label: 'WL Test', to: '/workspaces' },
 ];
 
+interface Data {
+  right: number;
+  Left: number;
+  up: number;
+}
+
 export default function WLTestResultsPage() {
-  const { data } = useQueryWrapper({ endpoint: "/api/wl-test" });
-  const dataString = JSON.stringify(data);
+  const { data } = useQueryWrapper<Data>({ endpoint: "/api/wl-test" });
 
   return (
     <Page>
@@ -46,7 +51,7 @@ export default function WLTestResultsPage() {
               </CardHeaderMain>
             </CardHeader>
             <p>
-              {dataString}
+              {data?.right}
             </p>
           </Card>
         </CardsContainer>

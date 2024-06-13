@@ -141,7 +141,10 @@ class FileUploadView(APIView):
 
 class WLTestView(APIView):
     def get(self, request, *args, **kwargs):
-        return Response("Hello world", status=200)
+        left = 1
+        right = 2
+        up = 3
+        return Response({"Left": left, "right": right, "up": up}, status=200)
 
 class RootFileViewSet(VariousSerializersViewSet):
     queryset = RootFile.objects.all()
