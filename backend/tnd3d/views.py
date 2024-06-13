@@ -142,7 +142,7 @@ class FileUploadView(APIView):
 class WLTestView(APIView):
     def get(self, request, *args, **kwargs):
         left = 1
-        right = 2
+        right = 69
         up = 3
         return Response({"Left": left, "right": right, "up": up}, status=200)
 
