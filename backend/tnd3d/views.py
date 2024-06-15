@@ -16,7 +16,7 @@ from tnd3d.serializer import JobSerializer, JobSerializerPending, JobRootFileSer
     JobListSerializer, JobRootFileDetailSerializer, WorkspaceSerializer, WorkspaceCellSerializer, \
     WorkspaceCellCreateSerializer, RootFileSerializer, UploadedFileSerializer
 from django.utils.translation import gettext_lazy as _
-
+from .services.WLTest import test_wl
 
 class JobViewSet(VariousSerializersViewSet):
     queryset = Job.objects.all()
@@ -141,10 +141,8 @@ class FileUploadView(APIView):
 
 class WLTestView(APIView):
     def get(self, request, *args, **kwargs):
-        left = 1
-        right = 69
-        up = 3
-        return Response({"Left": left, "right": right, "up": up}, status=200)
+        result = test_wl()
+        return Response({"result": result}, status=200)
 
 class RootFileViewSet(VariousSerializersViewSet):
     queryset = RootFile.objects.all()

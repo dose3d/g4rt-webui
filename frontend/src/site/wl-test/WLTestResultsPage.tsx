@@ -28,9 +28,7 @@ export const WLTestPageBreadcrumbs: Breadcrumb[] = [
 ];
 
 interface Data {
-  right: number;
-  Left: number;
-  up: number;
+  result: string;
 }
 
 export default function WLTestResultsPage() {
@@ -51,7 +49,7 @@ export default function WLTestResultsPage() {
               </CardHeaderMain>
             </CardHeader>
             <p>
-              {data?.right}
+              Results: {data?.result}
             </p>
           </Card>
         </CardsContainer>
