@@ -1,5 +1,5 @@
 import React, { Suspense, useCallback, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import cn from 'classnames';
 import {
   Card,
@@ -8,6 +8,7 @@ import {
   CardHeaderSubTitle,
   CardHeaderTitle,
   CardsContainer,
+  Description,
   ErrorAlert,
   Margin,
   Page,
@@ -19,7 +20,7 @@ import { useWorkspaceList } from '../../api/workspaces';
 import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
 import { useNavigate } from 'react-router-dom';
 import { useRootFileForm } from '../../api/rootFile';
-import { UploadFileSuccessCallback, useFormatErrorToString, useQueryWrapper } from '../../drf-crud-client';
+import { UploadFileSuccessCallback, useAuthContext, useFormatErrorToString, useQueryWrapper } from '../../drf-crud-client';
 import { CTextArea, CTextInput } from '../../components/forms';
 import UploadFile from '../../components/UploadFile';
 
@@ -32,7 +33,33 @@ interface Data {
 }
 
 export default function WLTestResultsPage() {
-  const { data, isLoading } = useQueryWrapper<Data>({ endpoint: "/api/wl-test", queryKey: ["some_key"], staleTime: 1000 * 60 * 5 });
+  const authContext = useAuthContext();
+  const ai = authContext.buildAxiosInstance();
+
+  const { state } = useLocation();
+  const filename = state.filename;
+  const { data, isLoading } = useQueryWrapper<Data>({
+    endpoint: `/api/wl-test`, config: { params: { filename } }, queryKey: [filename],
+    // staleTime: 1000 * 60 * 5,
+    staleTime: 0,
+  });
+
+  const handleClick = async () => {
+    try {
+      const response = await ai.get('/api/wl-test/pdf', {
+        params: { filename },
+        responseType: 'blob' // Specify response type to 'blob' for handling binary data like PDF
+      });
+      const pdfUrl = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.setAttribute('download', 'filename.pdf');
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <Page>
@@ -43,15 +70,16 @@ export default function WLTestResultsPage() {
               <CardHeaderMain>
                 <Breadcrumbs breadcrumbs={WLTestPageBreadcrumbs} />
                 <CardHeaderTitle>WL test completed successfully</CardHeaderTitle>
-                <CardHeaderSubTitle>
-                  Click <Link to="/workspaces" style={{ color: 'blue' }}>here</Link> to download results.
-                </CardHeaderSubTitle>
               </CardHeaderMain>
             </CardHeader>
-            {isLoading ? <p>Loading...</p> :
-              <p>
-                Results: {data?.result}
-              </p>}
+            {
+              isLoading
+                ? <Description> Loading... </Description>
+                : <Description> Results: {data?.result}</Description>
+            }
+            <Description>
+              <button className="btn btn-primary" onClick={handleClick}>Download full results in pdf</button>
+            </Description>
           </Card>
         </CardsContainer>
       </Margin>

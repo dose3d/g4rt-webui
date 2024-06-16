@@ -35,7 +35,7 @@ export default function WLTestPage() {
 
   const { onDrop, errorMessage } = useUploadRequest({ endpoint: "/api/upload/", onSuccess: () => setFilesUploaded(true) });
 
-  const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({ onDrop, multiple: false, accept: { 'application/zip': ['.zip'], 'application/x-zip-compressed': ['.zip'] } });
 
   return (
     <Page>
@@ -60,9 +60,9 @@ export default function WLTestPage() {
                   <input {...getInputProps()} />
                   <div className="text-center">
                     {isDragActive ? (
-                      <p className="text-gray-600">Drop the files here...</p>
+                      <p className="text-gray-600">Drop zip file here...</p>
                     ) : (
-                      <p className="text-gray-600">{`Drag 'n' drop some files here, or click to select files.`}</p>
+                      <p className="text-gray-600">{`Drag 'n' drop zip file, or click to select files.`}</p>
                     )}
                   </div>
                 </div>
@@ -80,16 +80,15 @@ export default function WLTestPage() {
                 <ul>
                   {acceptedFiles.map((file: any) => (
                     <li key={file.path}>
-                      {file.path} - {file.size} bytes
+                      {file.path}
                     </li>
                   ))}
                 </ul>
                 <div className="flex w-full items-center">
-                  <Link to="results" className="btn btn-primary" >
+                  <Link to="results" className="btn btn-primary" state={{ filename: (acceptedFiles[0] as any).path }}>
                     Perform test
                   </Link>
                 </div>
-
               </>
             }
 

@@ -2,12 +2,13 @@ import os.path
 import json
 
 from dose3d import QUEUE, RUNNING
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.http import FileResponse
 
 from commons.views import CustomPageNumberPagination, VariousSerializersViewSet
 from tnd3d.download import download_file, download_tail_of_text_file
@@ -16,7 +17,7 @@ from tnd3d.serializer import JobSerializer, JobSerializerPending, JobRootFileSer
     JobListSerializer, JobRootFileDetailSerializer, WorkspaceSerializer, WorkspaceCellSerializer, \
     WorkspaceCellCreateSerializer, RootFileSerializer, UploadedFileSerializer
 from django.utils.translation import gettext_lazy as _
-from .services.WLTest import test_wl
+from .services.WLTest import test_wl, wl_test_pdf
 
 class JobViewSet(VariousSerializersViewSet):
     queryset = Job.objects.all()
@@ -141,9 +142,18 @@ class FileUploadView(APIView):
 
 class WLTestView(APIView):
     def get(self, request, *args, **kwargs):
-        # result = test_wl()
-        result = 'temp'
+        path = request.query_params.get('filename') 
+        result = test_wl(path)
         return Response({"result": result}, status=200)
+    
+class WLTestPdfView(APIView):
+    def get(self, request, *args, **kwargs):
+        path = request.query_params.get('filename') 
+        result_path = wl_test_pdf(path)
+        try:
+            return FileResponse(open(result_path, 'rb'), content_type='application/pdf')
+        except FileNotFoundError:
+            return Response({"error": "PDF not found"}, status=status.HTTP_404_NOT_FOUND)
 
 class RootFileViewSet(VariousSerializersViewSet):
     queryset = RootFile.objects.all()

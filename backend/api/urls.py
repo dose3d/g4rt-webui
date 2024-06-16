@@ -1,8 +1,7 @@
 from django.urls import path
 from rest_framework import routers
 
-from tnd3d.views import JobViewSet, JobRootFileDetailViewSet, WorkspaceViewSet, WorkspaceCellViewSet, RootFileViewSet, \
-    FileUploadView, WLTestView
+from tnd3d.views import JobViewSet, JobRootFileDetailViewSet, WorkspaceViewSet, WorkspaceCellViewSet, RootFileViewSet, FileUploadView, WLTestView, WLTestPdfView
 from . import views
 
 from rest_framework_simplejwt.views import (
@@ -25,4 +24,5 @@ urlpatterns = [
     path('token/', views.MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('upload/', FileUploadView.as_view()),
     path('wl-test/', WLTestView.as_view()),
+    path('wl-test/pdf', WLTestPdfView.as_view()),
 ] + router.urls
