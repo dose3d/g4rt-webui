@@ -141,7 +141,8 @@ class FileUploadView(APIView):
 
 class WLTestView(APIView):
     def get(self, request, *args, **kwargs):
-        result = test_wl()
+        # result = test_wl()
+        result = 'temp'
         return Response({"result": result}, status=200)
 
 class RootFileViewSet(VariousSerializersViewSet):

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { Suspense, useCallback, useState } from 'react';
 import { Link } from 'react-router-dom';
 import cn from 'classnames';
 import {
@@ -32,7 +32,7 @@ interface Data {
 }
 
 export default function WLTestResultsPage() {
-  const { data } = useQueryWrapper<Data>({ endpoint: "/api/wl-test" });
+  const { data, isLoading } = useQueryWrapper<Data>({ endpoint: "/api/wl-test", queryKey: ["some_key"], staleTime: 1000 * 60 * 5 });
 
   return (
     <Page>
@@ -48,12 +48,14 @@ export default function WLTestResultsPage() {
                 </CardHeaderSubTitle>
               </CardHeaderMain>
             </CardHeader>
-            <p>
-              Results: {data?.result}
-            </p>
+            {isLoading ? <p>Loading...</p> :
+              <p>
+                Results: {data?.result}
+              </p>}
           </Card>
         </CardsContainer>
       </Margin>
     </Page>
   );
 }
+

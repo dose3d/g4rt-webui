@@ -22,33 +22,20 @@ import { useRootFileForm } from '../../api/rootFile';
 import { UploadFileSuccessCallback, useFormatErrorToString } from '../../drf-crud-client';
 import { CTextArea, CTextInput } from '../../components/forms';
 import UploadFile from '../../components/UploadFile';
+import { UseUploadRequest, useUploadRequest } from '../../drf-crud-client';
+import { useDropzone } from 'react-dropzone';
 
 export const WLTestPageBreadcrumbs: Breadcrumb[] = [
   { icon: <ServerStackIcon className={BreadcrumbsIconClass} />, label: 'WL Test', to: '/workspaces' },
 ];
 
 export default function WLTestPage() {
-  const [numPages, setNumPages] = useState(0);
+  const [filesUploaded, setFilesUploaded] = useState(false);
   const navigate = useNavigate();
-  const formatErrorToString = useFormatErrorToString();
-  const {
-    handleSubmitShort,
-    form: { control, setValue, watch, register },
-    cud: { isLoading, failureReason },
-  } = useRootFileForm({
-    formProps: { defaultValues: { title: '', description: '' }, reValidateMode: 'onSubmit' },
-    onSuccess: () => navigate('/rf'),
-  });
 
-  const onSuccess = useCallback<UploadFileSuccessCallback>(
-    (response) => {
-      if (!watch('title')) {
-        setValue('title', response.data.file.substring('/uploads/'.length));
-      }
-      setValue('uploaded_file', response.data.id);
-    },
-    [setValue, watch],
-  );
+  const { onDrop, errorMessage } = useUploadRequest({ endpoint: "/api/upload/", onSuccess: () => setFilesUploaded(true) });
+
+  const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({ onDrop });
 
   return (
     <Page>
@@ -64,27 +51,49 @@ export default function WLTestPage() {
                 </CardHeaderSubTitle>
               </CardHeaderMain>
             </CardHeader>
-            {/* <form onSubmit={handleSubmitShort}>
-              <input type="hidden" {...register('uploaded_file')} />
+            {!filesUploaded ?
+              <>
+                <div
+                  {...getRootProps()}
+                  className="mb-6 cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-6 hover:border-gray-500"
+                >
+                  <input {...getInputProps()} />
+                  <div className="text-center">
+                    {isDragActive ? (
+                      <p className="text-gray-600">Drop the files here...</p>
+                    ) : (
+                      <p className="text-gray-600">{`Drag 'n' drop some files here, or click to select files.`}</p>
+                    )}
+                  </div>
+                </div>
+                {errorMessage && <ErrorAlert>{errorMessage}</ErrorAlert>}
 
-              {watch('uploaded_file') ? (
-                <>
-                  <CTextInput name="title" control={control} title="User file name" inputProps={{ readOnly: true }} />
-                  <CTextArea name="description" control={control} title="Description of the user file" />
-                  <button type="submit" className={cn('btn-primary btn', { loading: isLoading })} disabled={isLoading}>
-                    Send
-                  </button>
-                </>
-              ) : (
-                <>
-                  <UploadFile endpoint="/api/upload/" onSuccess={onSuccess} />
-                  <input type="hidden" {...register('title')} />
-                </>
-              )}
+                <div className="flex w-full items-center">
+                  <div className="btn btn-ghost">
+                    Perform test
+                  </div>
+                </div>
+              </>
+              :
+              <>
+                <p>Uploaded Files:</p>
+                <ul>
+                  {acceptedFiles.map((file: any) => (
+                    <li key={file.path}>
+                      {file.path} - {file.size} bytes
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex w-full items-center">
+                  <Link to="results" className="btn btn-primary" >
+                    Perform test
+                  </Link>
+                </div>
 
-              {!!failureReason && <ErrorAlert className="my-4">{formatErrorToString(failureReason)}</ErrorAlert>}
-            </form> */}
-            <Link to="results" style={{ color: 'blue' }}>Launch test</Link>
+              </>
+            }
+
+
           </Card>
         </CardsContainer>
       </Margin>
