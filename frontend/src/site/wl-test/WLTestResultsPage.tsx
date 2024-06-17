@@ -29,7 +29,7 @@ export const WLTestPageBreadcrumbs: Breadcrumb[] = [
 ];
 
 interface Data {
-  result: string;
+  result: string[];
 }
 
 export default function WLTestResultsPage() {
@@ -40,8 +40,7 @@ export default function WLTestResultsPage() {
   const filename = state.filename;
   const { data, isLoading } = useQueryWrapper<Data>({
     endpoint: `/api/wl-test`, config: { params: { filename } }, queryKey: [filename],
-    // staleTime: 1000 * 60 * 5,
-    staleTime: 0,
+    staleTime: 1000 * 60 * 5,
   });
 
   const handleClick = async () => {
@@ -77,9 +76,11 @@ export default function WLTestResultsPage() {
                 ? <Description> Loading... </Description>
                 : <Description> Results: {data?.result}</Description>
             }
-            <Description>
-              <button className="btn btn-primary" onClick={handleClick}>Download full results in pdf</button>
-            </Description>
+            <Margin>
+              <Description>
+                <button className="btn btn-primary" onClick={handleClick}>Download full results in pdf</button>
+              </Description>
+            </Margin>
           </Card>
         </CardsContainer>
       </Margin>

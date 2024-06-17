@@ -4,7 +4,7 @@ def test_wl(filename):
   print('Testing Winston-Lutz')
   wl = WinstonLutz.from_zip(f'/app/var/dose3d/uploads/{filename}')
   wl.analyze()
-  return wl.bb_shift_instructions()
+  return wl.results(as_list=True)
 
 def wl_test_pdf(filename):
   wl = WinstonLutz.from_zip(f'/app/var/dose3d/uploads/{filename}')

@@ -8,6 +8,7 @@ import {
   CardHeaderSubTitle,
   CardHeaderTitle,
   CardsContainer,
+  Description,
   ErrorAlert,
   Margin,
   Page,
@@ -47,7 +48,7 @@ export default function WLTestPage() {
                 <Breadcrumbs breadcrumbs={WLTestPageBreadcrumbs} />
                 <CardHeaderTitle>WL test Setup page</CardHeaderTitle>
                 <CardHeaderSubTitle>
-                  To perform WL test upload dcm files using field above.
+                  To perform WL test upload zip file using field below.
                 </CardHeaderSubTitle>
               </CardHeaderMain>
             </CardHeader>
@@ -76,19 +77,12 @@ export default function WLTestPage() {
               </>
               :
               <>
-                <p>Uploaded Files:</p>
-                <ul>
-                  {acceptedFiles.map((file: any) => (
-                    <li key={file.path}>
-                      {file.path}
-                    </li>
-                  ))}
-                </ul>
-                <div className="flex w-full items-center">
+                <Description>Uploaded file: {(acceptedFiles[0] as any).path}</Description>
+                <Margin>
                   <Link to="results" className="btn btn-primary" state={{ filename: (acceptedFiles[0] as any).path }}>
                     Perform test
                   </Link>
-                </div>
+                </Margin>
               </>
             }
 
