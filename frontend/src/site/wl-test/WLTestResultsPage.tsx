@@ -1,28 +1,18 @@
-import React, { Suspense, useCallback, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import cn from 'classnames';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
+import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
+import { ServerStackIcon } from '../../components/icons';
 import {
   Card,
   CardHeader,
   CardHeaderMain,
-  CardHeaderSubTitle,
   CardHeaderTitle,
   CardsContainer,
   Description,
-  ErrorAlert,
   Margin,
-  Page,
-  Title,
+  Page
 } from '../../components/layout';
-import { AddIcon, ServerStackIcon } from '../../components/icons';
-import Pagination from '../../components/Pagination';
-import { useWorkspaceList } from '../../api/workspaces';
-import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
-import { useNavigate } from 'react-router-dom';
-import { useRootFileForm } from '../../api/rootFile';
-import { UploadFileSuccessCallback, useAuthContext, useFormatErrorToString, useQueryWrapper } from '../../drf-crud-client';
-import { CTextArea, CTextInput } from '../../components/forms';
-import UploadFile from '../../components/UploadFile';
+import { useAuthContext, useQueryWrapper } from '../../drf-crud-client';
 
 export const WLTestPageBreadcrumbs: Breadcrumb[] = [
   { icon: <ServerStackIcon className={BreadcrumbsIconClass} />, label: 'WL Test', to: '/workspaces' },
@@ -39,7 +29,9 @@ export default function WLTestResultsPage() {
   const { state } = useLocation();
   const filename = state.filename;
   const { data, isLoading } = useQueryWrapper<Data>({
-    endpoint: `/api/wl-test`, config: { params: { filename } }, queryKey: [filename],
+    endpoint: `/api/wl-test`,
+    config: { params: { filename } },
+    queryKey: [filename],
     staleTime: 1000 * 60 * 5,
   });
 
@@ -71,14 +63,12 @@ export default function WLTestResultsPage() {
                 <CardHeaderTitle>WL test completed successfully</CardHeaderTitle>
               </CardHeaderMain>
             </CardHeader>
-            {
-              isLoading
-                ? <Description> Loading... </Description>
-                : <Description> Results: {data?.result}</Description>
-            }
+            {isLoading ? <Description> Loading... </Description> : <Description> Results: {data?.result}</Description>}
             <Margin>
               <Description>
-                <button className="btn btn-primary" onClick={handleClick}>Download full results in pdf</button>
+                <button className="btn btn-primary" onClick={handleClick}>
+                  Download full results in pdf
+                </button>
               </Description>
             </Margin>
           </Card>
@@ -87,4 +77,3 @@ export default function WLTestResultsPage() {
     </Page>
   );
 }
-
