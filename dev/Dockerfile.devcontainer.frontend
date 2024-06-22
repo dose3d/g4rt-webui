@@ -11,5 +11,3 @@ USER $USERNAME
 RUN sudo apt-get update && sudo apt-get install -y python3 make g++ libxi-dev libglu1-mesa-dev libglew-dev
 RUN sudo ln -s /usr/bin/python3 /usr/bin/python
 RUN sudo rm -rf /var/lib/apt/lists/*
-
-WORKDIR /workspaces/g4rt-webui/frontend
