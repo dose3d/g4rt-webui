@@ -96,7 +96,7 @@ function DropzoneView({ getRootProps, getInputProps, isDragActive, errorMessage 
       {errorMessage && <ErrorAlert>{errorMessage}</ErrorAlert>}
 
       <div className="flex w-full items-center">
-        <div className="btn btn-ghost">Perform test</div>
+        <button disabled className="btn">Perform test</button>
       </div>
     </>
   );
