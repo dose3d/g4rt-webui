@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
@@ -69,12 +70,9 @@ export default function WLTestResultsPage() {
             {isLoading ? <Description> Loading... </Description> : <Description> Results: {data?.result}</Description>}
             <Margin>
               <Description>
-                {!isPdfGenerating ?
-                  <button className="btn btn-primary" onClick={handleClick}>
-                    Download full results in pdf
-                  </button>
-                  : <ButtonSpinner />
-                }
+                <button className={cn('btn-primary btn', { loading: isPdfGenerating })} disabled={isPdfGenerating} onClick={handleClick}>
+                  Download full results in pdf
+                </button>
               </Description>
             </Margin>
           </Card>

@@ -1,7 +1,10 @@
+import cn from 'classnames';
 import React, { useState } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { Link } from 'react-router-dom';
+import { FileWithPath, useDropzone } from 'react-dropzone';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
+import { CTextInput } from '../../components/forms';
 import { ServerStackIcon } from '../../components/icons';
 import {
   Card,
@@ -22,11 +25,20 @@ export const WLTestPageBreadcrumbs: Breadcrumb[] = [
 ];
 
 export default function WLTestPage() {
-  const [filesUploaded, setFilesUploaded] = useState(false);
+  interface FormInput {
+    bb_size: string;
+    uploaded_file: string;
+  }
+
+  const { handleSubmit, control, setValue, watch, register, formState: { isValid } } = useForm<FormInput>();
+
   const [hashedFileName, setHashedFileName] = useState('');
+  const navigate = useNavigate();
   const { onDrop, errorMessage } = useUploadRequest({
     endpoint: '/api/upload/',
-    onSuccess: () => setFilesUploaded(true),
+    onSuccess: () => {
+      setValue('uploaded_file', "true");
+    },
   });
 
   async function computeChecksum(file: File) {
@@ -49,6 +61,8 @@ export default function WLTestPage() {
     accept: { 'application/zip': ['.zip'], 'application/x-zip-compressed': ['.zip'] },
   });
 
+  const onSubmit: SubmitHandler<FormInput> = (data) => navigate('/wl-test/results', { state: { filename: hashedFileName, data } });
+
   return (
     <Page>
       <Margin>
@@ -61,9 +75,22 @@ export default function WLTestPage() {
                 <CardHeaderSubTitle>To perform WL test upload zip file using field below.</CardHeaderSubTitle>
               </CardHeaderMain>
             </CardHeader>
-            {filesUploaded
-              ? UploadedView({ filename: hashedFileName })
-              : DropzoneView({ getRootProps, getInputProps, isDragActive, errorMessage })}
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <CTextInput name="bb_size" control={control} rules={{ required: true }} title="BB size [mm]" />
+
+              {watch('uploaded_file') ? (
+                <Description>Uploaded file: {(acceptedFiles[0] as FileWithPath).path}</Description>
+              ) : (
+                DropzoneView({ getRootProps, getInputProps, isDragActive, errorMessage })
+              )}
+              <input type="hidden" {...register('uploaded_file', { required: true })} />
+
+              <button type="submit" className={cn('btn-primary btn')} disabled={!isValid}>
+                Send
+              </button>
+
+              {!!errorMessage && <ErrorAlert className="my-4">{errorMessage}</ErrorAlert>}
+            </form>
           </Card>
         </CardsContainer>
       </Margin>
@@ -94,26 +121,6 @@ function DropzoneView({ getRootProps, getInputProps, isDragActive, errorMessage 
         </div>
       </div>
       {errorMessage && <ErrorAlert>{errorMessage}</ErrorAlert>}
-
-      <div className="flex w-full items-center">
-        <button disabled className="btn">Perform test</button>
-      </div>
-    </>
-  );
-}
-
-interface UploadedViewProps {
-  filename: string;
-}
-function UploadedView({ filename }: UploadedViewProps) {
-  return (
-    <>
-      <Description>Uploaded file: {filename}</Description>
-      <Margin>
-        <Link to="results" className="btn btn-primary" state={{ filename }}>
-          Perform test
-        </Link>
-      </Margin>
     </>
   );
 }

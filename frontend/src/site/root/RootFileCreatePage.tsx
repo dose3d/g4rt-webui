@@ -1,5 +1,11 @@
-import React, { useCallback } from 'react';
 import cn from 'classnames';
+import React, { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useRootFileForm } from '../../api/rootFile';
+import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
+import UploadFile from '../../components/UploadFile';
+import { CTextArea, CTextInput } from '../../components/forms';
+import { DocumentPlusIcon } from '../../components/icons';
 import {
   Card,
   CardHeader,
@@ -11,14 +17,8 @@ import {
   Margin,
   Page,
 } from '../../components/layout';
-import { CTextArea, CTextInput } from '../../components/forms';
-import { useNavigate } from 'react-router-dom';
 import { UploadFileSuccessCallback, useFormatErrorToString } from '../../drf-crud-client';
-import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
 import { RootFilesPagePageBreadcrumbs } from './RootFilesPage';
-import { DocumentPlusIcon } from '../../components/icons';
-import { useRootFileForm } from '../../api/rootFile';
-import UploadFile from '../../components/UploadFile';
 
 const RootFileCreatePageBreadcrumbs: Breadcrumb[] = [
   ...RootFilesPagePageBreadcrumbs,
