@@ -8,6 +8,8 @@ from django.db.models import Max
 from django.utils.translation import gettext_lazy as _
 from dose3d import JobsManager, INIT, QUEUE, RUNNING, DONE, Dose3DException
 
+from tnd3d.utils import OverwriteStorage
+
 MARKDOWN = 'markdown'
 ROOT = 'root'
 DOSE3D = 'dose3d'
@@ -197,7 +199,7 @@ class JobRootFile(models.Model):
 
 
 class UploadedFile(models.Model):
-    file = models.FileField(upload_to='uploads/')
+    file = models.FileField(upload_to='uploads/', storage=OverwriteStorage())
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     @staticmethod

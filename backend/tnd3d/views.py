@@ -1,6 +1,7 @@
 import os.path
 import json
 
+from tnd3d.utils import compute_checksum
 from dose3d import QUEUE, RUNNING
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -133,6 +134,7 @@ class FileUploadView(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
+        # request.data['file'].name = compute_checksum(request.data['file'], 'md5')
         file_serializer = UploadedFileSerializer(data=request.data)
         if file_serializer.is_valid():
             file_serializer.save()

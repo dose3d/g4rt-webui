@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileWithPath, useDropzone } from 'react-dropzone';
+import { useDropzone } from 'react-dropzone';
 import { Link } from 'react-router-dom';
 import Breadcrumbs, { Breadcrumb, BreadcrumbsIconClass } from '../../components/Breadcrumbs';
 import { ServerStackIcon } from '../../components/icons';
@@ -23,13 +23,28 @@ export const WLTestPageBreadcrumbs: Breadcrumb[] = [
 
 export default function WLTestPage() {
   const [filesUploaded, setFilesUploaded] = useState(false);
+  const [hashedFileName, setHashedFileName] = useState('');
   const { onDrop, errorMessage } = useUploadRequest({
     endpoint: '/api/upload/',
     onSuccess: () => setFilesUploaded(true),
   });
 
+  async function computeChecksum(file: File) {
+    const arrayBuffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+  }
+
   const { getRootProps, getInputProps, isDragActive, acceptedFiles } = useDropzone({
-    onDrop,
+    onDrop: async (acceptedFiles: File[]) => {
+      acceptedFiles = await Promise.all(
+        acceptedFiles.map(async (file) => new File([file], await computeChecksum(file))),
+      );
+      setHashedFileName(acceptedFiles[0].name);
+      onDrop(acceptedFiles);
+    },
     multiple: false,
     accept: { 'application/zip': ['.zip'], 'application/x-zip-compressed': ['.zip'] },
   });
@@ -47,7 +62,7 @@ export default function WLTestPage() {
               </CardHeaderMain>
             </CardHeader>
             {filesUploaded
-              ? UploadedView({ acceptedFiles })
+              ? UploadedView({ filename: hashedFileName })
               : DropzoneView({ getRootProps, getInputProps, isDragActive, errorMessage })}
           </Card>
         </CardsContainer>
@@ -88,14 +103,14 @@ function DropzoneView({ getRootProps, getInputProps, isDragActive, errorMessage 
 }
 
 interface UploadedViewProps {
-  acceptedFiles: FileWithPath[];
+  filename: string;
 }
-function UploadedView({ acceptedFiles }: UploadedViewProps) {
+function UploadedView({ filename }: UploadedViewProps) {
   return (
     <>
-      <Description>Uploaded file: {acceptedFiles[0].path}</Description>
+      <Description>Uploaded file: {filename}</Description>
       <Margin>
-        <Link to="results" className="btn btn-primary" state={{ filename: (acceptedFiles[0] as any).path }}>
+        <Link to="results" className="btn btn-primary" state={{ filename }}>
           Perform test
         </Link>
       </Margin>

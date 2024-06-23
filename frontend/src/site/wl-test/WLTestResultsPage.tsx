@@ -28,6 +28,7 @@ export default function WLTestResultsPage() {
 
   const { state } = useLocation();
   const filename = state.filename;
+  console.log(`caching ${filename}`);
   const { data, isLoading } = useQueryWrapper<Data>({
     endpoint: `/api/wl-test`,
     config: { params: { filename } },
