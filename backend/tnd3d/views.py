@@ -145,13 +145,17 @@ class FileUploadView(APIView):
 class WLTestView(APIView):
     def get(self, request, *args, **kwargs):
         path = request.query_params.get('filename') 
-        result = test_wl(path)
+        bb_size = int(request.query_params.get('bb_size'))
+        print(f'bb_size: {bb_size}')
+        result = test_wl(path, bb_size)
         return Response({"result": result}, status=200)
     
 class WLTestPdfView(APIView):
     def get(self, request, *args, **kwargs):
         path = request.query_params.get('filename') 
-        result_path = wl_test_pdf(path)
+        bb_size = int(request.query_params.get('bb_size'))
+        print(f'bb_size: {bb_size}')
+        result_path = wl_test_pdf(path, bb_size)
         try:
             return FileResponse(open(result_path, 'rb'), content_type='application/pdf')
         except FileNotFoundError:

@@ -26,18 +26,18 @@ export const WLTestPageBreadcrumbs: Breadcrumb[] = [
 
 export default function WLTestPage() {
   interface FormInput {
-    bb_size: string;
+    bb_size: number;
     uploaded_file: string;
   }
 
-  const { handleSubmit, control, setValue, watch, register, formState: { isValid } } = useForm<FormInput>();
+  const { handleSubmit, control, setValue, watch, register, getFieldState, formState: { isValid } } = useForm<FormInput>();
 
   const [hashedFileName, setHashedFileName] = useState('');
   const navigate = useNavigate();
   const { onDrop, errorMessage } = useUploadRequest({
     endpoint: '/api/upload/',
     onSuccess: () => {
-      setValue('uploaded_file', "true");
+      setValue('uploaded_file', "true", { shouldValidate: true });
     },
   });
 
@@ -61,7 +61,7 @@ export default function WLTestPage() {
     accept: { 'application/zip': ['.zip'], 'application/x-zip-compressed': ['.zip'] },
   });
 
-  const onSubmit: SubmitHandler<FormInput> = (data) => navigate('/wl-test/results', { state: { filename: hashedFileName, data } });
+  const onSubmit: SubmitHandler<FormInput> = (data) => navigate('/wl-test/results', { state: { filename: hashedFileName, bb_size: data.bb_size } });
 
   return (
     <Page>
@@ -76,7 +76,12 @@ export default function WLTestPage() {
               </CardHeaderMain>
             </CardHeader>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <CTextInput name="bb_size" control={control} rules={{ required: true }} title="BB size [mm]" />
+              <CTextInput
+                name="bb_size"
+                control={control}
+                rules={{ required: true, pattern: { value: /^\d+$/, message: 'Only numbers are allowed' } }}
+                title="BB size [mm]"
+              />
 
               {watch('uploaded_file') ? (
                 <Description>Uploaded file: {(acceptedFiles[0] as FileWithPath).path}</Description>
