@@ -1,0 +1,3 @@
+function HelloWorld() {
+  return 'HelloWorld';
+}
