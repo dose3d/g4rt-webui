@@ -1,23 +1,25 @@
 import React from 'react';
-import './index.css';
+import { Route, HashRouter as Router, Routes } from 'react-router-dom';
+import Copyright from './components/Copyright';
 import Footer from './components/Footer';
 import Navbar from './components/Navbar';
-import { HashRouter as Router, Route, Routes } from 'react-router-dom';
+import Sidebar from './components/Sidebar';
+import WLTestPage from './contrib/wl-test/WLTestPage';
+import WLTestResultsPage from './contrib/wl-test/WLTestResultsPage';
+import { AuthProvider, useAuthContext } from './drf-crud-client';
+import useToggle from './hooks/useToggle';
+import './index.css';
 import HomePage from './site/HomePage';
-import JobsPage from './site/jobs/JobsPage';
+import LoginScreen from './site/LoginScreen';
 import JobCreatePage from './site/jobs/JobCreatePage';
 import JobDetailPage from './site/jobs/JobDetailPage';
-import Sidebar from './components/Sidebar';
-import useToggle from './hooks/useToggle';
-import Copyright from './components/Copyright';
-import LoginScreen from './site/LoginScreen';
-import { AuthProvider, useAuthContext } from './drf-crud-client';
+import JobsPage from './site/jobs/JobsPage';
 import JobRootDetailPage from './site/root/JobRootDetailPage';
-import WorkspacesPage from './site/workspaces/WorkspacesPage';
+import RootFileCreatePage from './site/root/RootFileCreatePage';
+import RootFilesPage from './site/root/RootFilesPage';
 import WorkspaceCreatePage from './site/workspaces/WorkspaceCreatePage';
 import WorkspaceDetailPage from './site/workspaces/WorkspaceDetailPage';
-import RootFilesPage from './site/root/RootFilesPage';
-import RootFileCreatePage from './site/root/RootFileCreatePage';
+import WorkspacesPage from './site/workspaces/WorkspacesPage';
 
 function Authorized() {
   const [toggle, onToggle] = useToggle();
@@ -43,6 +45,10 @@ function Authorized() {
               <Route element={<WorkspacesPage />} path="" />
               <Route element={<WorkspaceCreatePage />} path="create" />
               <Route element={<WorkspaceDetailPage />} path=":workspaceId" />
+            </Route>
+            <Route path="/wl-test">
+              <Route element={<WLTestPage />} path="" />
+              <Route element={<WLTestResultsPage />} path="results" />
             </Route>
             <Route element={<HomePage />} path="/" />
           </Routes>
