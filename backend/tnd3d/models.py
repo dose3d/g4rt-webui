@@ -8,6 +8,8 @@ from django.db.models import Max
 from django.utils.translation import gettext_lazy as _
 from dose3d import JobsManager, INIT, QUEUE, RUNNING, DONE, Dose3DException
 
+from contrib.wl_test.models import WLUploadedFile
+
 MARKDOWN = 'markdown'
 ROOT = 'root'
 DOSE3D = 'dose3d'
