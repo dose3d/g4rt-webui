@@ -1,7 +1,0 @@
-FROM node:20-bookworm
-
-RUN apt-get update && apt-get install -y python3 make g++ libxi-dev libglu1-mesa-dev libglew-dev
-RUN ln -s /usr/bin/python3 /usr/bin/python
-RUN rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app/frontend

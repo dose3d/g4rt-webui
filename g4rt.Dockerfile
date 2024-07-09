@@ -38,7 +38,7 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     cd; git clone --single-branch --branch develop https://github.com/dose3d/g4rt.git && \
     mkdir g4rt/build; cd g4rt/build; cmake ../; make -j2
 	
-COPY ./runner /app/runner
+COPY g4rt-webui-be/runner /app/runner
 COPY ./dose3d_commons /app/dose3d_commons
 COPY config.txt.docker /app/config.txt
 

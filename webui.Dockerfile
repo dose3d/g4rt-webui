@@ -7,12 +7,12 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /jsroot-fork
-COPY ./jsroot-fork /jsroot-fork
+COPY g4rt-webui-fe/jsroot-fork /jsroot-fork
 RUN npm install
 RUN npm run build
 
 WORKDIR /app
-COPY ./frontend /app
+COPY g4rt-webui-fe/frontend /app
 RUN npm install
 RUN npm run build
 
@@ -27,8 +27,8 @@ COPY --from=build /app/build /app/frontend/build
 COPY requirements.txt .
 COPY config.txt.docker ./config.txt
 COPY ./dose3d_commons /app/dose3d_commons
-COPY ./backend /app/backend
-COPY ./backend/backend/settings_local.py.docker /app/backend/backend/settings_local.py
+COPY g4rt-webui-be/backend /app/backend
+COPY g4rt-webui-be/backend/backend/settings_local.py.docker /app/backend/backend/settings_local.py
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Envs

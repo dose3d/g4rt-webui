@@ -1,22 +1,22 @@
-frontend/.idea/
-jsroot-fork/.idea/
+g4rt-webui-fe/frontend/.idea/
+g4rt-webui-fe/jsroot-fork/.idea/
 dose3d_commons/.idea/
-backend/.idea/
+g4rt-webui-be/backend/.idea/
 
-backend/venv/
+g4rt-webui-be/backend/venv/
 *.pyc
-backend/backend/settings_local.py
-backend/static/
-backend/static_collected/
-backend/db.sqlite3
-backend/test.py
+g4rt-webui-be/backend/backend/settings_local.py
+g4rt-webui-be/backend/static/
+g4rt-webui-be/backend/static_collected/
+g4rt-webui-be/backend/db.sqlite3
+g4rt-webui-be/backend/test.py
 
-frontend/build/
-frontend/node_modules/
+g4rt-webui-fe/frontend/build/
+g4rt-webui-fe/frontend/node_modules/
 
-jsroot-fork/node_modules/
-jsroot-fork/build/jsroot.min.js
-jsroot-fork/build/hist2d.js
-jsroot-fork/build/hist2d.min.js
-jsroot-fork/build/hist.js
-jsroot-fork/build/hist.min.js
+g4rt-webui-fe/jsroot-fork/node_modules/
+g4rt-webui-fe/jsroot-fork/build/jsroot.min.js
+g4rt-webui-fe/jsroot-fork/build/hist2d.js
+g4rt-webui-fe/jsroot-fork/build/hist2d.min.js
+g4rt-webui-fe/jsroot-fork/build/hist.js
+g4rt-webui-fe/jsroot-fork/build/hist.min.js
