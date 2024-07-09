@@ -1,0 +1,9 @@
+[submodule "g4rt-webui-devops"]
+	path = g4rt-webui-devops
+	url = git@github.com:dose3d/g4rt-webui-devops.git
+[submodule "g4rt-webui-fe"]
+	path = g4rt-webui-fe
+	url = git@github.com:dose3d/g4rt-webui-fe.git
+[submodule "g4rt-webui-be"]
+	path = g4rt-webui-be
+	url = git@github.com:dose3d/g4rt-webui-be.git
