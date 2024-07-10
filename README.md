@@ -6,6 +6,16 @@ Runner, backend and frontend for **geant4-rt**.
 * Backend - manage jobs and serve frontend for web browser.
 * Frontend - GUI in web browser.
 
+## Development environment setup
+
+There is development version of `docker-compose.yml` located in `dev` directory that sets up development environment. This environment consists of 3 containers: db, frontend and backend. 
+
+Frontend and backend are served by development servers supporting hot-reload feature, meaning that any changes in source code are automatically picked up and applied in working application without the need of rebuilding anything. `backend`, `frontend` and `jsroot-fork` servers are attached to containers as volumes, which enable developer to edit files on host, and servers will pick up changes.
+
+To launch this environment run `cd dev && docker compose up -d`
+
+To see dev server logs run `docker logs <container_name> --follow`
+
 ## Installation on Ubuntu 20.04 with compiled geant4-rt 
 
 How to install and execute Web Interface on WSL2 with Ubuntu 20.04 with configured **geant4-rt**:
