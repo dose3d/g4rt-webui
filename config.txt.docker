@@ -1,6 +1,0 @@
-QUEUE_DIR=/app/var/dose3d/queue
-RUNNING_DIR=/app/var/dose3d/running
-DONE_DIR=/app/var/dose3d/done
-DOSE3D_EXEC=/root/g4rt/build/executables/g4rt
-MEDIA_DIR=/app/var/dose3d/
-SLEEP=1

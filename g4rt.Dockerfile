@@ -17,7 +17,7 @@ RUN DEBIAN_FRONTEND=noninteractive && \
   rm /opt/miniconda.sh
 
 RUN conda init && \
-    /bin/bash && \ 
+    /bin/bash && \
     conda env create -f /opt/geant4-g4rt-environment.yml
 
 RUN cd /opt/geant4-data && \
@@ -39,8 +39,8 @@ RUN . /opt/conda/etc/profile.d/conda.sh && \
     mkdir g4rt/build; cd g4rt/build; cmake ../; make -j2
 	
 COPY g4rt-webui-be/runner /app/runner
-COPY ./dose3d_commons /app/dose3d_commons
-COPY config.txt.docker /app/config.txt
+COPY g4rt-webui-be/backend/dose3d_commons /app/dose3d_commons
+COPY g4rt-webui-be/backend/config.txt.docker /app/config.txt
 
 # Envs
 ENV PYTHONDONTWRITEBYTECODE 1
