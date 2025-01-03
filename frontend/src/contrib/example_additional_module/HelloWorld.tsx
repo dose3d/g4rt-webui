@@ -1,3 +1,0 @@
-function HelloWorld() {
-  return 'HelloWorld';
-}

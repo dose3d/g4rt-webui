@@ -1,8 +1,0 @@
-venv/
-.idea/
-*.pyc
-db.sqlite3
-templates/
-static/
-static_collected/
-backend/settings_local.py
