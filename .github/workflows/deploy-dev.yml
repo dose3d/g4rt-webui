@@ -1,0 +1,26 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
+      - name: Connect to server and deploy
+        run: |
+          sshpass -p "${{ secrets.TAURUS_SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
+          ${{ secrets.TAURUS_SERVER_USER }}@${{ secrets.TAURUS_SERVER_ADDRESS }} << 'EOF'
+          ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -i ${{ secrets.SSH_KEY_TAURUS_PATH }}<< 'EOF'
+            cd ~/g4rt-webui-be
+            git pull origin master
+          EOF
