@@ -21,6 +21,6 @@ jobs:
           sshpass -p "${{ secrets.TAURUS_SERVER_PASSWORD }}" ssh -o StrictHostKeyChecking=no \
           ${{ secrets.TAURUS_SERVER_USER }}@${{ secrets.TAURUS_SERVER_ADDRESS }} << 'EOF'
           ssh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} -i ${{ secrets.SSH_KEY_TAURUS_PATH }}<< 'EOF'
-            cd ~/g4rt-webui-be
+            cd ~/g4rt-webui
             git pull origin master
           EOF
