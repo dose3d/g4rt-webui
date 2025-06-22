@@ -1,81 +1,40 @@
-# geant4-rt Web Interface
+# geant4-rt Web Interface - Main Repository
 
-Runner, backend and frontend for **geant4-rt**.
+This is the **main repository** for the modular web application. It serves as an umbrella project containing three key components, each stored in a separate subdirectory as a Git submodule:
 
-* Runner - work as daemon, consume jobs from backend and launch dose4-rt.
-* Backend - manage jobs and serve frontend for web browser.
-* Frontend - GUI in web browser.
+- [`frontend`](https://github.com/dose3d/g4rt-webui-fe) – React-based frontend application
+- [`backend`](https://github.com/dose3d/g4rt-webui-be) – Django-based backend service, Configuration for g4rt and jupyter
+- [`devops`](https://github.com/dose3d/g4rt-webui-devops) – Docker-based deployment and development environment configuration
 
-## Development environment setup
+## 📥 Cloning the Repository
 
-There is development version of `docker-compose.yml` located in `dev` directory that sets up development environment. This environment consists of 3 containers: db, frontend and backend. 
+To clone this repository along with all submodules, run the following command:
 
-Frontend and backend are served by development servers supporting hot-reload feature, meaning that any changes in source code are automatically picked up and applied in working application without the need of rebuilding anything. `backend`, `frontend` and `jsroot-fork` servers are attached to containers as volumes, which enable developer to edit files on host, and servers will pick up changes.
-
-To launch this environment run `cd dev && docker compose up -d`
-
-To see dev server logs run `docker logs <container_name> --follow`
-
-## Installation on Ubuntu 20.04 with compiled geant4-rt 
-
-How to install and execute Web Interface on WSL2 with Ubuntu 20.04 with configured **geant4-rt**:
-
-The web application requires python and postgresql for running the **Backend** and **Runner** and nodejs for build the **Frontend**.
-
-Python should be installed with `conda` environment for `dose3d`.
-
-The `nodejs` can be installed from Ubuntu repo recommend to install from official PPA repository because you will install new version:
-
-```
-$ curl -sL https://deb.nodesource.com/setup_18.x -o nodesource_setup.sh
-$ sudo bash nodesource_setup.sh
-$ sudo apt install nodejs
+```bash
+git clone --recurse-submodules git@github.com:dose3d/g4rt-webui.git
 ```
 
-### 1. Clone repo
+## 🚀 Running the Application in Desktop Mode
 
-```
-git clone https://git.plgrid.pl/scm/tnd3d/webinterface.git
-cd webinterface
-```
+To provide a seamless **desktop application experience**, two platform-specific launcher scripts are included:
 
-### 2. Configure: `config.txt`
+- **`run_mac.command`** – for macOS
+- **`run_windows.bat`** – for Windows
 
-The `config.txt` file contains settings for **Runner** and **Backend** applications.
-In this file you must configure directiory for jobs files and dose3d-geant4-linac execution.
+These scripts start the application in a windowed interface using Docker and Electron.
 
-Please use sample of settings and modify:
+### ⚙️ Requirements
 
-```cp config.txt.sample config.txt``` 
+Before running the scripts, make sure the following dependencies are installed:
 
-If you compile **dose3d** in `/home/user/dose3d-geant4-linac/build` you can set `DOSE3D_EXEC`: 
+- 🐳 **Docker Desktop**
+- 🖥️ **X Server** (required for GUI support):
+    - **macOS**: [XQuartz](https://www.xquartz.org/)
+    - **Linux**: An X11 server (typically already installed)
+    - **Windows**: Comes bundled with the Electron container configuration
 
-```DOSE3D_EXEC=/home/user/dose3d-geant4-linac/build/executables/run-toml-mode```
- 
-Other settings can be copied from `config.txt.sample` file.
+### ⏳ Installation Time
 
-Full example of `config.txt`:
-```
-QUEUE_DIR=../var/dose3d/queue
-RUNNING_DIR=../var/dose3d/running
-DONE_DIR=../var/dose3d/done
-DOSE3D_EXEC=/home/user/dose3d-geant4-linac/build/executables/run-toml-mode
-SLEEP=1
-```
+> 🛠️ **Note:** The first-time installation may take **1–2 hours**, depending on your internet connection and system performance. This includes pulling Docker images and setting up dependencies.
 
-### 3. Configure and build applications
-
-See `backend/README.md`.
-
-## Run **Runner** and **Backend**
-
-For development you can run **Runner** and **Backend** in separated terminals.
-
-Please look on `run_in_screen.sh` file. Its launch **Runner** and **Backend** in **screen** terminal.
-
-## Upgrade from repo
-
-See `backend/README.md` for upgrade **Backend** and **Frontend**.
-
-Next, restart **Runner**.
-
+Once everything is ready, just double-click the appropriate script to launch the app.
